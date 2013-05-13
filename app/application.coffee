@@ -1,11 +1,14 @@
 Chaplin = require 'chaplin'
 routes = require 'routes'
+CompositionController = require 'controllers/composition-controller'
+Composition = require 'models/composition'
+User = require 'models/user'
 
 # The application object.
 module.exports = class Application extends Chaplin.Application
   # Set your application name here so the document title is set to
   # “Controller title – Site title” (see Chaplin.Layout#adjustTitle)
-  title: 'Brunch example application'
+  title: 'SVG Editor'
 
   initialize: ->
     super
@@ -19,7 +22,7 @@ module.exports = class Application extends Chaplin.Application
     # the root per default. You might change that in the options
     # if necessary:
     # @initRouter routes, pushState: false, root: '/subdir/'
-    @initRouter routes
+    @initRouter routes, root: '/compositions/'+payload?.composition+'/editor'
 
     # Dispatcher listens for routing events and initialises controllers.
     @initDispatcher controllerSuffix: '-controller'
@@ -39,10 +42,16 @@ module.exports = class Application extends Chaplin.Application
     # Freeze the application instance to prevent further changes.
     Object.freeze? this
 
+
+  # Instantiate common controllers
+  # ------------------------------
+  initControllers: ->
+    new CompositionController(payload?.composition)
+
   # Create additional mediator properties.
   initMediator: ->
-    # Add additional application-specific properties and methods
-    # e.g. Chaplin.mediator.prop = null
+    Chaplin.mediator.user = new User payload?.user
+    Chaplin.mediator.composition = new Composition payload?.composition
 
     # Seal the mediator.
     Chaplin.mediator.seal()
