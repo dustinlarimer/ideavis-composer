@@ -1,0 +1,64 @@
+@import 'nib'
+
+/* ==========================================================================
+   Editor styles
+   ========================================================================== */
+
+body {
+	background: #fbfbfb;
+	overflow: hidden;
+}
+
+#editor {
+	height: 100%;
+	position: absolute;
+	top: 0px;
+	width: 100%;
+}
+#controls {
+	left: 10px;
+	position: absolute;
+	top: 10px;
+}
+
+#stage {
+	height: 100%;
+}
+
+
+/*
+ *	Demo styles
+ */
+
+.node {
+	cursor: pointer;
+	/*cursor: -webkit-grab;
+	 cursor: -webkit-grabbing; */
+}
+
+.node_selected {
+  fill: #ff7f0e;
+  stroke: #ff7f0e;
+}
+
+.drag_line {
+  stroke: #999;
+  stroke-width: 5;
+  pointer-events: none;
+}
+
+.drag_line_hidden {
+  stroke: #999;
+  stroke-width: 0;
+  pointer-events: none;
+}
+
+.link {
+  stroke: #999;
+  stroke-width: 5;
+  cursor: crosshair;
+}
+
+.link_selected {
+  stroke: #ff7f0e;
+}
