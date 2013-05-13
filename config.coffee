@@ -14,7 +14,7 @@ exports.config =
           'vendor/scripts/console-polyfill.js',
           'vendor/scripts/d3-3.1.6.js',
           'vendor/scripts/jquery-1.9.1.js',
-          'vendor/scripts/underscore.js',
+          'vendor/scripts/lodash.underscore.js',
           'vendor/scripts/backbone-1.0.0.js'
           'vendor/scripts/keymaster.js'
           'vendor/scripts/backbone.shortcuts.js'
