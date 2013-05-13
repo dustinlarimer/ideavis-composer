@@ -12,6 +12,7 @@ exports.config =
         # even if they aren't specified in order.before.
         before: [
           'vendor/scripts/console-polyfill.js',
+          'vendor/scripts/d3-3.1.6.js',
           'vendor/scripts/jquery-1.9.1.js',
           'vendor/scripts/lodash-1.2.0.js',
           'vendor/scripts/backbone-1.0.0.js'
