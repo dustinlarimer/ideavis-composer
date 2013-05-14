@@ -13,6 +13,7 @@ exports.config =
         before: [
           'vendor/scripts/console-polyfill.js',
           'vendor/scripts/d3-3.1.6.js',
+          'vendor/scripts/d3.superforumla.v0.js',
           'vendor/scripts/jquery-1.9.1.js',
           'vendor/scripts/lodash.underscore.js',
           'vendor/scripts/backbone-1.0.0.js'

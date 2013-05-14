@@ -1,7 +1,7 @@
 View = require 'views/base/view'
 template = require 'views/templates/composition'
 
-module.exports = class CompositionView extends View
+module.exports = class CompositionEditorView extends View
   autoRender: true
   el: '#editor'
   regions:
