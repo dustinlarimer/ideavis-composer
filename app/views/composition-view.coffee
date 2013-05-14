@@ -72,16 +72,22 @@ module.exports = class CompositionView extends View
         .attr("cx", (d) -> d.x)
         .attr("cy", (d) -> d.y)
     
-    setInterval ( -> 
-      this.stage.height = $('#stage').height()
-      this.stage.width = $('#stage').width()
-      $("#stage svg")
-        .attr('height', this.stage.height)
-        .attr('width', this.stage.width)
-      $("#stage svg rect")
-        .attr('height', this.stage.height - 60)
-        .attr('width', this.stage.width - 20)
-      force
-        .size([this.stage.width, this.stage.height])
-        .start();
-    ), 250
+    adjust = ->
+      setInterval ( -> 
+        this.stage.height = $('#stage').height()
+        this.stage.width = $('#stage').width()
+        $("#stage svg")
+          .attr('height', this.stage.height)
+          .attr('width', this.stage.width)
+        $("#stage svg rect")
+          .attr('height', this.stage.height - 60)
+          .attr('width', this.stage.width - 20)
+        force
+          .size([this.stage.width, this.stage.height])
+          .start();
+      ), 250
+    adjust()
+    $(window).resize ->
+      adjust()
+
+
