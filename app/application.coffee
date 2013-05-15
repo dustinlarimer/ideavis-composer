@@ -1,4 +1,5 @@
 Chaplin = require 'chaplin'
+mediator = require 'mediator'
 routes = require 'routes'
 CompositionController = require 'controllers/composition-controller'
 Composition = require 'models/composition'
@@ -50,8 +51,8 @@ module.exports = class Application extends Chaplin.Application
 
   # Create additional mediator properties.
   initMediator: ->
-    Chaplin.mediator.user = new User payload?.user
-    Chaplin.mediator.composition = new Composition payload?.composition
+    mediator.user = new User payload?.user
+    mediator.composition = new Composition payload?.composition
 
     # Seal the mediator.
-    Chaplin.mediator.seal()
+    mediator.seal()
