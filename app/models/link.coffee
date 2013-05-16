@@ -7,8 +7,7 @@ module.exports = class Path extends Model
   initialize: ->
     super
 
-  defaults: {
+  defaults=
     source: null,
     target: null,
     nested: []
-  }

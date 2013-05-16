@@ -5,7 +5,7 @@ module.exports = class Path extends Model
   initialize: ->
     super
 
-  defaults: {
+  defaults=
     type: 'path',
     path: '',
     fill: '#FBFBFB',
@@ -16,4 +16,3 @@ module.exports = class Path extends Model
     x: 0,
     y: 0,
     visible: true
-  }
