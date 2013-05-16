@@ -2,7 +2,7 @@ View = require 'views/base/view'
 template = require 'views/templates/composition'
 
 module.exports = class CompositionEditorView extends View
-  autoRender: true
+  #autoRender: true
   el: '#editor'
   regions:
     '#controls': 'controls'
@@ -13,20 +13,24 @@ module.exports = class CompositionEditorView extends View
     super
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
+    @model.synced =>
+      unless @rendered
+        @render()
+        @rendered = yes
 
   shortcuts:
     'shift+t' : 'shifty'
 
-  stage:
-    'width' : 600
-    'width' : 900
-    'fill'  : '#fff'
-
   shifty: =>
-    console.log 'Shifty! shift + t shortcut pressed!'
+    console.log @model.get('canvas').fill
 
   render: ->
     super
+    
+    canvas_settings:
+      fill   : @model.get('canvas').fill
+      height : @model.get('canvas').height
+      width  : @model.get('canvas').width
     
     selected_node = null
     selected_link = null
@@ -37,31 +41,31 @@ module.exports = class CompositionEditorView extends View
     
     outer = d3.select("#stage")
       .append("svg:svg")
-        .attr("width", this.stage.width)
-        .attr("height", this.stage.height)
+        .attr("width", @model.get('canvas').width)
+        .attr("height", @model.get('canvas').height)
         .attr("pointer-events", "all")
     
     vis = outer.append('svg:g')
       .on("dblclick.zoom", null)
-      .append('svg:g')
-        #.on("mousemove", mousemove)
-        #.on("mousedown", mousedown)
-        #.on("mouseup", mouseup)
-
+      #.append('svg:g')
+      #.on("mousemove", mousemove)
+      #.on("mousedown", mousedown)
+      #.on("mouseup", mouseup)
+    
     vis
       .append("svg:rect")
-        .attr("fill", this.stage.fill)
-        .attr("height", this.stage.height)
-        .attr("width", this.stage.width)
+        .attr("fill", @model.get('canvas').fill)
+        .attr("height", @model.get('canvas').height)
+        .attr("width", @model.get('canvas').width)
         .attr('x', 10)
         .attr('y', 50)
 
     force = d3.layout.force()
       .charge(0) #-10
       .gravity(0)
-      #.nodes(user_data.nodes)
-      #.links(user_data.links)
-      .size([this.stage.width, this.stage.height])
+      .nodes(@model.get('canvas').nodes)
+      .links(@model.get('canvas').links)
+      .size([@model.get('canvas').width, @model.get('canvas').height])
       .start()
     
     nodes = force.nodes()
@@ -74,16 +78,16 @@ module.exports = class CompositionEditorView extends View
     
     adjust = ->
       setInterval ( -> 
-        this.stage.height = $('#stage').height()
-        this.stage.width = $('#stage').width()
+        stage.height = $('#stage').height()
+        stage.width = $('#stage').width()
         $("#stage svg")
-          .attr('height', this.stage.height)
-          .attr('width', this.stage.width)
+          .attr('height', stage.height)
+          .attr('width', stage.width)
         $("#stage svg rect")
-          .attr('height', this.stage.height - 60)
-          .attr('width', this.stage.width - 20)
+          .attr('height', stage.height - 60)
+          .attr('width', stage.width - 20)
         force
-          .size([this.stage.width, this.stage.height])
+          .size([stage.width, stage.height])
           .start();
       ), 250
     adjust()

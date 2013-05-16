@@ -1,18 +1,22 @@
+Chaplin = require 'chaplin'
 Model = require 'models/base/model'
 
 module.exports = class Composition extends Model
-  url: ->
-    'http://localhost:3000/compositions/519108a5170d58b464000002'
+  _.extend @prototype, Chaplin.SyncMachine
+  urlRoot: '/compositions/'
 
-  #urlPath: ->
-  #  "/compositions/#{@get('_id')}"
+  constructor: (data) ->
+    _.extend({}, data)
+    super(data)
 
   initialize: ->
     super
 
-  render: ->
-    console.log this._id
-
-  parse: (response) ->
-    console.log response
-    console.log this.model
+  fetch: (options = {}) ->
+    @beginSync()
+    success = options.success
+    options.success = (model, response) =>
+      success? model, response
+      this.set(response)
+      @finishSync()
+    super options
