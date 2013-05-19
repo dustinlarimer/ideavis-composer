@@ -4,6 +4,7 @@ Node = require 'models/node'
 Link = require 'models/link'
 Path = require 'models/path'
 Text = require 'models/text'
+NodesView = require 'views/nodes-view'
 
 module.exports = class CompositionEditorView extends View
   #autoRender: true
@@ -45,11 +46,6 @@ module.exports = class CompositionEditorView extends View
   node  = undefined
   link  = undefined
 
-  node_drag = d3.behavior.drag()
-    .on("dragstart", @dragstart)
-    .on("drag", @dragmove)
-    .on("dragend", @dragend)
-  
   selected_node = null
   selected_link = null
   mousedown_link = null
@@ -70,7 +66,8 @@ module.exports = class CompositionEditorView extends View
         break
 
   dragstart: (d, i) ->
-    force.stop()
+    #console.log 'starting drag'
+    #force.stop()
     mousedown_node = null if mousedown_node
   
   dragmove: (d, i) ->
@@ -133,19 +130,28 @@ module.exports = class CompositionEditorView extends View
          .start()
     
     @draw()
+    #@renderSubviews()
+
+  renderSubviews: ->
+    console.log 'Rendering subviews!'
+    #console.log @$(vis[0])
+    @subview 'nodes', new NodesView(
+      collection: @model.canvas.nodes
+      el: @$(vis[0])
+    )
 
   applyCanvasAttributes: (canvas) ->
-    console.log canvas.attributes.height
     console.log 'applyCanvasAttributes()'
-    
     outer
       .attr('height', canvas.attributes.height)
       .attr('width', canvas.attributes.width)
-    
     vis.select('rect')
       .attr('fill', canvas.attributes.fill)
       .attr('height', canvas.attributes.height)
       .attr('width', canvas.attributes.width)
+    force
+      .size([canvas.attributes.width, canvas.attributes.height])
+      .start()
 
   draw: ->
     console.log 'Drawing!'
@@ -158,11 +164,16 @@ module.exports = class CompositionEditorView extends View
 
     #link = vis.selectAll(".link").data(links)
 
-    node = vis.selectAll(".node").data(nodes)
+    node_drag = d3.behavior.drag()
+      .on('dragstart', @dragstart)
+      .on('drag', @dragmove)
+      .on('dragend', @dragend)
+    #console.log @model.canvas.nodes
+    node = vis.selectAll(".node").data(@model.canvas.nodes.models)
     node.enter().append('svg:circle')
         .attr("class", "node")
-        .attr("cx", (d) -> d.x)
-        .attr("cy", (d) -> d.y)
+        .attr("cx", (d) -> d.attributes.x) # doesn't work <--
+        .attr("cy", (d) -> d.attributes.y)
         .attr("r", (d) -> 25)
         .attr("fill", (d) -> 'grey')
         .attr("stroke", (d) -> '')
@@ -176,7 +187,7 @@ module.exports = class CompositionEditorView extends View
     force.start()
 
   force.on "tick", ->
-    vis.selectAll("circle")
+    vis.selectAll(".node")
       .attr("cx", (d) -> d.x)
       .attr("cy", (d) -> d.y)
 

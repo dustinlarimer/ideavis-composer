@@ -51,6 +51,7 @@ module.exports = class Application extends Chaplin.Application
 
   # Create additional mediator properties.
   initMediator: ->
+    #mediator.force = d3.layout.force()
     #mediator.current_user = new User payload?.current_user
     #mediator.composition  = payload?.composition
 
