@@ -6,11 +6,9 @@ Links = require 'models/links'
 module.exports = class Composition extends Model
   _.extend @prototype, Chaplin.SyncMachine
   urlRoot: '/compositions/'
-
-  #constructor: (data) ->
-  #  console.log data
-  #  _.extend({}, data)
-  #  super(data)
+  #defaults:
+    #nodes: new Nodes
+    #links: new Link
 
   initialize: (data={}) ->
     super
@@ -21,7 +19,23 @@ module.exports = class Composition extends Model
     success = options.success
     options.success = (model, response) =>
       success? model, response
-      #this.get('canvas').nodes = new Nodes response.canvas.nodes
-      #this.get('canvas').links = new Links response.canvas.links
+      
+      @nodes ?= @get('canvas').nodes = new Nodes response.canvas.nodes
+      @nodes.url = @urlRoot + @id + '/nodes/'
+      @nodes.comp_id = @id
+      @nodes.fetch()
+      @nodes.on 'add', @addNode
+      
+      @links ?= @get('canvas').links = new Links response.canvas.links
+      @links.url = @urlRoot + @id + '/links/'
+      @links.comp_id = @id
+      @links.on 'add', @addLink
+      
       @finishSync()
     super options
+
+  addNode: ->
+    console.log 'Added a new node'
+
+  addLink: ->
+    console.log 'Added a new link'

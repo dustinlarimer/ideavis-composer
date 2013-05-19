@@ -60,7 +60,7 @@ module.exports = class CompositionEditorView extends View
     console.log 'Keyboard shortcuts enabled'
 
   keydown: ->
-    console.log 'Keycode ' + d3.event.keyCode + ' pressed.'
+    #console.log 'Keycode ' + d3.event.keyCode + ' pressed.'
     switch d3.event.keyCode
       when 8, 46
         nodes.splice nodes.indexOf(selected_node), 1  if selected_node
@@ -98,9 +98,8 @@ module.exports = class CompositionEditorView extends View
       new_node = new Node {x: e.offsetX, y: e.offsetY}
       new_node.nest_default()
       #new_node.save()
-      @model.get('canvas').nodes.add(new_node)
-      #@model.get('canvas').nodes.save()
-      #console.log @model
+      @model.nodes.add(new_node)
+      #@model.save()
       @draw()
       @resetMouseVars
 
@@ -116,7 +115,9 @@ module.exports = class CompositionEditorView extends View
 
   render: ->
     super
+    #console.log @nodes
     #@model.get('canvas').nodes = []
+    #@model.set({title: 'New Titlez'})
     #@model.save()
     outer = d3.select("#stage")
       .append('svg:svg')
@@ -135,8 +136,8 @@ module.exports = class CompositionEditorView extends View
     force
          .charge(0)
          .gravity(0)
-         .nodes(@model.get('canvas').nodes.toJSON())
-         .links(@model.get('canvas').links.toJSON())
+         .nodes(@model.nodes.toJSON())
+         .links(@model.links.toJSON())
          .size([@model.get('canvas').width, @model.get('canvas').height])
          .start()
     
@@ -163,8 +164,8 @@ module.exports = class CompositionEditorView extends View
   draw: ->
     console.log 'Drawing!'
     force
-         .nodes(@model.get('canvas').nodes.toJSON())
-         .links(@model.get('canvas').links.toJSON())
+         .nodes(@model.nodes.toJSON())
+         .links(@model.links.toJSON())
          .start()
     nodes = force.nodes()
     links = force.links()
