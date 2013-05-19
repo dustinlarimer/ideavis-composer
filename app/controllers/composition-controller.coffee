@@ -8,5 +8,6 @@ module.exports = class CompositionController extends Controller
   
   index: ->
     @model = new Composition {_id: payload?.composition}
+    @node_collection = @model.nodes
     @view = new CompositionView {@model}
     @model.fetch()

@@ -36,23 +36,36 @@ module.exports = class CompositionEditorView extends View
   shortcuts:
     'shift+t' : 'shifty'
 
+  force = d3.layout.force()
+  outer = undefined
+  vis   = undefined
+  nodes = undefined
+  links = undefined
+  node  = undefined
+  link  = undefined
+
+  node_drag = d3.behavior.drag()
+    .on("dragstart", @dragstart)
+    .on("drag", @dragmove)
+    .on("dragend", @dragend)
+  
   selected_node = null
   selected_link = null
   mousedown_link = null
   mousedown_node = null
   mouseup_node = null
   keydown_code = null
-
+  
   shifty: ->
-    console.log @model.get('canvas').fill
+    console.log 'Keyboard shortcuts enabled'
 
   keydown: ->
-    console.log d3.event.keyCode
+    console.log 'Keycode ' + d3.event.keyCode + ' pressed.'
     switch d3.event.keyCode
       when 8, 46
         nodes.splice nodes.indexOf(selected_node), 1  if selected_node
         selected_node = null
-        @draw
+        @draw()
         break
 
   dragstart: (d, i) ->
@@ -74,29 +87,20 @@ module.exports = class CompositionEditorView extends View
     console.log ':mousedown'
     unless mousedown_node?
       selected_node = null
-      @draw
+      #@draw()
 
   mousemove: ->
-    console.log ':mousemove'
+    #console.log ':mousemove'
   
   mouseup: (e) ->
     console.log ':mouseup'
     unless mouseup_node?
-      #spot = d3.mouse(e.currentTarget)
-      #new_node = new Node
-      new_node =
-        x: e.offsetX
-        y: e.offsetY
-        px: e.offsetX
-        py: e.offsetY + 1
-        r: 45
-        f: "#FBFBFB"
-        s: "#E5E5E5"
-        sw: 3
-        fixed: true
-      console.log new_node
-      #canvas_data?.nodes.push node
-      @draw
+      new_node = new Node {x: e.offsetX, y: e.offsetY}
+      new_node.nest_default()
+      @model.get('canvas').nodes.push(new_node)
+      @model.save()
+      console.log @model
+      @draw()
       @resetMouseVars
 
   resetMouseVars: ->
@@ -109,77 +113,92 @@ module.exports = class CompositionEditorView extends View
     scale = d3.event.scale
     vis.attr "transform", "translate(" + trans + ")" + " scale(" + scale + ")"
 
-  draw: ->
-    console.log 'Drawing!'
-
   render: ->
     super
-    console.log @model.get('canvas').nodes
-    #@model.set({title: 'First Comp'})
+    #@model.get('canvas').nodes = []
     #@model.save()
-
-    canvas_settings=
-      fill   : @model.get('canvas').fill
-      height : @model.get('canvas').height
-      width  : @model.get('canvas').width
-    canvas_data=
-      nodes  : @model.get('canvas').nodes
-      links  : @model.get('canvas').links
-
-    node_drag = d3.behavior.drag()
-      .on("dragstart", @dragstart)
-      .on("drag", @dragmove)
-      .on("dragend", @dragend);
-
     outer = d3.select("#stage")
-      .append("svg:svg")
-        .attr("width", canvas_settings.width)
-        .attr("height", canvas_settings.height)
-        .attr("pointer-events", "all")
+      .append('svg:svg')
+      .attr('width', @model.get('canvas').width)
+      .attr('height', @model.get('canvas').height)
+      .attr('pointer-events', 'all')
     
     vis = outer.append('svg:g')
-      #.on('mousemove', @mousemove)
-      #.on('mousedown', @mousedown)
-      #.on('mouseup', @mouseup)
-    
-    vis
-      .append("svg:rect")
-        .attr("fill", canvas_settings.fill)
-        .attr("height", canvas_settings.height)
-        .attr("width", canvas_settings.width)
+    vis.append("svg:rect")
+        .attr("fill", @model.get('canvas').fill)
+        .attr("height", @model.get('canvas').height)
+        .attr("width", @model.get('canvas').width)
         .attr('x', 10)
         .attr('y', 50)
-
-    force = d3.layout.force()
-      .charge(0) #-10
-      .gravity(0)
-      .nodes(canvas_data.nodes)
-      .links(canvas_data.links)
-      .size([canvas_settings.width, canvas_settings.height])
-      .start()
     
-    nodes = force.nodes()
-    node  = vis.selectAll(".node")
-
-    force.on "tick", ->
-      vis.selectAll("circle")
-        .attr("cx", (d) -> d.x)
-        .attr("cy", (d) -> d.y)
+    force
+         .charge(0)
+         .gravity(0)
+         .nodes(@model.get('canvas').nodes.toJSON())
+         .links(@model.get('canvas').links.toJSON())
+         .size([@model.get('canvas').width, @model.get('canvas').height])
+         .start()
+    
+    #nodes = force.nodes()
+    #links = force.links()
+    #node = vis.selectAll(".node")
+    #link = vis.selectAll(".link")
+    
+    @draw()
     
     adjust = ->
       setInterval ( -> 
         stage.height = $('#stage').height()
         stage.width = $('#stage').width()
-        $("#stage svg")
-          .attr('height', stage.height)
-          .attr('width', stage.width)
-        $("#stage svg rect")
-          .attr('height', stage.height - 60)
-          .attr('width', stage.width - 20)
-        force
-          .size([stage.width, stage.height])
-          .start();
+        #$("#stage svg")
+        #  .attr('height', stage.height)
+        #  .attr('width', stage.width)
+        #$("#stage svg rect")
+        #  .attr('height', stage.height - 60)
+        #  .attr('width', stage.width - 20)
+        #force
+        #  .size([stage.width, stage.height])
+        #  .start();
       ), 250
     adjust()
     $(window).resize ->
       adjust()
+
+  draw: ->
+    console.log 'Drawing!'
+    force
+         .nodes(@model.get('canvas').nodes.toJSON())
+         .links(@model.get('canvas').links.toJSON())
+         .start()
+    nodes = force.nodes()
+    links = force.links()
+
+    link = vis.selectAll(".link").data(links)
+
+    node = vis.selectAll(".node").data(nodes)
+    node.enter().append('svg:circle')
+        .attr("class", "node")
+        .attr("cx", (d) -> d.x)
+        .attr("cy", (d) -> d.y)
+        .attr("r", (d) -> 25)
+        .attr("fill", (d) -> 'grey')
+        .attr("stroke", (d) -> '')
+        .attr("stroke-width", (d) -> 0)
+        .call(node_drag)
+        .transition()
+          .ease Math.sqrt
+    node.exit().remove()
+
+    d3.event.preventDefault() if d3.event
+    force.start()
+
+  force.on "tick", ->
+    vis.selectAll("circle")
+      .attr("cx", (d) -> d.x)
+      .attr("cy", (d) -> d.y)
+
+
+
+
+
+

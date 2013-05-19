@@ -19,7 +19,8 @@ module.exports = class Composition extends Model
     success = options.success
     options.success = (model, response) =>
       success? model, response
-      this.get('canvas').nodes = new Nodes response.canvas.nodes
-      this.get('canvas').links = new Links response.canvas.links
+      console.log model
+      model.get('canvas').nodes = new Nodes response.canvas.nodes
+      model.get('canvas').links = new Links response.canvas.links
       @finishSync()
     super options

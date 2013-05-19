@@ -3,11 +3,14 @@ Path = require 'models/path'
 Text = require 'models/text'
 
 module.exports = class Path extends Model
-  
-  initialize: ->
-    super
-
-  defaults=
+  defaults:
     source: null,
     target: null,
     nested: []
+
+  constructor: (data) ->
+    _.extend({}, data)
+    super(data)  
+
+  initialize: ->
+    super

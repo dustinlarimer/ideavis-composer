@@ -1,11 +1,7 @@
 Model = require 'models/base/model'
 
 module.exports = class Text extends Model
-  
-  initialize: ->
-    super
-
-  defaults=
+  defaults:
     type: 'text',
     text: 'Text',
     fill: '#000000',
@@ -18,3 +14,10 @@ module.exports = class Text extends Model
     x: 0,
     y: 0,
     visible: true
+
+  constructor: (data) ->
+    _.extend({}, data)
+    super(data)
+
+  initialize: ->
+    super
