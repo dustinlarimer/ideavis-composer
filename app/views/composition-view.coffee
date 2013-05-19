@@ -13,13 +13,12 @@ module.exports = class CompositionEditorView extends View
     '#controls': 'controls'
     '#stage': 'stage'
 
-  listen:
-    'change model': -> console.log 'Model has changed'
+  #listen:
+    #'change model': -> console.log 'Model has changed'
 
   initialize: ->
     super
     
-    #@delegate 'keydown', 'window', @keydown
     @delegate 'mousemove', 'svg > g', @mousemove
     @delegate 'mousedown', 'svg > g', @mousedown
     @delegate 'mouseup', 'svg > g', @mouseup
@@ -27,6 +26,8 @@ module.exports = class CompositionEditorView extends View
     
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
+
+    @subscribeEvent 'canvas_attributes_updated', @applyCanvasAttributes
     
     @model.synced =>
       unless @rendered
@@ -95,11 +96,7 @@ module.exports = class CompositionEditorView extends View
   mouseup: (e) ->
     #console.log ':mouseup'
     unless mouseup_node?
-      new_node = new Node {x: e.offsetX, y: e.offsetY}
-      new_node.nest_default()
-      #new_node.save()
-      @model.nodes.add(new_node)
-      #@model.save()
+      @model.addNode({x: e.offsetX, y: e.offsetY})
       @draw()
       @resetMouseVars
 
@@ -115,62 +112,51 @@ module.exports = class CompositionEditorView extends View
 
   render: ->
     super
-    #console.log @nodes
-    #@model.get('canvas').nodes = []
-    #@model.set({title: 'New Titlez'})
-    #@model.save()
+    
     outer = d3.select("#stage")
       .append('svg:svg')
-      .attr('width', @model.get('canvas').width)
-      .attr('height', @model.get('canvas').height)
       .attr('pointer-events', 'all')
     
     vis = outer.append('svg:g')
     vis.append("svg:rect")
-        .attr("fill", @model.get('canvas').fill)
-        .attr("height", @model.get('canvas').height)
-        .attr("width", @model.get('canvas').width)
-        .attr('x', 10)
-        .attr('y', 50)
+       .attr('x', 10)
+       .attr('y', 50)
+
+    @applyCanvasAttributes(@model.canvas)
     
     force
          .charge(0)
          .gravity(0)
-         .nodes(@model.nodes.toJSON())
-         .links(@model.links.toJSON())
+         .nodes(@model.canvas.nodes.toJSON())
+         #.links(@model.links.toJSON())
          .size([@model.get('canvas').width, @model.get('canvas').height])
          .start()
     
     @draw()
+
+  applyCanvasAttributes: (canvas) ->
+    console.log canvas.attributes.height
+    console.log 'applyCanvasAttributes()'
     
-    adjust = ->
-      setInterval ( -> 
-        stage.height = $('#stage').height()
-        stage.width = $('#stage').width()
-        #$("#stage svg")
-        #  .attr('height', stage.height)
-        #  .attr('width', stage.width)
-        #$("#stage svg rect")
-        #  .attr('height', stage.height - 60)
-        #  .attr('width', stage.width - 20)
-        #force
-        #  .size([stage.width, stage.height])
-        #  .start();
-      ), 250
-    adjust()
-    $(window).resize ->
-      adjust()
+    outer
+      .attr('height', canvas.attributes.height)
+      .attr('width', canvas.attributes.width)
+    
+    vis.select('rect')
+      .attr('fill', canvas.attributes.fill)
+      .attr('height', canvas.attributes.height)
+      .attr('width', canvas.attributes.width)
 
   draw: ->
     console.log 'Drawing!'
     force
-         .nodes(@model.nodes.toJSON())
-         .links(@model.links.toJSON())
+         .nodes(@model.canvas.nodes.toJSON())
+         #.links(@model.links.toJSON())
          .start()
     nodes = force.nodes()
-    links = force.links()
+    #links = force.links()
 
-    link = vis.selectAll(".link").data(links)
+    #link = vis.selectAll(".link").data(links)
 
     node = vis.selectAll(".node").data(nodes)
     node.enter().append('svg:circle')

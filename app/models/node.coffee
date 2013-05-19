@@ -8,14 +8,8 @@ module.exports = class Node extends Model
     rotate: 0,
     scale: 0,
     x: 0, y: 0, # g.transform(x,y)
-    nested: []
+    nested: [ new Path, new Text ]
 
   initialize: (data={}) ->
     super
     _.extend({}, data)
-
-  nest_default: ->
-    new_default_object = new Path
-    new_default_text = new Text
-    this.attributes.nested.push(new_default_object)
-    this.attributes.nested.push(new_default_text)
