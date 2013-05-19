@@ -1,8 +1,13 @@
+#mediator = require 'mediator'
+Chaplin = require 'chaplin'
 Model = require 'models/base/model'
 Path = require 'models/path'
 Text = require 'models/text'
 
 module.exports = class Node extends Model
+  #_.extend @prototype, Chaplin.SyncMachine
+  #urlRoot: '/nodes/'
+  
   defaults:
     rotate: 0,
     scale: 0,
@@ -15,6 +20,7 @@ module.exports = class Node extends Model
 
   initialize: ->
     super
+    #this.url = '/composition/' + mediator.composition + '/nodes/'
 
   nest_default: ->
     new_default_object = new Path

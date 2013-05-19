@@ -1,3 +1,4 @@
+mediator = require 'mediator'
 Collection = require 'models/base/collection'
 Node = require 'models/node'
 
@@ -6,3 +7,4 @@ module.exports = class Nodes extends Collection
 
   initialize: ->
     super
+    this.urlRoot = '/composition/' + mediator.composition + '/nodes/'

@@ -8,10 +8,10 @@ Text = require 'models/text'
 module.exports = class CompositionEditorView extends View
   #autoRender: true
   el: '#editor'
+  template: template
   regions:
     '#controls': 'controls'
     '#stage': 'stage'
-  template: template
 
   listen:
     'change model': -> console.log 'Model has changed'
@@ -84,7 +84,7 @@ module.exports = class CompositionEditorView extends View
     force.resume()
 
   mousedown: ->
-    console.log ':mousedown'
+    #console.log ':mousedown'
     unless mousedown_node?
       selected_node = null
       #@draw()
@@ -93,13 +93,14 @@ module.exports = class CompositionEditorView extends View
     #console.log ':mousemove'
   
   mouseup: (e) ->
-    console.log ':mouseup'
+    #console.log ':mouseup'
     unless mouseup_node?
       new_node = new Node {x: e.offsetX, y: e.offsetY}
       new_node.nest_default()
-      @model.get('canvas').nodes.push(new_node)
-      @model.save()
-      console.log @model
+      #new_node.save()
+      @model.get('canvas').nodes.add(new_node)
+      #@model.get('canvas').nodes.save()
+      #console.log @model
       @draw()
       @resetMouseVars
 
@@ -138,11 +139,6 @@ module.exports = class CompositionEditorView extends View
          .links(@model.get('canvas').links.toJSON())
          .size([@model.get('canvas').width, @model.get('canvas').height])
          .start()
-    
-    #nodes = force.nodes()
-    #links = force.links()
-    #node = vis.selectAll(".node")
-    #link = vis.selectAll(".link")
     
     @draw()
     

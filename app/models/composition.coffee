@@ -7,20 +7,21 @@ module.exports = class Composition extends Model
   _.extend @prototype, Chaplin.SyncMachine
   urlRoot: '/compositions/'
 
-  constructor: (data) ->
-    _.extend({}, data)
-    super(data)
+  #constructor: (data) ->
+  #  console.log data
+  #  _.extend({}, data)
+  #  super(data)
 
-  initialize: ->
+  initialize: (data={}) ->
     super
+    _.extend({}, data)
 
   fetch: (options = {}) ->
     @beginSync()
     success = options.success
     options.success = (model, response) =>
       success? model, response
-      console.log model
-      model.get('canvas').nodes = new Nodes response.canvas.nodes
-      model.get('canvas').links = new Links response.canvas.links
+      #this.get('canvas').nodes = new Nodes response.canvas.nodes
+      #this.get('canvas').links = new Links response.canvas.links
       @finishSync()
     super options
