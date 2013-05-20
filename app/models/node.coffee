@@ -8,8 +8,11 @@ module.exports = class Node extends Model
     rotate: 0,
     scale: 0,
     x: 0, y: 0, # g.transform(x,y)
-    nested: [ new Path, new Text ]
+    nested: [ (new Path).toJSON(), (new Text).toJSON() ]
 
   initialize: (data={}) ->
     super
     _.extend({}, data)
+    #@paths = _.where(@get('nested'), {type: 'path'})
+    #@texts = _.where(@get('nested'), {type: 'text'})
+    #console.log @paths

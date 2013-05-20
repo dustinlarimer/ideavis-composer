@@ -3,7 +3,7 @@ Model = require 'models/base/model'
 module.exports = class Path extends Model
   defaults:
     type: 'path',
-    path: '',
+    path: 'b',
     fill: '#FBFBFB',
     stroke: '#E5E5E5',
     stroke_width: 1,
@@ -13,9 +13,9 @@ module.exports = class Path extends Model
     y: 0,
     visible: true
 
-  constructor: (data) ->
-    _.extend({}, data)
-    super(data)
-
-  initialize: ->
+  initialize: (data={}) ->
     super
+    _.extend({}, data)
+    @set('path', @defaultPath())
+
+  defaultPath: d3.superformula().type("circle").size(3000)

@@ -5,6 +5,7 @@ Link = require 'models/link'
 Path = require 'models/path'
 Text = require 'models/text'
 NodesView = require 'views/nodes-view'
+NodeView = require 'views/node-view'
 
 module.exports = class CompositionEditorView extends View
   #autoRender: true
@@ -29,6 +30,7 @@ module.exports = class CompositionEditorView extends View
     @delegateShortcuts()
 
     @subscribeEvent 'canvas_attributes_updated', @applyCanvasAttributes
+    @subscribeEvent 'node_created', @draw
     
     @model.synced =>
       unless @rendered
@@ -65,11 +67,18 @@ module.exports = class CompositionEditorView extends View
         @draw()
         break
 
-  dragstart: (d, i) ->
-    #console.log 'starting drag'
+  drag_group_start: (d, i) ->
+    console.log 'starting drag'
     #force.stop()
-    mousedown_node = null if mousedown_node
+
+  drag_group_move: (d, i) ->
+    d3.select(@).attr('transform', 'translate('+ d3.event.x + ',' + d3.event.y + ')')
+    force.tick()
   
+  drag_group_end: (d, i) ->
+    force.tick()
+    force.resume()
+
   dragmove: (d, i) ->
     d.px += d3.event.dx
     d.py += d3.event.dy
@@ -94,7 +103,6 @@ module.exports = class CompositionEditorView extends View
     #console.log ':mouseup'
     unless mouseup_node?
       @model.addNode({x: e.offsetX, y: e.offsetY})
-      @draw()
       @resetMouseVars
 
   resetMouseVars: ->
@@ -109,36 +117,23 @@ module.exports = class CompositionEditorView extends View
 
   render: ->
     super
-    
     outer = d3.select("#stage")
       .append('svg:svg')
       .attr('pointer-events', 'all')
-    
     vis = outer.append('svg:g')
     vis.append("svg:rect")
        .attr('x', 10)
        .attr('y', 50)
-
     @applyCanvasAttributes(@model.canvas)
-    
     force
          .charge(0)
          .gravity(0)
-         .nodes(@model.canvas.nodes.toJSON())
-         #.links(@model.links.toJSON())
+         .nodes(@model.canvas.nodes.models)
          .size([@model.get('canvas').width, @model.get('canvas').height])
          .start()
-    
+    nodes = force.nodes()
+    node = vis.selectAll(".node")
     @draw()
-    #@renderSubviews()
-
-  renderSubviews: ->
-    console.log 'Rendering subviews!'
-    #console.log @$(vis[0])
-    @subview 'nodes', new NodesView(
-      collection: @model.canvas.nodes
-      el: @$(vis[0])
-    )
 
   applyCanvasAttributes: (canvas) ->
     console.log 'applyCanvasAttributes()'
@@ -155,42 +150,27 @@ module.exports = class CompositionEditorView extends View
 
   draw: ->
     console.log 'Drawing!'
-    force
-         .nodes(@model.canvas.nodes.toJSON())
-         #.links(@model.links.toJSON())
-         .start()
-    nodes = force.nodes()
-    #links = force.links()
-
-    #link = vis.selectAll(".link").data(links)
-
-    node_drag = d3.behavior.drag()
-      .on('dragstart', @dragstart)
-      .on('drag', @dragmove)
-      .on('dragend', @dragend)
-    #console.log @model.canvas.nodes
-    node = vis.selectAll(".node").data(@model.canvas.nodes.models)
-    node.enter().append('svg:circle')
-        .attr("class", "node")
-        .attr("cx", (d) -> d.attributes.x) # doesn't work <--
-        .attr("cy", (d) -> d.attributes.y)
-        .attr("r", (d) -> 25)
-        .attr("fill", (d) -> 'grey')
-        .attr("stroke", (d) -> '')
-        .attr("stroke-width", (d) -> 0)
-        .call(node_drag)
+    drag_group = d3.behavior.drag()
+      .on('dragstart', @drag_group_start)
+      .on('drag', @drag_group_move)
+      .on('dragend', @drag_group_end)
+    node = node.data(nodes)
+    node.enter()
+        .append('svg:g')
+        .attr('class', 'nodeGroup')
+        .attr('transform', (d) -> 'translate('+ d.attributes.x + ',' + d.attributes.y + ')')
+        .call(drag_group)
+        .each((d,i)-> new NodeView({model: d, el: @}))
         .transition()
           .ease Math.sqrt
     node.exit().remove()
-
+    
     d3.event.preventDefault() if d3.event
     force.start()
 
   force.on "tick", ->
-    vis.selectAll(".node")
-      .attr("cx", (d) -> d.x)
-      .attr("cy", (d) -> d.y)
-
+    vis.selectAll("g.nodeGroup")
+      #.attr('transform', (d) -> 'translate('+ d.attributes.x + ',' + d.attributes.y + ')')
 
 
 

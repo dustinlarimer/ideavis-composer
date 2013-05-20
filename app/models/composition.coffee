@@ -28,7 +28,8 @@ module.exports = class Composition extends Model
     @save()
 
   addNode: (data) ->
-    @canvas.nodes.create(data)
+    new_node = @canvas.nodes.create(data)
+    @publishEvent 'node_created', new_node
 
   updateCanvasAttributes: =>
     @publishEvent 'canvas_attributes_updated', this
