@@ -53,7 +53,7 @@ module.exports = class Application extends Chaplin.Application
   initMediator: ->
     #mediator.force = d3.layout.force()
     #mediator.current_user = new User payload?.current_user
-    #mediator.composition  = payload?.composition
+    mediator.composition_id  = payload?.composition
 
     # Seal the mediator.
     mediator.seal()

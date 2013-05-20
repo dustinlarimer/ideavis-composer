@@ -69,13 +69,15 @@ module.exports = class CompositionEditorView extends View
 
   drag_group_start: (d, i) ->
     console.log 'starting drag'
-    #force.stop()
+    force.stop()
 
   drag_group_move: (d, i) ->
     d3.select(@).attr('transform', 'translate('+ d3.event.x + ',' + d3.event.y + ')')
     force.tick()
   
   drag_group_end: (d, i) ->
+    nodes[i].set({x: d3.event.sourceEvent.x, y: d3.event.sourceEvent.y})
+    console.log nodes.length
     force.tick()
     force.resume()
 
@@ -128,7 +130,7 @@ module.exports = class CompositionEditorView extends View
     force
          .charge(0)
          .gravity(0)
-         .nodes(@model.canvas.nodes.models)
+         .nodes(@model.nodes.models)
          .size([@model.get('canvas').width, @model.get('canvas').height])
          .start()
     nodes = force.nodes()

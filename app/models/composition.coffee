@@ -18,8 +18,7 @@ module.exports = class Composition extends Model
     options.success = (model, response) =>
       success? model, response
       @canvas ?= new Canvas response.canvas
-      @canvas.nodes ?= new Nodes response.canvas.nodes
-      @canvas.nodes.url = @urlRoot + @id + '/nodes/'
+      @nodes ?= new Nodes
       @finishSync()
     super options
 
@@ -28,7 +27,7 @@ module.exports = class Composition extends Model
     @save()
 
   addNode: (data) ->
-    new_node = @canvas.nodes.create(data)
+    new_node = @nodes.create(data)
     @publishEvent 'node_created', new_node
 
   updateCanvasAttributes: =>
