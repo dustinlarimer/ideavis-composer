@@ -10,3 +10,7 @@ module.exports = class Nodes extends Collection
   initialize: ->
     @url = '/compositions/' + mediator.composition_id + '/nodes/'
     @fetch()
+    @on 'add', @updateNodes
+
+  updateNodes: =>
+    @publishEvent 'node_created', this
