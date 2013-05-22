@@ -5,55 +5,32 @@ CompositionController = require 'controllers/composition-controller'
 Composition = require 'models/composition'
 User = require 'models/user'
 
-# The application object.
-module.exports = class Application extends Chaplin.Application
-  # Set your application name here so the document title is set to
-  # “Controller title – Site title” (see Chaplin.Layout#adjustTitle)
-  title: 'SVG Editor'
+EditorController = undefined
 
+module.exports = class Application extends Chaplin.Application
   initialize: ->
     super
-
-    # Initialize core components.
-    # ---------------------------
-
-    # Register all routes.
-    # You might pass Router/History options as the second parameter.
-    # Chaplin enables pushState per default and Backbone uses / as
-    # the root per default. You might change that in the options
-    # if necessary:
-    # @initRouter routes, pushState: false, root: '/subdir/'
-    @initRouter routes, root: '/compositions/'+payload?.composition+'/editor'
-
-    # Dispatcher listens for routing events and initialises controllers.
+    
+    @initRouter routes, root: window.location.pathname
     @initDispatcher controllerSuffix: '-controller'
-
-    # Layout listens for click events & delegates internal links to router.
     @initLayout()
-
-    # Composer grants the ability for views and stuff to be persisted.
     @initComposer()
-
-    # Mediator is a global message broker which implements pub / sub pattern.
     @initMediator()
-
-    # Actually start routing.
     @startRouting()
 
-    # Freeze the application instance to prevent further changes.
+    try EditorController = require 'editor/controllers/editor-controller'
     Object.freeze? this
 
-
-  # Instantiate common controllers
-  # ------------------------------
   initControllers: ->
     new CompositionController(payload?.composition)
+    #new CanvasController(payload?.composition_id)
+    new EditorController if EditorController?
 
-  # Create additional mediator properties.
   initMediator: ->
-    #mediator.force = d3.layout.force()
     #mediator.current_user = new User payload?.current_user
     mediator.composition_id  = payload?.composition
+    #mediator.nodes = new Nodes
+    #mediator.links = new Links
 
     # Seal the mediator.
     mediator.seal()
