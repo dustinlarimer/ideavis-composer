@@ -5,6 +5,7 @@ CompositionController = require 'controllers/composition-controller'
 Composition = require 'models/composition'
 User = require 'models/user'
 
+#CanvasController = require'controllers/canvas-controller'
 EditorController = undefined
 
 module.exports = class Application extends Chaplin.Application
@@ -31,6 +32,4 @@ module.exports = class Application extends Chaplin.Application
     mediator.composition_id  = payload?.composition
     #mediator.nodes = new Nodes
     #mediator.links = new Links
-
-    # Seal the mediator.
     mediator.seal()

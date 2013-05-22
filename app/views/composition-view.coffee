@@ -1,4 +1,3 @@
-Chaplin = require 'chaplin'
 View = require 'views/base/view'
 template = require 'views/templates/composition'
 Node = require 'models/node'
@@ -29,7 +28,6 @@ module.exports = class CompositionEditorView extends View
     
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
-    Chaplin.mediator.publish 'hey'
     @subscribeEvent 'canvas_attributes_updated', @applyCanvasAttributes
     @subscribeEvent 'node_created', @draw
     
