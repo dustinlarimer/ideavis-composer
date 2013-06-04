@@ -7,7 +7,6 @@ module.exports = class NodesView extends CollectionView
 
   initialize: ->
     console.log 'nodes-view loaded'
-    #console.log @containerMethod
     @on 'add', @notifyNewItem
 
   notifyNewItem: ->
