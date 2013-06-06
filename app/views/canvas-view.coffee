@@ -16,7 +16,7 @@ module.exports = class CompositionEditorView extends View
 
   initialize: ->
     super
-    @subscribeEvent 'canvas_attributes_updated', @applyCanvasAttributes
+    #@subscribeEvent 'canvas_attributes_updated', @applyCanvasAttributes
     @subscribeEvent 'node_created', @draw
     
     @model.synced =>
@@ -38,8 +38,6 @@ module.exports = class CompositionEditorView extends View
   mousedown_node = null
   mouseup_node = null
   keydown_code = null
-  
-
 
   drag_group_start: (d, i) ->
     console.log 'starting drag'
@@ -95,12 +93,16 @@ module.exports = class CompositionEditorView extends View
     super
     outer = d3.select("#stage")
       .append('svg:svg')
-      .attr('pointer-events', 'all')
-    vis = outer.append('svg:g')
-    vis.append("svg:rect")
+      .attr('pointer-events', 'all');
+    outer.append("svg:rect")
+       .attr('id', 'canvas_background')
+       .attr('fill', '#fff')
        .attr('x', 10)
-       .attr('y', 50)
-    @applyCanvasAttributes(@model.canvas)
+       .attr('y', 50);
+    vis = outer.append('svg:g')
+       .attr('id', 'canvas_elements');
+    
+    @applyCanvasAttributes(@model)
     force
          .charge(0)
          .gravity(0)
@@ -148,7 +150,15 @@ module.exports = class CompositionEditorView extends View
     vis.selectAll("g.nodeGroup")
       #.attr('transform', (d) -> 'translate('+ d.attributes.x + ',' + d.attributes.y + ')')
 
-
-
-
-
+  $ ->
+    adjust = ->
+      setTimeout (->
+        stage_height = $("#canvas").height()
+        stage_width = $("#stage").width()
+        #$("#stage svg").attr("height", stage_height).attr "width", stage_width
+        #$("#stage svg rect").attr("height", stage_height - 60).attr "width", stage_width - 20
+        #force.size([stage_width, stage_height]).start()
+      ), 250
+    adjust()
+    $(window).resize ->
+      adjust()
