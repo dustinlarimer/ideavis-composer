@@ -5,6 +5,6 @@ Canvas = require 'models/canvas'
 
 module.exports = class CanvasController extends Controller  
   index: ->
-    @model = new Canvas _id: payload?.composition
+    @model = mediator.canvas
     @view = new CanvasView {@model}
     @model.fetch()

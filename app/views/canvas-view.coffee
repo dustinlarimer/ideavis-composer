@@ -4,19 +4,20 @@ template = require 'views/templates/canvas'
 Node = require 'models/node'
 NodeView = require 'views/node-view'
 
-module.exports = class CompositionEditorView extends View
-  autoRender: false
+module.exports = class CanvasView extends View
   el: '#canvas'
   template: template
   regions:
     '#stage': 'stage'
 
   #listen:
-    #'change model': -> console.log 'Model has changed'
+  #'change model': -> console.log 'Model has changed'
 
   initialize: ->
     super
+    console.log 'Initializing CanvasView'
     #@subscribeEvent 'canvas_attributes_updated', @applyCanvasAttributes
+    @subscribeEvent 'canvas_rendered', @draw
     @subscribeEvent 'node_created', @draw
     
     @model.synced =>
@@ -91,18 +92,19 @@ module.exports = class CompositionEditorView extends View
 
   render: ->
     super
+    console.log '[...] Rendering CanvasView'
+    
     outer = d3.select("#stage")
       .append('svg:svg')
       .attr('pointer-events', 'all');
     outer.append("svg:rect")
        .attr('id', 'canvas_background')
-       .attr('fill', '#fff')
-       .attr('x', 10)
-       .attr('y', 50);
+       .attr('fill', '#fff');
+       #.attr('x', 10)
+       #.attr('y', 50);
     vis = outer.append('svg:g')
        .attr('id', 'canvas_elements');
     
-    @applyCanvasAttributes(@model)
     force
          .charge(0)
          .gravity(0)
@@ -111,7 +113,10 @@ module.exports = class CompositionEditorView extends View
          .start()
     nodes = force.nodes()
     node = vis.selectAll(".node")
-    @draw()
+    
+    #@applyCanvasAttributes(@model)
+    #console.log '»» CanvasView rendered!'
+    @publishEvent 'canvas_rendered'
 
   applyCanvasAttributes: (canvas) ->
     console.log 'applyCanvasAttributes()'
@@ -154,10 +159,13 @@ module.exports = class CompositionEditorView extends View
     adjust = ->
       setTimeout (->
         stage_height = $("#canvas").height()
-        stage_width = $("#stage").width()
-        #$("#stage svg").attr("height", stage_height).attr "width", stage_width
-        #$("#stage svg rect").attr("height", stage_height - 60).attr "width", stage_width - 20
-        #force.size([stage_width, stage_height]).start()
+        stage_width = $("#canvas").width()
+        #('svg #canvas_elements').height()
+        $("#stage svg").attr("height", stage_height).attr "width", stage_width
+        $("#stage svg rect")
+          .attr("height", stage_height)
+          .attr("width", stage_width);
+        force.size([stage_width, stage_height]).start()
       ), 250
     adjust()
     $(window).resize ->

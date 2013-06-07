@@ -1,25 +1,28 @@
 View = require 'views/base/view'
-template = require 'views/templates/canvas'
-
-CanvasView = require 'views/canvas-view'
+template = require 'editor/views/templates/editor'
 
 module.exports = class EditorView extends View
-  el: '#canvas'
+  el: '#editor'
+  template: template
   regions:
-    '#controls': 'controls'
-    '#stage': 'stage'
+    '#editor': 'editor'
   
   initialize: ->
     super
-    console.log 'Ready to rock'
+    console.log 'Initializing EditorView'
+    @subscribeEvent 'canvas_rendered', @render()
     
     #@delegate 'mousemove', 'svg > g', @mousemove
     #@delegate 'mousedown', 'svg > g', @mousedown
     #@delegate 'mouseup', 'svg > g', @mouseup
-    d3.select(window).on("keydown", @keydown)
+    #d3.select(window).on("keydown", @keydown)
 
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
+
+  render: ->
+    super
+    console.log '[...] Rendering EditorView'
 
   shortcuts:
     'shift+t' : 'shifty'

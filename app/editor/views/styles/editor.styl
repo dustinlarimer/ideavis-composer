@@ -5,24 +5,29 @@
    ========================================================================== */
 
 body {
-	background: #fbfbfb;
-	overflow: hidden;
+	/*background: #fbfbfb;
+	overflow: hidden;*/
 }
 
-#canvas {
-	height: 100%;
-	position: absolute;
-	top: 0px;
-	width: 100%;
-}
 #controls {
 	left: 20px;
 	position: absolute;
 	top: 60px;
+	z-index: 1;
 }
 
+#canvas, #stage {
+	height: 100%;
+	position: absolute;
+	width: 100%;
+}
+
+#canvas {
+	top: 40px;
+}
 #stage {
 	height: 100%;
+	top: 0px;
 }
 
 
