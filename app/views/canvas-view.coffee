@@ -1,5 +1,8 @@
+mediator = require 'mediator'
 View = require 'views/base/view'
 template = require 'views/templates/canvas'
+
+try EditorView = require 'editor/views/editor-view'
 
 Node = require 'models/node'
 NodeView = require 'views/node-view'
@@ -11,12 +14,12 @@ module.exports = class CanvasView extends View
     '#stage': 'stage'
 
   #listen:
-  #'change model': -> console.log 'Model has changed'
+    #'change model': -> console.log 'Model has changed'
 
   initialize: ->
     super
     console.log 'Initializing CanvasView'
-    #@subscribeEvent 'canvas_attributes_updated', @applyCanvasAttributes
+    $(window).on 'resize', @refresh_canvas
     @subscribeEvent 'canvas_rendered', @draw
     @subscribeEvent 'node_created', @draw
     
@@ -29,61 +32,17 @@ module.exports = class CanvasView extends View
   outer = undefined
   vis   = undefined
   nodes = undefined
-  links = undefined
   node  = undefined
-  link  = undefined
 
-  selected_node = null
-  selected_link = null
-  mousedown_link = null
-  mousedown_node = null
-  mouseup_node = null
-  keydown_code = null
-
-  drag_group_start: (d, i) ->
-    console.log 'starting drag'
-    force.stop()
-
-  drag_group_move: (d, i) ->
-    d3.select(@).attr('transform', 'translate('+ d3.event.x + ',' + d3.event.y + ')')
-    force.tick()
+  viewport=
+    height: window.innerHeight
+    width: window.innerWidth
   
-  drag_group_end: (d, i) ->
-    nodes[i].set({x: d3.event.sourceEvent.x, y: d3.event.sourceEvent.y})
-    console.log nodes.length
-    force.tick()
-    force.resume()
-
-  dragmove: (d, i) ->
-    d.px += d3.event.dx
-    d.py += d3.event.dy
-    d.x += d3.event.dx
-    d.y += d3.event.dy
-    force.tick()
-  
-  dragend: (d, i) ->
-    force.tick()
-    force.resume()
-
-  mousedown: ->
-    #console.log ':mousedown'
-    unless mousedown_node?
-      selected_node = null
-      #@draw()
-
-  mousemove: ->
-    #console.log ':mousemove'
-  
-  mouseup: (e) ->
-    #console.log ':mouseup'
-    unless mouseup_node?
-      @model.addNode({x: e.offsetX, y: e.offsetY})
-      @resetMouseVars
-
-  resetMouseVars: ->
-    mousedown_node = null
-    mouseup_node = null
-    mousedown_link = null
+  bounds=
+    height: undefined
+    width: undefined
+    x: undefined
+    y: undefined
 
   rescale: ->
     trans = d3.event.translate
@@ -92,44 +51,45 @@ module.exports = class CanvasView extends View
 
   render: ->
     super
-    console.log '[...] Rendering CanvasView'
+    console.log 'Rendering CanvasView [...]'
     
     outer = d3.select("#stage")
       .append('svg:svg')
       .attr('pointer-events', 'all');
+    
     outer.append("svg:rect")
-       .attr('id', 'canvas_background')
-       .attr('fill', '#fff');
-       #.attr('x', 10)
-       #.attr('y', 50);
+      .attr('id', 'canvas_background')
+      .attr('fill', '#fff');
+    
     vis = outer.append('svg:g')
-       .attr('id', 'canvas_elements');
+      .attr('id', 'canvas_elements');
     
     force
-         .charge(0)
-         .gravity(0)
-         .nodes(@model.nodes.models)
-         .size([@model.get('canvas').width, @model.get('canvas').height])
-         .start()
+      .charge(0)
+      .gravity(0)
+      .nodes(@model.nodes.models)
+      .size([@model.get('canvas').width, @model.get('canvas').height])
+      .start()
+    
     nodes = force.nodes()
     node = vis.selectAll(".node")
     
-    #@applyCanvasAttributes(@model)
-    #console.log '»» CanvasView rendered!'
-    @publishEvent 'canvas_rendered'
+    if EditorView?
+      editorView = new EditorView container: @el, model: @model
+      @subview 'editor', editorView
 
-  applyCanvasAttributes: (canvas) ->
-    console.log 'applyCanvasAttributes()'
-    outer
-      .attr('height', canvas.attributes.height)
-      .attr('width', canvas.attributes.width)
-    vis.select('rect')
-      .attr('fill', canvas.attributes.fill)
-      .attr('height', canvas.attributes.height)
-      .attr('width', canvas.attributes.width)
-    force
-      .size([canvas.attributes.width, canvas.attributes.height])
-      .start()
+  #applyCanvasAttributes: (canvas) ->
+  #  console.log 'applyCanvasAttributes()'
+  #  outer
+  #    .attr('height', canvas.attributes.height)
+  #    .attr('width', canvas.attributes.width)
+  #  vis.select('rect')
+  #    .attr('fill', canvas.attributes.fill)
+  #    .attr('height', canvas.attributes.height)
+  #    .attr('width', canvas.attributes.width)
+  #  force
+  #    .size([canvas.attributes.width, canvas.attributes.height])
+  #    .start()
 
   draw: ->
     console.log 'Drawing!'
@@ -147,26 +107,27 @@ module.exports = class CanvasView extends View
         .transition()
           .ease Math.sqrt
     node.exit().remove()
-    
     d3.event.preventDefault() if d3.event
     force.start()
 
   force.on "tick", ->
     vis.selectAll("g.nodeGroup")
       #.attr('transform', (d) -> 'translate('+ d.attributes.x + ',' + d.attributes.y + ')')
+    bounds.x = d3.extent(force.nodes(), (d) -> return d.attributes.x )
+    bounds.y = d3.extent(force.nodes(), (d) -> return d.attributes.y )
+    bounds.height = Math.max((viewport.height - 40), (bounds.y[1]+100))
+    bounds.width = Math.max((viewport.width), (bounds.x[1]+100))
 
-  $ ->
-    adjust = ->
-      setTimeout (->
-        stage_height = $("#canvas").height()
-        stage_width = $("#canvas").width()
-        #('svg #canvas_elements').height()
-        $("#stage svg").attr("height", stage_height).attr "width", stage_width
-        $("#stage svg rect")
-          .attr("height", stage_height)
-          .attr("width", stage_width);
-        force.size([stage_width, stage_height]).start()
-      ), 250
-    adjust()
-    $(window).resize ->
-      adjust()
+  refresh_canvas: ->
+    console.log '⟲ Refreshing canvas'
+    console.log 'bounds.x: ' + bounds.x
+    console.log 'bounds.y: ' + bounds.y
+    console.log 'bounds.height: ' + bounds.height
+    console.log 'bounds.width: ' + bounds.width
+
+    $("#canvas, #stage, #stage svg, #stage svg rect")
+      .attr("height", bounds.height)
+      .attr("width", bounds.width);    
+    force
+      .size([bounds.width, bounds.height])
+      .start()

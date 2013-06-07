@@ -5,7 +5,6 @@ routes = require 'routes'
 CanvasController = require 'controllers/canvas-controller'
 Canvas = require 'models/canvas'
 User = require 'models/user'
-EditorController = undefined
 
 module.exports = class Application extends Chaplin.Application
   initialize: ->
@@ -16,11 +15,15 @@ module.exports = class Application extends Chaplin.Application
     @initComposer()
     @initMediator()
     @startRouting()
-    try EditorController = require 'editor/controllers/editor-controller'
     Object.freeze? this
 
   initMediator: ->
     mediator.canvas = new Canvas _id: payload?.composition
     mediator.current_user = new User payload?.current_user
     mediator.composition_id = payload?.composition
+    
+    #mediator.vis = undefined
+    #mediator.nodes = undefined
+    #mediator.node = undefined
+    
     mediator.seal()

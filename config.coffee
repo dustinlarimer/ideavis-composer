@@ -5,7 +5,6 @@ exports.config =
       joinTo:
         'javascripts/editor.js'           : /^app(\/|\\)editor/
         'javascripts/app.js'              : /^app(\/|\\)(?!editor)/
-        #'javascripts/app.js'             : /^app/
         'javascripts/vendor.js'           : /^vendor/
         'test/javascripts/test.js'        : /^test[\\/](?!vendor)/
         'test/javascripts/test-vendor.js' : /^test[\\/](?=vendor)/
