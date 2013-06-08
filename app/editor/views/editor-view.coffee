@@ -2,18 +2,20 @@ mediator = require 'mediator'
 View = require 'views/base/view'
 template = require 'editor/views/templates/editor'
 
-module.exports = class EditorView extends View
-  autoRender: true
-  id: 'editor'
-  containerMethod: 'prepend'
+CanvasView = require 'views/canvas-view'
+
+module.exports = class EditorView extends CanvasView
+  el: '#canvas'
   template: template
   regions:
-    '#editor': 'editor'
+    '#controls' : 'controls'
+    '#stage'    : 'stage'
   
   initialize: ->
     console.log 'Initializing EditorView'
     super
     _.bindAll this, 'mousemove', 'mousedown', 'mouseup'
+    console.log @
     
     d3.select(window).on("keydown", @keydown)
     $('#stage svg').on 'mousemove', @mousemove

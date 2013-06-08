@@ -2,7 +2,6 @@ mediator = require 'mediator'
 View = require 'views/base/view'
 template = require 'views/templates/canvas'
 
-try EditorView = require 'editor/views/editor-view'
 Node = require 'models/node'
 NodeView = require 'views/node-view'
 
@@ -85,9 +84,9 @@ module.exports = class CanvasView extends View
     mediator.nodes = force.nodes()
     mediator.node = mediator.vis.selectAll(".node")
     
-    if EditorView?
-      editorView = new EditorView container: @el, model: @model
-      @subview 'editor', editorView
+    #if EditorView?
+    #  editorView = new EditorView container: @el, model: @model
+    #  @subview 'editor', editorView
 
   draw: ->
     console.log 'Drawing!'

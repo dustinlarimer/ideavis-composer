@@ -1,10 +1,16 @@
 mediator = require 'mediator'
 Controller = require 'controllers/base/controller'
-CanvasView = require 'views/canvas-view'
-Canvas = require 'models/canvas'
 
-module.exports = class CanvasController extends Controller  
+Canvas = require 'models/canvas'
+CanvasView = require 'views/canvas-view'
+EditorView = undefined
+
+module.exports = class CanvasController extends Controller
   index: ->
     @model = mediator.canvas
-    @view = new CanvasView {@model}
+    try 
+      EditorView = require 'editor/views/editor-view'
+      @view = new EditorView {@model}
+    catch error
+      @view = new CanvasView {@model}
     @model.fetch()
