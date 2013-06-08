@@ -22,8 +22,9 @@ module.exports = class Application extends Chaplin.Application
     mediator.current_user = new User payload?.current_user
     mediator.composition_id = payload?.composition
     
-    #mediator.vis = undefined
-    #mediator.nodes = undefined
-    #mediator.node = undefined
+    mediator.outer = undefined
+    mediator.vis = undefined
+    mediator.nodes = undefined
+    mediator.node = undefined
     
     mediator.seal()

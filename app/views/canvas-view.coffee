@@ -3,7 +3,6 @@ View = require 'views/base/view'
 template = require 'views/templates/canvas'
 
 try EditorView = require 'editor/views/editor-view'
-
 Node = require 'models/node'
 NodeView = require 'views/node-view'
 
@@ -13,14 +12,12 @@ module.exports = class CanvasView extends View
   regions:
     '#stage': 'stage'
 
-  #listen:
-    #'change model': -> console.log 'Model has changed'
-
   initialize: ->
-    super
     console.log 'Initializing CanvasView'
+    super
+    _.bindAll this, 'drag_group_end'
+    
     $(window).on 'resize', @refresh_canvas
-    @subscribeEvent 'canvas_rendered', @draw
     @subscribeEvent 'node_created', @draw
     
     @model.synced =>
@@ -29,67 +26,68 @@ module.exports = class CanvasView extends View
         @rendered = yes
 
   force = d3.layout.force()
-  outer = undefined
-  vis   = undefined
-  nodes = undefined
-  node  = undefined
+  #outer = undefined
+  #vis   = undefined
+  #nodes = undefined
+  #node  = undefined
 
   viewport=
     height: window.innerHeight
     width: window.innerWidth
-  
-  bounds=
-    height: undefined
-    width: undefined
-    x: undefined
-    y: undefined
 
-  rescale: ->
-    trans = d3.event.translate
-    scale = d3.event.scale
-    vis.attr "transform", "translate(" + trans + ")" + " scale(" + scale + ")"
+  bounds=
+    height: viewport.height-40
+    width: viewport.width
+    x: [0, viewport.width]
+    y: [0, viewport.height-40]
+
+  drag_group = d3.behavior.drag()
+    .on('dragstart', @drag_group_start)
+    .on('drag', @drag_group_move)
+    .on('dragend', @drag_group_end)
+
+  drag_group_start: (d, i) ->
+    console.log 'starting drag'
+    force.stop()
+
+  drag_group_move: (d, i) ->
+    d3.select(@).attr('transform', 'translate('+ d3.event.x + ',' + d3.event.y + ')')
+    force.tick()
+  
+  drag_group_end: (d, i) ->
+    @publishEvent 'node_group_dragged', {node: mediator.nodes[i], x: d3.event.sourceEvent.x, y: d3.event.sourceEvent.y}
+    @refresh_canvas
+    force.tick()
+    force.resume()
 
   render: ->
     super
     console.log 'Rendering CanvasView [...]'
     
-    outer = d3.select("#stage")
+    mediator.outer = d3.select("#stage")
       .append('svg:svg')
       .attr('pointer-events', 'all');
     
-    outer.append("svg:rect")
+    mediator.outer.append("svg:rect")
       .attr('id', 'canvas_background')
       .attr('fill', '#fff');
     
-    vis = outer.append('svg:g')
+    mediator.vis = mediator.outer.append('svg:g')
       .attr('id', 'canvas_elements');
     
     force
       .charge(0)
       .gravity(0)
       .nodes(@model.nodes.models)
-      .size([@model.get('canvas').width, @model.get('canvas').height])
+      .size([bounds.width, bounds.height])
       .start()
     
-    nodes = force.nodes()
-    node = vis.selectAll(".node")
+    mediator.nodes = force.nodes()
+    mediator.node = mediator.vis.selectAll(".node")
     
     if EditorView?
       editorView = new EditorView container: @el, model: @model
       @subview 'editor', editorView
-
-  #applyCanvasAttributes: (canvas) ->
-  #  console.log 'applyCanvasAttributes()'
-  #  outer
-  #    .attr('height', canvas.attributes.height)
-  #    .attr('width', canvas.attributes.width)
-  #  vis.select('rect')
-  #    .attr('fill', canvas.attributes.fill)
-  #    .attr('height', canvas.attributes.height)
-  #    .attr('width', canvas.attributes.width)
-  #  force
-  #    .size([canvas.attributes.width, canvas.attributes.height])
-  #    .start()
 
   draw: ->
     console.log 'Drawing!'
@@ -97,8 +95,9 @@ module.exports = class CanvasView extends View
       .on('dragstart', @drag_group_start)
       .on('drag', @drag_group_move)
       .on('dragend', @drag_group_end)
-    node = node.data(nodes)
-    node.enter()
+    
+    mediator.node = mediator.node.data(mediator.nodes)
+    mediator.node.enter()
         .append('svg:g')
         .attr('class', 'nodeGroup')
         .attr('transform', (d) -> 'translate('+ d.attributes.x + ',' + d.attributes.y + ')')
@@ -106,17 +105,17 @@ module.exports = class CanvasView extends View
         .each((d,i)-> new NodeView({model: d, el: @}))
         .transition()
           .ease Math.sqrt
-    node.exit().remove()
+    mediator.node.exit().remove()
     d3.event.preventDefault() if d3.event
     force.start()
 
   force.on "tick", ->
-    vis.selectAll("g.nodeGroup")
+    mediator.vis.selectAll("g.nodeGroup")
       #.attr('transform', (d) -> 'translate('+ d.attributes.x + ',' + d.attributes.y + ')')
     bounds.x = d3.extent(force.nodes(), (d) -> return d.attributes.x )
     bounds.y = d3.extent(force.nodes(), (d) -> return d.attributes.y )
-    bounds.height = Math.max((viewport.height - 40), (bounds.y[1]+100))
-    bounds.width = Math.max((viewport.width), (bounds.x[1]+100))
+    bounds.height = Math.max((window.innerHeight-40), (bounds.y[1]+100))
+    bounds.width = Math.max(window.innerWidth, (bounds.x[1]+100))
 
   refresh_canvas: ->
     console.log '⟲ Refreshing canvas'
@@ -124,7 +123,7 @@ module.exports = class CanvasView extends View
     console.log 'bounds.y: ' + bounds.y
     console.log 'bounds.height: ' + bounds.height
     console.log 'bounds.width: ' + bounds.width
-
+    
     $("#canvas, #stage, #stage svg, #stage svg rect")
       .attr("height", bounds.height)
       .attr("width", bounds.width);    

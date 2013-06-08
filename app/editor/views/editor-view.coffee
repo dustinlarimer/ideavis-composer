@@ -19,6 +19,13 @@ module.exports = class EditorView extends View
     $('#stage svg').on 'mousemove', @mousemove
     $('#stage svg').on 'mousedown', @mousedown
     $('#stage svg').on 'mouseup', @mouseup
+
+    #d3.selectAll('#stage svg g.nodeGroup').call(drag_group)
+
+    #$('#stage svg g.nodeGroup').on 'dragstart', @drag_group_start
+    #$('#stage svg g.nodeGroup').on 'drag', @drag_group_move
+    #$('#stage svg g.nodeGroup').on 'dragend', @drag_group_end
+    @subscribeEvent 'node_group_dragged', @update_node_position
     
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
@@ -26,17 +33,18 @@ module.exports = class EditorView extends View
   render: ->
     super
     console.log 'Rendering EditorView [...]'
+    #console.log mediator.node #.call(drag_group)
 
-  #update_node_attributes: (node, e) ->
-  #  console.log node
-  #  console.log e.x
-  #  node.set({x: e.x, y: e.y})
+  update_node_position: (data) ->
+    console.log data
+    data.node.set({x: data.x, y: data.y})
 
   shortcuts:
     'shift+t' : 'shifty'
 
   shifty: ->
     console.log 'Keyboard shortcuts enabled'
+    #mediator.node.call(drag_group)
 
   selected_node = null
   selected_link = null
@@ -74,25 +82,6 @@ module.exports = class EditorView extends View
     mousedown_node = null
     mouseup_node = null
     mousedown_link = null
-
-  drag_group = d3.behavior.drag()
-    .on('dragstart', @drag_group_start)
-    .on('drag', @drag_group_move)
-    .on('dragend', @drag_group_end)
-
-  drag_group_start: (d, i) ->
-    console.log 'starting drag'
-    force.stop()
-
-  drag_group_move: (d, i) ->
-    d3.select(@).attr('transform', 'translate('+ d3.event.x + ',' + d3.event.y + ')')
-    force.tick()
-  
-  drag_group_end: (d, i) ->
-    nodes[i].set({x: d3.event.sourceEvent.x, y: d3.event.sourceEvent.y})
-    console.log nodes.length
-    force.tick()
-    force.resume()
 
   dragmove: (d, i) ->
     d.px += d3.event.dx
