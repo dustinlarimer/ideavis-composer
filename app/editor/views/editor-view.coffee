@@ -15,7 +15,6 @@ module.exports = class EditorView extends CanvasView
     console.log 'Initializing EditorView'
     super
     _.bindAll this, 'mousemove', 'mousedown', 'mouseup'
-    console.log @
     
     d3.select(window).on("keydown", @keydown)
     $('#stage svg').on 'mousemove', @mousemove
@@ -35,7 +34,7 @@ module.exports = class EditorView extends CanvasView
   render: ->
     super
     console.log 'Rendering EditorView [...]'
-    #console.log mediator.node #.call(drag_group)
+    console.log CanvasView.prototype.d3_refs().outer
 
   update_node_position: (data) ->
     console.log data

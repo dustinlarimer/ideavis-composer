@@ -15,6 +15,7 @@ module.exports = class CanvasView extends View
     console.log 'Initializing CanvasView'
     super
     _.bindAll this, 'drag_group_end'
+    _.bindAll this, 'd3_refs'
     
     $(window).on 'resize', @refresh_canvas
     @subscribeEvent 'node_created', @draw
@@ -24,9 +25,14 @@ module.exports = class CanvasView extends View
         @render()
         @rendered = yes
 
-  force = d3.layout.force()
+  force  = d3.layout.force()
   #outer = undefined
-  #vis   = undefined
+  d3_refs: ->
+    outer: mediator.outer
+    vis: 'vis'
+
+  vis: -> 
+    return 'test'
   #nodes = undefined
   #node  = undefined
 
@@ -39,6 +45,11 @@ module.exports = class CanvasView extends View
     width: viewport.width
     x: [0, viewport.width]
     y: [0, viewport.height-40]
+
+
+  # ----------------------------------
+  # NODE GROUP
+  # ----------------------------------
 
   drag_group = d3.behavior.drag()
     .on('dragstart', @drag_group_start)
@@ -58,6 +69,11 @@ module.exports = class CanvasView extends View
     @refresh_canvas
     force.tick()
     force.resume()
+
+
+  # ----------------------------------
+  # RENDER CANVAS VIEW
+  # ----------------------------------
 
   render: ->
     super
@@ -83,10 +99,11 @@ module.exports = class CanvasView extends View
     
     mediator.nodes = force.nodes()
     mediator.node = mediator.vis.selectAll(".node")
-    
-    #if EditorView?
-    #  editorView = new EditorView container: @el, model: @model
-    #  @subview 'editor', editorView
+
+
+  # ----------------------------------
+  # DRAW CANVAS ELEMENTS
+  # ----------------------------------
 
   draw: ->
     console.log 'Drawing!'
