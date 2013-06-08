@@ -1,2 +1,2 @@
 module.exports = (match) ->
-  match '', 'canvas#index'
+  #match '', 'canvas#index'
