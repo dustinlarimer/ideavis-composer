@@ -98,5 +98,6 @@ module.exports = class EditorView extends CanvasView
   # ----------------------------------
 
   drag_group_end: (d, i) ->
-    d.set({x: d3.event.sourceEvent.x, y: d3.event.sourceEvent.y})
+    console.log d3.event.sourceEvent
+    d.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
     super
