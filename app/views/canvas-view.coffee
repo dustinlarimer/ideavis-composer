@@ -12,12 +12,14 @@ module.exports = class CanvasView extends View
     '#stage': 'stage'
 
   initialize: ->
-    console.log 'Initializing CanvasView'
     super
+    console.log 'Initializing CanvasView'
     #_.bindAll this, 'd3_refs'
     
-    $(window).on 'resize', @refresh_canvas
     @subscribeEvent 'node_created', @draw
+    #@subscribeEvent 'event', @method
+    
+    $(window).on 'resize', @refresh_canvas
     
     @model.synced =>
       unless @rendered

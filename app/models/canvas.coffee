@@ -26,7 +26,3 @@ module.exports = class Canvas extends Model
 
   addNode: (data) ->
     new_node = @nodes.create(data)
-    @publishEvent 'node_created', new_node
-
-  updateCanvasAttributes: =>
-    @publishEvent 'canvas_attributes_updated', this

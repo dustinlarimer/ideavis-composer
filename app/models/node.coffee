@@ -15,9 +15,11 @@ module.exports = class Node extends Model
   initialize: (data={}) ->
     super
     _.extend({}, data)
+    
     #@paths = _.where(@get('nested'), {type: 'path'})
     #@texts = _.where(@get('nested'), {type: 'text'})
     #console.log @paths
+    
     @on 'change', @updateNodeAttributes
 
   updateNodeAttributes: =>

@@ -19,7 +19,6 @@ module.exports = class Application extends Chaplin.Application
   initMediator: ->
     mediator.canvas = new Canvas _id: payload?.composition
     mediator.current_user = new User payload?.current_user
-    mediator.composition_id = payload?.composition
     
     mediator.outer = undefined
     mediator.vis = undefined

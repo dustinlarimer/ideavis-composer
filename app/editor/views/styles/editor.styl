@@ -10,10 +10,35 @@ body {
 }
 
 #controls {
+	position: absolute;
+}
+
+#toolbar {
+  background: rgba(0,0,0,.5);
+	border-radius: 4px;
 	left: 20px;
+	padding: 5px 5px 0;
 	position: absolute;
 	top: 20px;
 	z-index: 1;
+}
+#toolbar .btn-group { white-space: normal }
+#toolbar .btn-group > .btn {
+	background: rgba(0,0,0,.25)
+	border-radius: 4px;
+	color: #fff;
+	font-size: 12px;
+	margin: 0 0 5px;
+	padding: 4px;
+	text-shadow: 0 1px 1px rgba(0,0,0,.75)
+	width: 100%;
+}
+#toolbar .btn-group > .btn:focus,
+#toolbar .btn-group > .btn:hover {
+	background: rgba(0,0,0,.35)
+}
+#toolbar .btn-group > .btn.active {
+	background: rgba(0,0,0,.5)
 }
 
 #canvas, #stage {

@@ -8,7 +8,7 @@ module.exports = class Nodes extends Collection
   model: Node
 
   initialize: ->
-    @url = '/compositions/' + mediator.composition_id + '/nodes/'
+    @url = '/compositions/' + mediator.canvas.id + '/nodes/'
     @fetch()
     @on 'add', @updateNodes
 

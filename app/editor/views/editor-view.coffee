@@ -12,15 +12,16 @@ module.exports = class EditorView extends CanvasView
     '#stage'    : 'stage'
   
   initialize: ->
-    console.log 'Initializing EditorView'
     super
+    console.log 'Initializing EditorView'
     #_.extend EditorView.prototype, CanvasView.prototype
-    _.bindAll this, 'mousemove', 'mousedown', 'mouseup'
+    #_.bindAll this, 'mousedown', 'mousemove', 'mouseup'
     
     #d3.select(window).on('keydown', @keydown)
-    $('#stage svg').on 'mousemove', @mousemove
-    $('#stage svg').on 'mousedown', @mousedown
-    $('#stage svg').on 'mouseup', @mouseup
+        
+    @delegate 'mousedown', '#stage svg', @mousedown
+    @delegate 'mousemove', '#stage svg', @mousemove
+    @delegate 'mouseup', '#stage svg', @mouseup
     
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
@@ -83,12 +84,11 @@ module.exports = class EditorView extends CanvasView
       #@draw()
 
   mousemove: ->
-    console.log '» mousemove'
+    #console.log '» mousemove'
   
   mouseup: (e) ->
     console.log '» mouseup'
     unless mouseup_node?
-      console.log @model
       @model.addNode x: e.offsetX, y: e.offsetY
       @resetMouseVars
 
