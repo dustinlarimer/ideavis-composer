@@ -14,19 +14,13 @@ module.exports = class EditorView extends CanvasView
   initialize: ->
     console.log 'Initializing EditorView'
     super
+    #_.extend EditorView.prototype, CanvasView.prototype
     _.bindAll this, 'mousemove', 'mousedown', 'mouseup'
     
-    d3.select(window).on("keydown", @keydown)
+    #d3.select(window).on('keydown', @keydown)
     $('#stage svg').on 'mousemove', @mousemove
     $('#stage svg').on 'mousedown', @mousedown
     $('#stage svg').on 'mouseup', @mouseup
-
-    #d3.selectAll('#stage svg g.nodeGroup').call(drag_group)
-
-    #$('#stage svg g.nodeGroup').on 'dragstart', @drag_group_start
-    #$('#stage svg g.nodeGroup').on 'drag', @drag_group_move
-    #$('#stage svg g.nodeGroup').on 'dragend', @drag_group_end
-    @subscribeEvent 'node_group_dragged', @update_node_position
     
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
@@ -34,18 +28,11 @@ module.exports = class EditorView extends CanvasView
   render: ->
     super
     console.log 'Rendering EditorView [...]'
-    console.log CanvasView.prototype.d3_refs().outer
 
-  update_node_position: (data) ->
-    console.log data
-    data.node.set({x: data.x, y: data.y})
 
-  shortcuts:
-    'shift+t' : 'shifty'
-
-  shifty: ->
-    console.log 'Keyboard shortcuts enabled'
-    #mediator.node.call(drag_group)
+  # ----------------------------------
+  # SELECTIONS
+  # ----------------------------------
 
   selected_node = null
   selected_link = null
@@ -53,6 +40,27 @@ module.exports = class EditorView extends CanvasView
   mousedown_node = null
   mouseup_node = null
   keydown_code = null
+
+  resetSelections: ->
+    return null
+
+  resetMouseVars: ->
+    mousedown_node = null
+    mouseup_node = null
+    mousedown_link = null
+
+
+
+  # ----------------------------------
+  # KEYBOARD METHODS
+  # ----------------------------------
+
+  shortcuts:
+    'shift+t' : 'shifty'
+
+  shifty: ->
+    console.log 'Keyboard shortcuts enabled'
+    #mediator.node.call(drag_group)
 
   keydown: ->
     console.log 'Keycode ' + d3.event.keyCode + ' pressed.'
@@ -63,35 +71,32 @@ module.exports = class EditorView extends CanvasView
         @draw()
         break
 
+
+  # ----------------------------------
+  # MOUSE METHODS
+  # ----------------------------------
+
   mousedown: ->
-    console.log ':mousedown'
+    console.log '» mousedown'
     unless mousedown_node?
       selected_node = null
       #@draw()
 
   mousemove: ->
-    console.log ':mousemove'
+    console.log '» mousemove'
   
   mouseup: (e) ->
-    console.log ':mouseup'
+    console.log '» mouseup'
     unless mouseup_node?
       console.log @model
       @model.addNode x: e.offsetX, y: e.offsetY
       @resetMouseVars
 
-  resetMouseVars: ->
-    mousedown_node = null
-    mouseup_node = null
-    mousedown_link = null
 
-  dragmove: (d, i) ->
-    d.px += d3.event.dx
-    d.py += d3.event.dy
-    d.x += d3.event.dx
-    d.y += d3.event.dy
-    force.tick()
-  
-  dragend: (d, i) ->
-    force.tick()
-    force.resume()
+  # ----------------------------------
+  # NODE GROUP METHODS (OVERRIDE)
+  # ----------------------------------
 
+  drag_group_end: (d, i) ->
+    d.set({x: d3.event.sourceEvent.x, y: d3.event.sourceEvent.y})
+    super

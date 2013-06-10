@@ -14,8 +14,7 @@ module.exports = class CanvasView extends View
   initialize: ->
     console.log 'Initializing CanvasView'
     super
-    _.bindAll this, 'drag_group_end'
-    _.bindAll this, 'd3_refs'
+    #_.bindAll this, 'd3_refs'
     
     $(window).on 'resize', @refresh_canvas
     @subscribeEvent 'node_created', @draw
@@ -24,6 +23,11 @@ module.exports = class CanvasView extends View
       unless @rendered
         @render()
         @rendered = yes
+
+
+  # ----------------------------------
+  # D3/CANVAS ATTRIBUTES
+  # ----------------------------------
 
   force  = d3.layout.force()
   #outer = undefined
@@ -37,18 +41,18 @@ module.exports = class CanvasView extends View
   #node  = undefined
 
   viewport=
-    height: window.innerHeight
-    width: window.innerWidth
+    height: -> return window.innerHeight
+    width: -> return window.innerWidth
 
   bounds=
-    height: viewport.height-40
-    width: viewport.width
-    x: [0, viewport.width]
-    y: [0, viewport.height-40]
+    height: viewport.height()-40
+    width: viewport.width()
+    x: [0, viewport.width()]
+    y: [0, viewport.height()-40]
 
 
   # ----------------------------------
-  # NODE GROUP
+  # NODE GROUP METHODS
   # ----------------------------------
 
   drag_group = d3.behavior.drag()
@@ -57,7 +61,7 @@ module.exports = class CanvasView extends View
     .on('dragend', @drag_group_end)
 
   drag_group_start: (d, i) ->
-    console.log 'starting drag'
+    console.log 'Starting drag'
     force.stop()
 
   drag_group_move: (d, i) ->
@@ -65,7 +69,7 @@ module.exports = class CanvasView extends View
     force.tick()
   
   drag_group_end: (d, i) ->
-    @publishEvent 'node_group_dragged', {node: mediator.nodes[i], x: d3.event.sourceEvent.x, y: d3.event.sourceEvent.y}
+    console.log 'Ending drag'
     @refresh_canvas
     force.tick()
     force.resume()
@@ -79,11 +83,11 @@ module.exports = class CanvasView extends View
     super
     console.log 'Rendering CanvasView [...]'
     
-    mediator.outer = d3.select("#stage")
+    mediator.outer = d3.select('#stage')
       .append('svg:svg')
       .attr('pointer-events', 'all');
     
-    mediator.outer.append("svg:rect")
+    mediator.outer.append('svg:rect')
       .attr('id', 'canvas_background')
       .attr('fill', '#fff');
     
@@ -98,7 +102,7 @@ module.exports = class CanvasView extends View
       .start()
     
     mediator.nodes = force.nodes()
-    mediator.node = mediator.vis.selectAll(".node")
+    mediator.node = mediator.vis.selectAll('.node')
 
 
   # ----------------------------------
@@ -125,24 +129,35 @@ module.exports = class CanvasView extends View
     d3.event.preventDefault() if d3.event
     force.start()
 
-  force.on "tick", ->
-    mediator.vis.selectAll("g.nodeGroup")
+
+  # ----------------------------------
+  # FORCE METHODS
+  # ----------------------------------
+
+  force.on 'tick', ->
+    mediator.vis.selectAll('g.nodeGroup')
       #.attr('transform', (d) -> 'translate('+ d.attributes.x + ',' + d.attributes.y + ')')
+    
     bounds.x = d3.extent(force.nodes(), (d) -> return d.attributes.x )
     bounds.y = d3.extent(force.nodes(), (d) -> return d.attributes.y )
     bounds.height = Math.max((window.innerHeight-40), (bounds.y[1]+100))
     bounds.width = Math.max(window.innerWidth, (bounds.x[1]+100))
 
+
+  # ----------------------------------
+  # REFRESH CANVAS
+  # ----------------------------------
+
   refresh_canvas: ->
-    console.log '⟲ Refreshing canvas'
-    console.log 'bounds.x: ' + bounds.x
-    console.log 'bounds.y: ' + bounds.y
-    console.log 'bounds.height: ' + bounds.height
-    console.log 'bounds.width: ' + bounds.width
+    console.log '⟲ Refreshing canvas { ' +
+      'bounds.x: [' + bounds.x + '],' +
+      'bounds.y: [' + bounds.y + '] ' + 
+      'bounds.width: ' + bounds.width + ', ' +
+      'bounds.height: ' + bounds.height + ' }'
     
-    $("#canvas, #stage, #stage svg, #stage svg rect")
-      .attr("height", bounds.height)
-      .attr("width", bounds.width);    
+    $('#canvas, #stage, #stage svg, #stage svg rect')
+      .attr('height', bounds.height)
+      .attr('width', bounds.width);    
     force
       .size([bounds.width, bounds.height])
       .start()
