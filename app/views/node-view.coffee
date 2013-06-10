@@ -6,13 +6,12 @@ module.exports = class NodeView extends View
   tagName: 'g'
   
   initialize: (data={}) ->
-    #console.log data
     @paths = _.where(@model.get('nested'), {type: 'path'})
     @texts = _.where(@model.get('nested'), {type: 'text'})
     @delegate 'click', 'path', @nodePathSelected
 
-  listen:
-    'change model': -> console.log @model
+  #listen:
+  #  'change model': -> console.log @model
 
   nodePathSelected: (e) ->
     e.preventDefault()
