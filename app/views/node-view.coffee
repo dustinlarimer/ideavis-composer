@@ -8,14 +8,17 @@ module.exports = class NodeView extends View
   initialize: (data={}) ->
     @paths = _.where(@model.get('nested'), {type: 'path'})
     @texts = _.where(@model.get('nested'), {type: 'text'})
-    @delegate 'click', 'path', @nodePathSelected
+    #@delegate 'click', 'path', @nodePathSelected
 
   #listen:
   #  'change model': -> console.log @model
 
   nodePathSelected: (e) ->
     e.preventDefault()
-    console.log 'Node selected'
+    console.log this
+
+  select: ->
+    d3.select(@el).attr('class', 'selected')
 
   render: ->
     #console.log d3.select(@el).data(@paths)

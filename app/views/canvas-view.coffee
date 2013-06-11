@@ -14,10 +14,10 @@ module.exports = class CanvasView extends View
   initialize: ->
     super
     console.log 'Initializing CanvasView'
-    #_.bindAll this, 'd3_refs'
-    
+    _.bindAll this, 'drag_group_end'
+
     @subscribeEvent 'node_created', @draw
-    #@subscribeEvent 'event', @method
+    @subscribeEvent 'node_removed', @draw
     
     $(window).on 'resize', @refresh_canvas
     
@@ -31,16 +31,7 @@ module.exports = class CanvasView extends View
   # D3/CANVAS ATTRIBUTES
   # ----------------------------------
 
-  force  = d3.layout.force()
-  #outer = undefined
-  d3_refs: ->
-    outer: mediator.outer
-    vis: 'vis'
-
-  vis: -> 
-    return 'test'
-  #nodes = undefined
-  #node  = undefined
+  force = d3.layout.force()
 
   viewport=
     height: -> return window.innerHeight
@@ -67,12 +58,13 @@ module.exports = class CanvasView extends View
     force.stop()
 
   drag_group_move: (d, i) ->
+    console.log 'Dragging'
     d3.select(@).attr('transform', 'translate('+ d3.event.x + ',' + d3.event.y + ')')
     force.tick()
   
   drag_group_end: (d, i) ->
     console.log 'Ending drag'
-    @refresh_canvas
+    @refresh_canvas()
     force.tick()
     force.resume()
 
@@ -124,12 +116,13 @@ module.exports = class CanvasView extends View
         .attr('class', 'nodeGroup')
         .attr('transform', (d) -> 'translate('+ d.attributes.x + ',' + d.attributes.y + ')')
         .call(drag_group)
-        .each((d,i)-> new NodeView({model: d, el: @}))
+        .each((d,i)-> d.view = new NodeView({model: d, el: @}))
         .transition()
           .ease Math.sqrt
     mediator.node.exit().remove()
     d3.event.preventDefault() if d3.event
     force.start()
+    @refresh_canvas()
 
 
   # ----------------------------------
@@ -151,6 +144,7 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   refresh_canvas: ->
+    force.tick()
     console.log '⟲ Refreshing canvas { ' +
       'bounds.x: [' + bounds.x + '],' +
       'bounds.y: [' + bounds.y + '] ' + 

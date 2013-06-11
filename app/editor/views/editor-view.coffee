@@ -17,11 +17,12 @@ module.exports = class EditorView extends CanvasView
     #_.extend EditorView.prototype, CanvasView.prototype
     #_.bindAll this, 'mousedown', 'mousemove', 'mouseup'
     
-    #d3.select(window).on('keydown', @keydown)
-        
-    @delegate 'mousedown', '#stage svg', @mousedown
-    @delegate 'mousemove', '#stage svg', @mousemove
-    @delegate 'mouseup', '#stage svg', @mouseup
+    d3.select(window).on('keydown', @keydown)
+    
+    #@delegate 'mousedown', '#stage svg', @mousedown
+    #@delegate 'mousemove', '#stage svg', @mousemove
+    #@delegate 'mouseup', '#stage svg', @mouseup
+    #@delegate 'dblclick', 'svg g', @select_node_group
     
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
@@ -50,6 +51,8 @@ module.exports = class EditorView extends CanvasView
     mouseup_node = null
     mousedown_link = null
 
+  select_node_group: (e) ->
+    console.log e
 
 
   # ----------------------------------
@@ -67,7 +70,8 @@ module.exports = class EditorView extends CanvasView
     console.log 'Keycode ' + d3.event.keyCode + ' pressed.'
     switch d3.event.keyCode
       when 8, 46
-        nodes.splice nodes.indexOf(selected_node), 1  if selected_node
+        #mediator.nodes.splice mediator.nodes.indexOf(selected_node), 1  if selected_node
+        #console.log selected_node
         selected_node = null
         @draw()
         break
@@ -97,6 +101,30 @@ module.exports = class EditorView extends CanvasView
   # NODE GROUP METHODS (OVERRIDE)
   # ----------------------------------
 
-  drag_group_end: (d, i) ->
-    d.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
+  drag_group_start: (d, i) ->
+    console.log d
+    selected_node = d
     super
+
+  drag_group_move: (d, i) ->
+    selected_node = null
+    super
+
+  drag_group_end: (d, i) ->
+    console.log selected_node
+    if !selected_node?
+      d.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
+    else
+      console.log '»» Node has been selected ««'
+      console.log selected_node
+      selected_node.view.dispose()
+      selected_node.destroy()
+      @resetMouseVars()
+    super
+
+
+
+
+
+
+
