@@ -15,7 +15,7 @@ module.exports = class EditorView extends CanvasView
     super
     console.log 'Initializing EditorView'
     #_.extend EditorView.prototype, CanvasView.prototype
-    #_.bindAll this, 'mousedown', 'mousemove', 'mouseup'
+    _.bindAll this, 'keydown' #, 'mousemove', 'mouseup'
     
     d3.select(window).on('keydown', @keydown)
     
@@ -36,7 +36,7 @@ module.exports = class EditorView extends CanvasView
   # SELECTIONS
   # ----------------------------------
 
-  selected_node = null
+  selected_node_group = null
   selected_link = null
   mousedown_link = null
   mousedown_node = null
@@ -70,10 +70,9 @@ module.exports = class EditorView extends CanvasView
     console.log 'Keycode ' + d3.event.keyCode + ' pressed.'
     switch d3.event.keyCode
       when 8, 46
-        #mediator.nodes.splice mediator.nodes.indexOf(selected_node), 1  if selected_node
-        #console.log selected_node
-        selected_node = null
-        @draw()
+        d3.event.preventDefault() if d3.event
+        @destroy_node_group(selected_node_group) if selected_node_group
+        @resetMouseVars()
         break
 
 
@@ -84,7 +83,7 @@ module.exports = class EditorView extends CanvasView
   mousedown: ->
     console.log '» mousedown'
     unless mousedown_node?
-      selected_node = null
+      selected_node_group = null
       #@draw()
 
   mousemove: ->
@@ -103,26 +102,25 @@ module.exports = class EditorView extends CanvasView
 
   drag_group_start: (d, i) ->
     console.log d
-    selected_node = d
+    selected_node_group = d
     super
 
   drag_group_move: (d, i) ->
-    selected_node = null
+    selected_node_group = null
     super
 
   drag_group_end: (d, i) ->
-    console.log selected_node
-    if !selected_node?
+    if !selected_node_group?
       d.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
     else
-      console.log '»» Node has been selected ««'
-      console.log selected_node
-      selected_node.view.dispose()
-      selected_node.destroy()
+      console.log '»» Node Group selected ««'
+      console.log selected_node_group
       @resetMouseVars()
     super
 
-
+  destroy_node_group: (node_group) ->
+    node_group.view.dispose()
+    node_group.destroy()
 
 
 
