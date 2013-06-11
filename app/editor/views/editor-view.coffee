@@ -15,9 +15,10 @@ module.exports = class EditorView extends CanvasView
     super
     console.log 'Initializing EditorView'
     #_.extend EditorView.prototype, CanvasView.prototype
-    _.bindAll this, 'keydown' #, 'mousemove', 'mouseup'
+    _.bindAll this, 'keydown' #, 'drag_group_move' #, 'mouseup'
     
     d3.select(window).on('keydown', @keydown)
+    d3.select(window).on('keyup', @keyup)
     
     #@delegate 'mousedown', '#stage svg', @mousedown
     #@delegate 'mousemove', '#stage svg', @mousemove
@@ -37,19 +38,13 @@ module.exports = class EditorView extends CanvasView
   # ----------------------------------
 
   selected_node_group = null
-  selected_link = null
-  mousedown_link = null
-  mousedown_node = null
-  mouseup_node = null
-  keydown_code = null
+  mousedown_node      = null
+  mouseup_node        = null
 
-  resetSelections: ->
-    return null
-
-  resetMouseVars: ->
-    mousedown_node = null
-    mouseup_node = null
-    mousedown_link = null
+  reset_selections: ->
+    selected_node_group = null
+    mousedown_node      = null
+    mouseup_node        = null
 
   select_node_group: (e) ->
     console.log e
@@ -59,6 +54,8 @@ module.exports = class EditorView extends CanvasView
   # KEYBOARD METHODS
   # ----------------------------------
 
+  key_selection = null
+
   shortcuts:
     'shift+t' : 'shifty'
 
@@ -67,13 +64,23 @@ module.exports = class EditorView extends CanvasView
     #mediator.node.call(drag_group)
 
   keydown: ->
-    console.log 'Keycode ' + d3.event.keyCode + ' pressed.'
+    #console.log 'Keycode ' + d3.event.keyCode + ' pressed.'
+    key_selection = d3.event.keyCode
     switch d3.event.keyCode
       when 8, 46
         d3.event.preventDefault() if d3.event
         @destroy_node_group(selected_node_group) if selected_node_group
-        @resetMouseVars()
+        @reset_selections()
         break
+      when 32
+        d3.event.preventDefault() if d3.event
+        break
+      when 91
+        console.log 'Cmnd'
+        break
+
+  keyup: ->
+    key_selection = null
 
 
   # ----------------------------------
@@ -84,7 +91,6 @@ module.exports = class EditorView extends CanvasView
     console.log '» mousedown'
     unless mousedown_node?
       selected_node_group = null
-      #@draw()
 
   mousemove: ->
     #console.log '» mousemove'
@@ -93,7 +99,7 @@ module.exports = class EditorView extends CanvasView
     console.log '» mouseup'
     unless mouseup_node?
       @model.addNode x: e.offsetX, y: e.offsetY
-      @resetMouseVars
+      @reset_selections
 
 
   # ----------------------------------
@@ -102,7 +108,12 @@ module.exports = class EditorView extends CanvasView
 
   drag_group_start: (d, i) ->
     console.log d
-    selected_node_group = d
+    console.log selected_node_group
+    if selected_node_group and key_selection is 91
+      console.log '! Ready to pair'
+    else
+      @publishEvent 'clear_active_nodes'
+      selected_node_group = d
     super
 
   drag_group_move: (d, i) ->
@@ -111,11 +122,13 @@ module.exports = class EditorView extends CanvasView
 
   drag_group_end: (d, i) ->
     if !selected_node_group?
+      @publishEvent 'clear_active_nodes'
       d.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
     else
       console.log '»» Node Group selected ««'
       console.log selected_node_group
-      @resetMouseVars()
+      selected_node_group.view.activate()
+      #@reset_selections()
     super
 
   destroy_node_group: (node_group) ->

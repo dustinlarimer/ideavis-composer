@@ -7,13 +7,23 @@ module.exports = class NodeView extends View
     @paths = _.where(@model.get('nested'), {type: 'path'})
     @texts = _.where(@model.get('nested'), {type: 'text'})
     #@delegate 'click', 'path', @nodePathSelected
+    @subscribeEvent 'clear_active_nodes', @deactivate
 
   nodePathSelected: (e) ->
     e.preventDefault()
     console.log this
 
+  activate: ->
+    console.log 'activating'
+    d3.select(@el).attr('class', 'nodeGroup active')
+
+  deactivate: ->
+    console.log 'deactivating'
+    d3.select(@el).attr('class', 'nodeGroup')
+
   render: ->
     #console.log d3.select(@el).data(@paths)
+    
     d3.select(@el).data(@paths)
       .append('svg:path')
       .attr('d', (d) -> d.path)
@@ -22,8 +32,10 @@ module.exports = class NodeView extends View
       .attr('fill', (d) -> d.fill)
       .attr('stroke', (d) -> d.stroke)
       .attr('stroke-width', (d) -> d.stroke_width)
+    
     d3.select(@el).data(@texts)
       .append('svg:text')
       .text((d) -> d.text)
       .attr('contenteditable', true)
+    
     #d3.select(@el).attr('transform', 'translate('+@model.get('x')+','+@model.get('y')+')')

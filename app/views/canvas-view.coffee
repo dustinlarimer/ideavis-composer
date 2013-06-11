@@ -14,7 +14,7 @@ module.exports = class CanvasView extends View
   initialize: ->
     super
     console.log 'Initializing CanvasView'
-    _.bindAll this, 'drag_group_end'
+    _.bindAll this, 'drag_group_start', 'drag_group_end'
 
     @subscribeEvent 'node_created', @draw
     @subscribeEvent 'node_removed', @draw
