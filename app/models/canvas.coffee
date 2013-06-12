@@ -17,7 +17,7 @@ module.exports = class Canvas extends Model
     success = options.success
     options.success = (model, response) =>
       success? model, response
-      @nodes ?= new Nodes
+      #@nodes ?= new Nodes
       @finishSync()
     super options
 
@@ -25,4 +25,5 @@ module.exports = class Canvas extends Model
     @publishEvent 'canvas_attributes_updated', this
 
   addNode: (data) ->
-    new_node = @nodes.create(data)
+    console.log 'fix me!'
+    #new_node = @nodes.create(data)

@@ -3,6 +3,8 @@ mediator = require 'mediator'
 routes = require 'routes'
 
 Canvas = require 'models/canvas'
+Nodes = require 'models/nodes'
+
 User = require 'models/user'
 
 module.exports = class Application extends Chaplin.Application
@@ -22,7 +24,8 @@ module.exports = class Application extends Chaplin.Application
     
     mediator.outer = undefined
     mediator.vis = undefined
-    mediator.nodes = undefined
+    mediator.nodes = new Nodes
     mediator.node = undefined
+    mediator.selected_node = undefined
     
     mediator.seal()

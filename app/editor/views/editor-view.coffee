@@ -15,7 +15,7 @@ module.exports = class EditorView extends CanvasView
     super
     console.log 'Initializing EditorView'
     #_.extend EditorView.prototype, CanvasView.prototype
-    _.bindAll this, 'keydown' #, 'drag_group_move' #, 'mouseup'
+    _.bindAll @, 'keydown'
     
     d3.select(window).on('keydown', @keydown)
     d3.select(window).on('keyup', @keyup)
@@ -69,8 +69,8 @@ module.exports = class EditorView extends CanvasView
     switch d3.event.keyCode
       when 8, 46
         d3.event.preventDefault() if d3.event
-        @destroy_node_group(selected_node_group) if selected_node_group
-        @reset_selections()
+        @destroy_node_group(mediator.selected_node) if mediator.selected_node
+        mediator.selected_node = null
         break
       when 32
         d3.event.preventDefault() if d3.event
@@ -98,7 +98,8 @@ module.exports = class EditorView extends CanvasView
   mouseup: (e) ->
     console.log '» mouseup'
     unless mouseup_node?
-      @model.addNode x: e.offsetX, y: e.offsetY
+      mediator.nodes.create x: e.offsetX, y: e.offsetY
+      #@model.addNode x: e.offsetX, y: e.offsetY
       @reset_selections
 
 
@@ -106,22 +107,25 @@ module.exports = class EditorView extends CanvasView
   # NODE GROUP METHODS (OVERRIDE)
   # ----------------------------------
 
-  drag_group_start: (d, i) ->
-    console.log d
-    console.log selected_node_group
+  _drag_group_start: (d, i) ->
+    #console.log d3.select('g.nodeGroup')
+    #console.log d
+    #selection_parent = 
+    #console.log d3.event.sourceEvent.target.parentElement.__data__
+    #d = selection_parent if selection_parent.tagName is 'g'
     if selected_node_group and key_selection is 91
       console.log '! Ready to pair'
     else
       @publishEvent 'clear_active_nodes'
       selected_node_group = d
     super
-
-  drag_group_move: (d, i) ->
+  
+  _drag_group_move: (d, i) ->
     selected_node_group = null
     super
-
-  drag_group_end: (d, i) ->
-    if !selected_node_group?
+  
+  _drag_group_end: (d, i) ->
+    if !selected_node_group
       @publishEvent 'clear_active_nodes'
       d.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
     else
@@ -130,7 +134,22 @@ module.exports = class EditorView extends CanvasView
       selected_node_group.view.activate()
       #@reset_selections()
     super
+ 
+  drag_group_start: (d, i) ->
+    super
 
+  drag_group_move: (d, i) ->
+    super
+
+  drag_group_end: (d, i) ->
+    if !mediator.selected_node
+      mediator.publish 'clear_active_nodes'
+      d.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
+    else
+      console.log '»» Node Group selected'
+      console.log mediator.selected_node
+    super
+ 
   destroy_node_group: (node_group) ->
     node_group.view.dispose()
     node_group.destroy()
