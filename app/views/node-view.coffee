@@ -9,12 +9,7 @@ module.exports = class NodeView extends View
     @texts = _.where(@model.get('nested'), {type: 'text'})
     @subscribeEvent 'clear_active_nodes', @deactivate
 
-  activate: ->
-    console.log 'Node » class: active'
-    d3.select(@el).attr('class', 'nodeGroup active')
-
   deactivate: ->
-    console.log 'Node » class: deactive'
     d3.select(@el).attr('class', 'nodeGroup')
 
   render: ->

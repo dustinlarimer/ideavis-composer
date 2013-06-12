@@ -20,9 +20,11 @@ module.exports = class EditorView extends CanvasView
     d3.select(window).on('keydown', @keydown)
     d3.select(window).on('keyup', @keyup)
     
-    #@delegate 'mousedown', '#stage svg', @mousedown
-    #@delegate 'mousemove', '#stage svg', @mousemove
-    #@delegate 'mouseup', '#stage svg', @mouseup
+    @delegate 'click', '#tool-pointer', @activate_pointer
+    @delegate 'click', '#tool-node',    @activate_node
+    @delegate 'click', '#tool-link',     @activate_link
+    @delegate 'click', '#tool-text',    @activate_text
+    
     #@delegate 'dblclick', 'svg g', @select_node_group
     
     _.extend this, new Backbone.Shortcuts
@@ -58,10 +60,18 @@ module.exports = class EditorView extends CanvasView
 
   shortcuts:
     'shift+t' : 'shifty'
+    'v'       : 'activate_pointer'
+    'n'       : 'activate_node'
+    'l'       : 'activate_link'
+    't'       : 'activate_text'
+    'shift+/' : 'help'
 
   shifty: ->
     console.log 'Keyboard shortcuts enabled'
     #mediator.node.call(drag_group)
+
+  help: ->
+    console.log 'Keyboard shortcuts:\n' + JSON.stringify(@shortcuts, null, 4)
 
   keydown: ->
     #console.log 'Keycode ' + d3.event.keyCode + ' pressed.'
@@ -101,6 +111,38 @@ module.exports = class EditorView extends CanvasView
       mediator.nodes.create x: e.offsetX, y: e.offsetY
       #@model.addNode x: e.offsetX, y: e.offsetY
       @reset_selections
+
+
+  # ----------------------------------
+  # NODE GROUP METHODS (OVERRIDE)
+  # ----------------------------------
+
+  clear_tool_selection: ->
+    $('#toolbar button.active').removeClass('active')
+
+  activate_pointer: (e) ->
+    console.log 'Pointer tool active'
+    if e.type is 'keydown'
+      @clear_tool_selection()
+      $('#toolbar button#tool-pointer').addClass('active')
+
+  activate_node: (e) ->
+    console.log 'Node tool active'
+    if e.type is 'keydown'
+      @clear_tool_selection()
+      $('#toolbar button#tool-node').addClass('active')
+
+  activate_link: (e) ->
+    console.log 'Link tool active'
+    if e.type is 'keydown'
+      @clear_tool_selection()
+      $('#toolbar button#tool-link').addClass('active')
+
+  activate_text: (e) ->
+    console.log 'Text tool active'
+    if e.type is 'keydown'
+      @clear_tool_selection()
+      $('#toolbar button#tool-text').addClass('active')
 
 
   # ----------------------------------

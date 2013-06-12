@@ -14,9 +14,8 @@ module.exports = class Nodes extends Collection
     @on 'remove', @node_removed
 
   node_created: =>
-    #console.log JSON.stringify(this)
     @publishEvent 'node_created', this
 
   node_removed: =>
-    console.log 'removeNode'
+    console.log 'node_removed: =>'
     #@publishEvent 'node_removed', this
