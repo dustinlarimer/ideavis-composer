@@ -86,12 +86,11 @@ module.exports = class EditorView extends CanvasView
   # MOUSE METHODS
   # ----------------------------------
 
-  mousedown: ->
+  mousedown: (e) ->
     console.log '!» mousedown'
 
-  mousemove: ->
+  mousemove: (e) ->
     #console.log '!» mousemove'
-    #console.log @toolbar_mode
   
   mouseup: (e) ->
     console.log '!» mouseup'
@@ -104,6 +103,7 @@ module.exports = class EditorView extends CanvasView
           break
         when 'link'
           console.log '{{ mediator.links.create }}'
+          console.log mediator.selected_node if mediator.selected_node?
           break
         when 'text'
           console.log '{{ mediator.texts.create }}'
@@ -124,6 +124,7 @@ module.exports = class EditorView extends CanvasView
       @clear_tool_selection()
       $('#toolbar button#tool-pointer').addClass('active')
     @toolbar_mode = 'pointer'
+    mediator.outer.attr('cursor', 'default')
 
   activate_node: (e) ->
     console.log 'Node tool activated'
@@ -131,6 +132,7 @@ module.exports = class EditorView extends CanvasView
       @clear_tool_selection()
       $('#toolbar button#tool-node').addClass('active')
     @toolbar_mode = 'node'
+    mediator.outer.attr('cursor', 'crosshair')
 
   activate_link: (e) ->
     console.log 'Link tool active'
@@ -138,6 +140,7 @@ module.exports = class EditorView extends CanvasView
       @clear_tool_selection()
       $('#toolbar button#tool-link').addClass('active')
     @toolbar_mode = 'link'
+    mediator.outer.attr('cursor', 'crosshair')
 
   activate_text: (e) ->
     console.log 'Text tool active'
@@ -145,6 +148,7 @@ module.exports = class EditorView extends CanvasView
       @clear_tool_selection()
       $('#toolbar button#tool-text').addClass('active')
     @toolbar_mode = 'text'
+    mediator.outer.attr('cursor', 'crosshair')
 
 
 
