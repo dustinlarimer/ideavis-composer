@@ -19,10 +19,3 @@ module.exports = class Node extends Model
     #@paths = _.where(@get('nested'), {type: 'path'})
     #@texts = _.where(@get('nested'), {type: 'text'})
     #console.log @paths
-    
-    @on 'change', @updateNodeAttributes
-
-  updateNodeAttributes: =>
-    @save()
-    console.log 'updateNodeAttributes'
-    @publishEvent 'node_attributes_updated', this

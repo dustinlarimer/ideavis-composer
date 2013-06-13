@@ -95,7 +95,7 @@ module.exports = class EditorView extends CanvasView
   
   mouseup: (e) ->
     console.log '!» mouseup'
-    if e.target.tagName is 'svg'
+    if e.target.tagName is 'svg' or 'rect'
       switch @toolbar_mode
         when 'pointer'
           break

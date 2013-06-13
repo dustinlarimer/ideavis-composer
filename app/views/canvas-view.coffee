@@ -14,25 +14,25 @@ module.exports = class CanvasView extends View
   initialize: ->
     super
     console.log 'Initializing CanvasView'
-    #_.bindAll @, 'drag_group_start', 'drag_group_move', 'drag_group_end'
-
-    #@subscribeEvent 'node_created', @draw
-    #@subscribeEvent 'node_removed', @draw
-    @subscribeEvent 'drag_group_end', @refresh
-    
     $(window).on 'resize', @refresh
+    
+    #@subscribeEvent 'node_created', @draw
+    #@subscribeEvent 'node_updated', @refresh
     
     @model.synced =>
       unless @rendered
         @render()
         @rendered = yes
 
+
+
   # ----------------------------------
   # FORCE/CANVAS METHODS
   # ----------------------------------
 
   force = d3.layout.force()
-
+  #force.on 'tick', ->
+  
   viewport=
     height: -> return window.innerHeight
     width: -> return window.innerWidth
@@ -43,14 +43,6 @@ module.exports = class CanvasView extends View
     x: [0, viewport.width()]
     y: [0, viewport.height()-40]
 
-  force.on 'tick', ->
-    #console.log mediator.vis.selectAll('g.nodeGroup')
-    #.attr('transform', (d) -> 'translate('+ d.get('x') + ',' + d.get('y') + ')')
-    
-    bounds.x = d3.extent(force.nodes(), (d) -> return d.attributes.x )
-    bounds.y = d3.extent(force.nodes(), (d) -> return d.attributes.y )
-    bounds.height = Math.max((window.innerHeight-40), (bounds.y[1]+100))
-    bounds.width = Math.max(window.innerWidth, (bounds.x[1]+100))
 
 
   # ----------------------------------
@@ -58,7 +50,7 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   drag_group_start: (d, i) ->
-    console.log 'drag_group_start: (d, i) ->'
+    console.log 'drag_group_start'
     mediator.selected_node = d
     mediator.publish 'clear_active_nodes'
     d3.select(@).classed 'moving', true
@@ -66,16 +58,17 @@ module.exports = class CanvasView extends View
     force.stop()
 
   drag_group_move: (d, i) ->
-    console.log 'drag_group_move: (d, i) ->'
+    console.log 'drag_group_move'
     mediator.selected_node = null
     d3.select(@).classed 'active', false
     d3.select(@).attr('transform', 'translate('+ d3.event.x + ',' + d3.event.y + ')')
     force.tick()
   
   drag_group_end: (d, i) ->
-    console.log 'drag_group_end: (d, i) ->'
+    console.log 'drag_group_end'
     d3.select(@).classed 'moving', false
     force.resume()
+
 
 
   # ----------------------------------
@@ -110,6 +103,8 @@ module.exports = class CanvasView extends View
     
     d3.event.preventDefault() if d3.event
     force.start()
+    @refresh()
+
 
 
   # ----------------------------------
@@ -139,6 +134,8 @@ module.exports = class CanvasView extends View
       .start()
     
     @subscribeEvent 'node_created', @draw
+    @subscribeEvent 'node_updated', @refresh
+    @subscribeEvent 'node_removed', @refresh
     @draw()
 
 
@@ -148,12 +145,11 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   refresh: ->
-    force.tick()
-    console.log '⟲ Refreshing canvas { ' +
-      'bounds.x: [' + bounds.x + '],' +
-      'bounds.y: [' + bounds.y + '] ' + 
-      'bounds.width: ' + bounds.width + ', ' +
-      'bounds.height: ' + bounds.height + ' }'
+    bounds.x = d3.extent(force.nodes(), (d) -> return d.attributes.x )
+    bounds.y = d3.extent(force.nodes(), (d) -> return d.attributes.y )
+    bounds.height = Math.max((window.innerHeight-40), (bounds.y[1]+100))
+    bounds.width = Math.max(window.innerWidth, (bounds.x[1]+100))
+    #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)
     
     $('#canvas, #stage, #stage svg, #stage svg rect')
       .attr('height', bounds.height)
