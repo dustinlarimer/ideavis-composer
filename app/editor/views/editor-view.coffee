@@ -22,10 +22,13 @@ module.exports = class EditorView extends CanvasView
     
     @delegate 'click', '#tool-pointer', @activate_pointer
     @delegate 'click', '#tool-node',    @activate_node
-    @delegate 'click', '#tool-link',     @activate_link
+    @delegate 'click', '#tool-link',    @activate_link
     @delegate 'click', '#tool-text',    @activate_text
-    
-    #@delegate 'dblclick', 'svg g', @select_node_group
+    @toolbar_mode = 'pointer'
+
+    @delegate 'mousedown', 'svg', @mousedown
+    @delegate 'mousemove', 'svg', @mousemove
+    @delegate 'mouseup', 'svg', @mouseup
     
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
@@ -34,22 +37,6 @@ module.exports = class EditorView extends CanvasView
     super
     console.log 'Rendering EditorView [...]'
 
-
-  # ----------------------------------
-  # SELECTIONS
-  # ----------------------------------
-
-  selected_node_group = null
-  mousedown_node      = null
-  mouseup_node        = null
-
-  reset_selections: ->
-    selected_node_group = null
-    mousedown_node      = null
-    mouseup_node        = null
-
-  select_node_group: (e) ->
-    console.log e
 
 
   # ----------------------------------
@@ -68,29 +55,31 @@ module.exports = class EditorView extends CanvasView
 
   shifty: ->
     console.log 'Keyboard shortcuts enabled'
-    #mediator.node.call(drag_group)
 
   help: ->
     console.log 'Keyboard shortcuts:\n' + JSON.stringify(@shortcuts, null, 4)
 
   keydown: ->
-    #console.log 'Keycode ' + d3.event.keyCode + ' pressed.'
+    #console.log 'Keycode ' + d3.event.keyCode + ' pressed'
     key_selection = d3.event.keyCode
     switch d3.event.keyCode
       when 8, 46
+        console.log '[del]'
         d3.event.preventDefault() if d3.event
-        @destroy_node_group(mediator.selected_node) if mediator.selected_node
-        mediator.selected_node = null
+        if mediator.selected_node
+          @destroy_node_group(mediator.selected_node)
+          mediator.selected_node = null
         break
       when 32
         d3.event.preventDefault() if d3.event
         break
       when 91
-        console.log 'Cmnd'
+        console.log '[cmnd]'
         break
 
   keyup: ->
     key_selection = null
+
 
 
   # ----------------------------------
@@ -98,23 +87,32 @@ module.exports = class EditorView extends CanvasView
   # ----------------------------------
 
   mousedown: ->
-    console.log '» mousedown'
-    unless mousedown_node?
-      selected_node_group = null
+    console.log '!» mousedown'
 
   mousemove: ->
-    #console.log '» mousemove'
+    #console.log '!» mousemove'
+    #console.log @toolbar_mode
   
   mouseup: (e) ->
-    console.log '» mouseup'
-    unless mouseup_node?
-      mediator.nodes.create x: e.offsetX, y: e.offsetY
-      #@model.addNode x: e.offsetX, y: e.offsetY
-      @reset_selections
+    console.log '!» mouseup'
+    if e.target.tagName is 'svg'
+      switch @toolbar_mode
+        when 'pointer'
+          break
+        when 'node'
+          mediator.nodes.create x: e.offsetX, y: e.offsetY
+          break
+        when 'link'
+          console.log '{{ mediator.links.create }}'
+          break
+        when 'text'
+          console.log '{{ mediator.texts.create }}'
+          break
+
 
 
   # ----------------------------------
-  # NODE GROUP METHODS (OVERRIDE)
+  # TOOLBAR METHODS
   # ----------------------------------
 
   clear_tool_selection: ->
@@ -125,57 +123,34 @@ module.exports = class EditorView extends CanvasView
     if e.type is 'keydown'
       @clear_tool_selection()
       $('#toolbar button#tool-pointer').addClass('active')
+    @toolbar_mode = 'pointer'
 
   activate_node: (e) ->
-    console.log 'Node tool active'
+    console.log 'Node tool activated'
     if e.type is 'keydown'
       @clear_tool_selection()
       $('#toolbar button#tool-node').addClass('active')
+    @toolbar_mode = 'node'
 
   activate_link: (e) ->
     console.log 'Link tool active'
     if e.type is 'keydown'
       @clear_tool_selection()
       $('#toolbar button#tool-link').addClass('active')
+    @toolbar_mode = 'link'
 
   activate_text: (e) ->
     console.log 'Text tool active'
     if e.type is 'keydown'
       @clear_tool_selection()
       $('#toolbar button#tool-text').addClass('active')
+    @toolbar_mode = 'text'
+
 
 
   # ----------------------------------
   # NODE GROUP METHODS (OVERRIDE)
   # ----------------------------------
-
-  _drag_group_start: (d, i) ->
-    #console.log d3.select('g.nodeGroup')
-    #console.log d
-    #selection_parent = 
-    #console.log d3.event.sourceEvent.target.parentElement.__data__
-    #d = selection_parent if selection_parent.tagName is 'g'
-    if selected_node_group and key_selection is 91
-      console.log '! Ready to pair'
-    else
-      @publishEvent 'clear_active_nodes'
-      selected_node_group = d
-    super
-  
-  _drag_group_move: (d, i) ->
-    selected_node_group = null
-    super
-  
-  _drag_group_end: (d, i) ->
-    if !selected_node_group
-      @publishEvent 'clear_active_nodes'
-      d.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
-    else
-      console.log '»» Node Group selected ««'
-      console.log selected_node_group
-      selected_node_group.view.activate()
-      #@reset_selections()
-    super
  
   drag_group_start: (d, i) ->
     super
@@ -195,8 +170,5 @@ module.exports = class EditorView extends CanvasView
   destroy_node_group: (node_group) ->
     node_group.view.dispose()
     node_group.destroy()
-
-
-
 
 
