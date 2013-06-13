@@ -4,6 +4,8 @@ template = require 'editor/views/templates/editor'
 
 CanvasView = require 'views/canvas-view'
 
+Link = require 'models/link'
+
 module.exports = class EditorView extends CanvasView
   el: '#canvas'
   template: template
@@ -54,7 +56,11 @@ module.exports = class EditorView extends CanvasView
     'shift+/' : 'help'
 
   shifty: ->
-    console.log 'Keyboard shortcuts enabled'
+    #console.log 'Keyboard shortcuts enabled'
+    #mediator.links.create source: mediator.nodes.models[0], target: mediator.nodes.models[1]
+    test_link = new Link {source: mediator.nodes.models[0], target: mediator.nodes.models[1]}
+    mediator.links.push test_link
+    console.log mediator.links
 
   help: ->
     console.log 'Keyboard shortcuts:\n' + JSON.stringify(@shortcuts, null, 4)
@@ -165,7 +171,7 @@ module.exports = class EditorView extends CanvasView
   drag_group_end: (d, i) ->
     if !mediator.selected_node
       mediator.publish 'clear_active_nodes'
-      d.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
+      d.model.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
     else
       console.log '»» Node Group selected'
       console.log mediator.selected_node

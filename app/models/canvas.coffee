@@ -1,8 +1,6 @@
 Chaplin = require 'chaplin'
 Model = require 'models/base/model'
 
-Nodes = require 'models/nodes'
-
 module.exports = class Canvas extends Model
   _.extend @prototype, Chaplin.SyncMachine
   urlRoot: '/compositions/'
@@ -10,20 +8,16 @@ module.exports = class Canvas extends Model
   initialize: (data={}) ->
     super
     _.extend({}, data)
-    @on 'change', @updateCanvasAttributes
+    @on 'change', @canvas_attributes_updated
 
   fetch: (options = {}) ->
     @beginSync()
     success = options.success
     options.success = (model, response) =>
       success? model, response
-      #@nodes ?= new Nodes
       @finishSync()
     super options
 
-  updateCanvasAttributes: =>
+  canvas_attributes_updated: =>
+    console.log '[pub] canvas_attributes_updated'
     @publishEvent 'canvas_attributes_updated', this
-
-  addNode: (data) ->
-    console.log 'fix me!'
-    #new_node = @nodes.create(data)

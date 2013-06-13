@@ -15,10 +15,6 @@ module.exports = class Text extends Model
     y: 0,
     visible: true
 
-  #constructor: (data) ->
-  #  _.extend({}, data)
-  #  super(data)
-
   initialize: (data) ->
     super
     _.extend({}, data)

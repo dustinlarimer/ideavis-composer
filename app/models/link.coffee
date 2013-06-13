@@ -1,16 +1,10 @@
 Model = require 'models/base/model'
-Path = require 'models/path'
-Text = require 'models/text'
 
-module.exports = class Path extends Model
+module.exports = class Link extends Model
   defaults:
-    source: null,
-    target: null,
-    nested: []
+    source: null
+    target: null
 
-  constructor: (data) ->
-    _.extend({}, data)
-    super(data)  
-
-  initialize: ->
+  initialize: (data={}) ->
     super
+    _.extend({}, data)

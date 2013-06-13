@@ -1,5 +1,5 @@
-mediator = require 'mediator'
 Chaplin = require 'chaplin'
+mediator = require 'mediator'
 Collection = require 'models/base/collection'
 Node = require 'models/node'
 

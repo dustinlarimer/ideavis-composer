@@ -1,15 +1,14 @@
-mediator = require 'mediator'
-Chaplin = require 'chaplin'
 Model = require 'models/base/model'
 Path = require 'models/path'
 Text = require 'models/text'
 
 module.exports = class Node extends Model
   defaults:
-    rotate: 0,
-    scale: 0,
-    x: 0, 
-    y: 0,
+    rotate: 0
+    scale: 0
+    x: 0 
+    y: 0
+    weight: 1
     nested: [ (new Path).toJSON(), (new Text).toJSON() ]
 
   initialize: (data={}) ->
