@@ -26,7 +26,6 @@ module.exports = class EditorView extends CanvasView
     @delegate 'click', '#tool-node',    @activate_node
     @delegate 'click', '#tool-link',    @activate_link
     @delegate 'click', '#tool-text',    @activate_text
-    @toolbar_mode = 'pointer'
 
     @delegate 'mousedown', 'svg', @mousedown
     @delegate 'mousemove', 'svg', @mousemove
@@ -60,7 +59,7 @@ module.exports = class EditorView extends CanvasView
     #mediator.links.create source: mediator.nodes.models[0], target: mediator.nodes.models[1]
     test_link = new Link {source: mediator.nodes.models[0], target: mediator.nodes.models[1]}
     mediator.links.push test_link
-    console.log mediator.links
+    #console.log mediator.links
 
   help: ->
     console.log 'Keyboard shortcuts:\n' + JSON.stringify(@shortcuts, null, 4)
@@ -101,7 +100,7 @@ module.exports = class EditorView extends CanvasView
   mouseup: (e) ->
     console.log '!» mouseup'
     if e.target.tagName is 'svg' or 'rect'
-      switch @toolbar_mode
+      switch toolbar_mode
         when 'pointer'
           break
         when 'node'
@@ -121,6 +120,8 @@ module.exports = class EditorView extends CanvasView
   # TOOLBAR METHODS
   # ----------------------------------
 
+  toolbar_mode = 'pointer'
+
   clear_tool_selection: ->
     $('#toolbar button.active').removeClass('active')
 
@@ -129,7 +130,7 @@ module.exports = class EditorView extends CanvasView
     if e.type is 'keydown'
       @clear_tool_selection()
       $('#toolbar button#tool-pointer').addClass('active')
-    @toolbar_mode = 'pointer'
+    toolbar_mode = 'pointer'
     mediator.outer.attr('cursor', 'default')
 
   activate_node: (e) ->
@@ -137,7 +138,7 @@ module.exports = class EditorView extends CanvasView
     if e.type is 'keydown'
       @clear_tool_selection()
       $('#toolbar button#tool-node').addClass('active')
-    @toolbar_mode = 'node'
+    toolbar_mode = 'node'
     mediator.outer.attr('cursor', 'crosshair')
 
   activate_link: (e) ->
@@ -145,7 +146,7 @@ module.exports = class EditorView extends CanvasView
     if e.type is 'keydown'
       @clear_tool_selection()
       $('#toolbar button#tool-link').addClass('active')
-    @toolbar_mode = 'link'
+    toolbar_mode = 'link'
     mediator.outer.attr('cursor', 'crosshair')
 
   activate_text: (e) ->
@@ -153,7 +154,7 @@ module.exports = class EditorView extends CanvasView
     if e.type is 'keydown'
       @clear_tool_selection()
       $('#toolbar button#tool-text').addClass('active')
-    @toolbar_mode = 'text'
+    toolbar_mode = 'text'
     mediator.outer.attr('cursor', 'crosshair')
 
 
@@ -163,6 +164,11 @@ module.exports = class EditorView extends CanvasView
   # ----------------------------------
  
   drag_group_start: (d, i) ->
+    if mediator.selected_node?
+      if toolbar_mode is 'link'
+        _source = mediator.selected_node
+        _target = d
+        mediator.links.push new Link {source: _source.model, target: _target.model}
     super
 
   drag_group_move: (d, i) ->

@@ -23,7 +23,7 @@ module.exports = class NodeView extends View
         .attr('cy', (d) -> d.y)
         .attr('fill', (d) -> d.fill)
         .attr('stroke', (d) -> d.stroke)
-        .attr('stroke-width', (d) -> d.stroke_width)      
+        .attr('stroke-width', (d) -> d.stroke_width) 
     d3.select(@el)
       .selectAll('text')
       .data(@texts)

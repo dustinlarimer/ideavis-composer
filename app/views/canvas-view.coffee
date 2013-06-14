@@ -41,11 +41,6 @@ module.exports = class CanvasView extends View
     y: [0, viewport.height()-40]
 
   force = d3.layout.force()
-  force_nodes = []
-  force_links = []
-  
-  lookup_nodes = []
-  lookup_links = []
 
   force.on 'tick', ->
     #mediator.vis.selectAll('g.nodeGroup')
@@ -54,20 +49,28 @@ module.exports = class CanvasView extends View
   
     mediator.link.select('path')
       .attr('d', (d)->
-        #console.log lookup_nodes[d.target.id].x
-        _target = lookup_nodes[d.target.id]
-        _source = lookup_nodes[d.source.id]
+        _target = _.where(force.nodes(), {id: d.target.id})[0]
+        _source = _.where(force.nodes(), {id: d.source.id})[0]
         dx = _target.x
         dy = _target.y
         dr = Math.sqrt(dx * dx + dy * dy)
+        cx1 = _source.x * 0.25 + _source.x
+        cy1 = _source.y * 0.25 + _source.y
+        cx2 = _target.x - _target.x * 0.25
+        cy2 = _target.y - _target.y * 0.25
+        lx1 = _source.x - 5
+        ly1 = _source.y - 5
+        lx2 = _target.x - 5
+        ly2 = _target.y - 5
         return '' +
-          'M' +
-          _source.x + ',' +
-          _source.y + 
-          'A' +
-          dr + ',' + dr + ' 0 0,1 ' +
-          _target.x + ',' +
-          _target.y
+          'M' + 
+          _source.x + ',' + _source.y + ' ' +
+          'L' +
+          lx1 + ',' + ly1 + ' ' +
+          'L' +
+          lx2 + ',' + ly2 + ' ' +
+          'L' +
+          _target.x + ',' + _target.y
       )
 
   # ----------------------------------
@@ -91,7 +94,6 @@ module.exports = class CanvasView extends View
     d.py = d.y
     d3.select(@).classed 'active', false
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ')')
-    lookup_nodes[d.id] = d
     #force.tick()
   
   drag_group_end: (d, i) ->
@@ -108,63 +110,64 @@ module.exports = class CanvasView extends View
 
   draw: ->
     console.log 'draw: ->'
+    # DATA ---------------------
+
+    force.nodes(_.map(
+      mediator.nodes.models, (d,i)-> 
+        return { id: d.get('_id'), x: d.get('x'), y: d.get('y'), model: d, view: null, weight: 0 }
+    ))
+
+    force.links(_.map(
+      mediator.links.models, (d)-> 
+        data = { source: null, target: null, model: d, view: null }
+        data.source = _.where(force.nodes(), {id: d.get('source').get('_id')})[0]
+        data.target = _.where(force.nodes(), {id: d.get('target').get('_id')})[0]
+        d = data
+        return d
+    ))
+
+
+    # NODE ---------------------
 
     drag_node_group = d3.behavior.drag()
       .on('dragstart', @drag_group_start)
       .on('drag', @drag_group_move)
       .on('dragend', @drag_group_end)
-
-    # PREP---------------------
-    force_nodes = _.map(
-      mediator.nodes.models, (d,i)-> 
-        return { id: d.get('_id'), x: d.get('x'), y: d.get('y'), model: d, view: null, weight: 0 }
-    )
-    force.nodes(force_nodes)
-
-    force_links = _.map(
-      mediator.links.models, (d)-> 
-        data = { source: null, target: null, model: d, view: null }
-        data.source = lookup_nodes[d.get('source').get('_id')]
-        data.target = lookup_nodes[d.get('target').get('_id')]
-        d = data
-        return d
-    )
-    force.links(force_links)
-    #console.log force.links()
-
-    # NODES---------------------
+    
     mediator.node = mediator.vis
       .selectAll('g.nodeGroup')
-      .data(force_nodes)
+      .data(force.nodes())
+    
     mediator.node.enter()
       .append('svg:g')
       .attr('class', 'nodeGroup')
       .call(drag_node_group)
-      .each((d)-> lookup_nodes[d.id] = d)
       .each((d,i)-> d.view = new NodeView({model: d.model, el: @}))
       .transition()
         .ease Math.sqrt
+    
     mediator.node.exit().remove()
 
-    # LINKS---------------------
+    # LINK ---------------------
+
     mediator.link = mediator.vis
       .selectAll('g.linkGroup')
-      .data(force_links)
+      .data(force.links())
     #console.log 'Building ' + mediator.link[0].length + ' links:'
     #console.log mediator.link[0]
     mediator.link
       .enter()
         .insert('svg:g', 'g.nodeGroup')
-        #.append('svg:g')
         .attr('class', 'linkGroup')
-        .append('svg:path')
-        #.each((d,i)-> d.view = new LinkView({model: d.model, el: @}))
+        .each((d,i)-> d.view = new LinkView({model: d.model, el: @}))
         .transition()
           .ease Math.sqrt
     mediator.link.exit().remove()
     
-    # FIN!---------------------
-    d3.event.preventDefault() if d3.event
+
+    # DONE ---------------------
+
+    #d3.event.preventDefault() if d3.event
     force.start()
     @refresh()
 
