@@ -23,6 +23,6 @@ module.exports = class Nodes extends Collection
     console.log '[pub] node_updated'
     @publishEvent 'node_updated'
 
-  node_removed: =>
+  node_removed: (node) =>
     console.log '[pub] node_removed'
-    @publishEvent 'node_removed'
+    @publishEvent 'node_removed', node

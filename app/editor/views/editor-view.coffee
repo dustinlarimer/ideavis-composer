@@ -18,7 +18,7 @@ module.exports = class EditorView extends CanvasView
     console.log 'Initializing EditorView'
     #_.extend EditorView.prototype, CanvasView.prototype
     _.bindAll @, 'keydown'
-    
+
     d3.select(window).on('keydown', @keydown)
     d3.select(window).on('keyup', @keyup)
     
@@ -33,6 +33,8 @@ module.exports = class EditorView extends CanvasView
     
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
+
+    @subscribeEvent 'node_removed', @prune_links
 
   render: ->
     super
@@ -59,7 +61,7 @@ module.exports = class EditorView extends CanvasView
     #mediator.links.create source: mediator.nodes.models[0], target: mediator.nodes.models[1]
     test_link = new Link {source: mediator.nodes.models[0], target: mediator.nodes.models[1]}
     mediator.links.push test_link
-    #console.log mediator.links
+    console.log mediator.links
 
   help: ->
     console.log 'Keyboard shortcuts:\n' + JSON.stringify(@shortcuts, null, 4)
@@ -168,7 +170,9 @@ module.exports = class EditorView extends CanvasView
       if toolbar_mode is 'link'
         _source = mediator.selected_node
         _target = d
-        mediator.links.push new Link {source: _source.model, target: _target.model}
+        unless _target.model.id is _source.model.id
+          mediator.links.push new Link {source: _source.model, target: _target.model}
+          #d = _source
     super
 
   drag_group_move: (d, i) ->
@@ -185,6 +189,15 @@ module.exports = class EditorView extends CanvasView
  
   destroy_node_group: (node_group) ->
     node_group.view.dispose()
-    node_group.destroy()
+    node_group.model.destroy()
 
+  prune_links: (dead_node) ->
+    d3.selectAll('g.linkGroup').each((d,i) => 
+      if d.source.id is dead_node.id or d.target.id is dead_node.id
+        @destroy_link_group(d)
+    )
+
+  destroy_link_group: (link_group) ->
+    link_group.view.dispose()
+    link_group.model.destroy()
 

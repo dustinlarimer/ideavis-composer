@@ -41,23 +41,17 @@ module.exports = class CanvasView extends View
     y: [0, viewport.height()-40]
 
   force = d3.layout.force()
+  get_force: -> return force
 
   force.on 'tick', ->
-    #mediator.vis.selectAll('g.nodeGroup')
+    
     mediator.node
       .attr('transform', (d)-> return 'translate('+ d.x + ',' + d.y + ')')
-  
+    
     mediator.link.select('path')
       .attr('d', (d)->
         _target = _.where(force.nodes(), {id: d.target.id})[0]
         _source = _.where(force.nodes(), {id: d.source.id})[0]
-        dx = _target.x
-        dy = _target.y
-        dr = Math.sqrt(dx * dx + dy * dy)
-        cx1 = _source.x * 0.25 + _source.x
-        cy1 = _source.y * 0.25 + _source.y
-        cx2 = _target.x - _target.x * 0.25
-        cy2 = _target.y - _target.y * 0.25
         lx1 = _source.x - 5
         ly1 = _source.y - 5
         lx2 = _target.x - 5
@@ -81,7 +75,8 @@ module.exports = class CanvasView extends View
     console.log 'drag_group_start'
     mediator.selected_node = d
     mediator.publish 'clear_active_nodes'
-    d3.select(@).classed 'moving', true
+    #d.view.activate()
+    #d3.select(@).classed 'moving', true
     d3.select(@).classed 'active', true
     #force.stop()
 
@@ -92,13 +87,14 @@ module.exports = class CanvasView extends View
     d.y = d3.event.y
     d.px = d.x
     d.py = d.y
+    #d.view.dectivate()
     d3.select(@).classed 'active', false
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ')')
     #force.tick()
   
   drag_group_end: (d, i) ->
     console.log 'drag_group_end'
-    d3.select(@).classed 'moving', false
+    #d3.select(@).classed 'moving', false
     #force.resume()
     #force.start()
 
@@ -114,16 +110,15 @@ module.exports = class CanvasView extends View
 
     force.nodes(_.map(
       mediator.nodes.models, (d,i)-> 
-        return { id: d.get('_id'), x: d.get('x'), y: d.get('y'), model: d, view: null, weight: 0 }
+        return { id: d.get('_id'), x: d.get('x'), y: d.get('y'), model: d, view: d.view?, weight: 0 }
     ))
 
     force.links(_.map(
       mediator.links.models, (d)-> 
-        data = { source: null, target: null, model: d, view: null }
+        data = { source: null, target: null, model: d, view: d.view? }
         data.source = _.where(force.nodes(), {id: d.get('source').get('_id')})[0]
         data.target = _.where(force.nodes(), {id: d.get('target').get('_id')})[0]
-        d = data
-        return d
+        return data
     ))
 
 
@@ -137,32 +132,41 @@ module.exports = class CanvasView extends View
     mediator.node = mediator.vis
       .selectAll('g.nodeGroup')
       .data(force.nodes())
-    
-    mediator.node.enter()
+
+    mediator.node
+      .enter()
       .append('svg:g')
       .attr('class', 'nodeGroup')
       .call(drag_node_group)
-      .each((d,i)-> d.view = new NodeView({model: d.model, el: @}))
       .transition()
         .ease Math.sqrt
-    
-    mediator.node.exit().remove()
+
+    mediator.node
+      .each((d,i)-> d.view = new NodeView({model: d.model, el: @}))
+
+    mediator.node
+      .exit()
+      .remove()
 
     # LINK ---------------------
 
     mediator.link = mediator.vis
       .selectAll('g.linkGroup')
       .data(force.links())
-    #console.log 'Building ' + mediator.link[0].length + ' links:'
-    #console.log mediator.link[0]
+
     mediator.link
       .enter()
-        .insert('svg:g', 'g.nodeGroup')
-        .attr('class', 'linkGroup')
-        .each((d,i)-> d.view = new LinkView({model: d.model, el: @}))
-        .transition()
-          .ease Math.sqrt
-    mediator.link.exit().remove()
+      .insert('svg:g', 'g.nodeGroup')
+      .attr('class', 'linkGroup')
+      .transition()
+        .ease Math.sqrt
+
+    mediator.link
+      .each((d,i)-> d.view = new LinkView({model: d.model, el: @}))
+
+    mediator.link
+      .exit()
+      .remove()
     
 
     # DONE ---------------------
@@ -210,7 +214,6 @@ module.exports = class CanvasView extends View
     @subscribeEvent 'link_removed', @refresh
     
     @draw()
-
 
 
   # ----------------------------------
