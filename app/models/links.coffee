@@ -8,8 +8,8 @@ module.exports = class Links extends Collection
   model: Link
 
   initialize: ->
-    #@url = '/compositions/' + mediator.canvas.id + '/links/'
-    #@fetch()
+    @url = '/compositions/' + mediator.canvas.id + '/links/'
+    @fetch()
     @on 'add', @link_created
     @on 'change', @link_updated
     @on 'remove', @link_removed

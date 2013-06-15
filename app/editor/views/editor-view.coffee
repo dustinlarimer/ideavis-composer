@@ -58,9 +58,9 @@ module.exports = class EditorView extends CanvasView
 
   shifty: ->
     #console.log 'Keyboard shortcuts enabled'
-    #mediator.links.create source: mediator.nodes.models[0], target: mediator.nodes.models[1]
-    test_link = new Link {source: mediator.nodes.models[0].id, target: mediator.nodes.models[1].id}
-    mediator.links.push test_link
+    #mediator.links.create {source: mediator.nodes.models[0].id, target: mediator.nodes.models[1].id}
+    #test_link = new Link {source: mediator.nodes.models[0].id, target: mediator.nodes.models[1].id}
+    #mediator.links.push test_link
     console.log mediator.links
 
   help: ->
@@ -171,7 +171,7 @@ module.exports = class EditorView extends CanvasView
         _source = mediator.selected_node
         _target = d
         unless _target.model.id is _source.model.id
-          mediator.links.push new Link {source: _source.model.id, target: _target.model.id}
+          mediator.links.create {source: _source.model.id, target: _target.model.id}
           #d = _source
     super
 

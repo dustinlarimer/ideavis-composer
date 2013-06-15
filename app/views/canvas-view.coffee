@@ -115,6 +115,7 @@ module.exports = class CanvasView extends View
 
     force.links(_.map(
       mediator.links.models, (d)-> 
+        console.log d
         data = { source: null, target: null, model: d, view: d.view? }
         data.source = _.where(force.nodes(), {id: d.get('source')})[0]
         data.target = _.where(force.nodes(), {id: d.get('target')})[0]
@@ -199,8 +200,7 @@ module.exports = class CanvasView extends View
     force
       .charge(0)
       .gravity(0)
-      .nodes(mediator.nodes.models)
-      .links(mediator.links.models)
+      #.linkDistance(150)
       .linkStrength(0)
       .size([bounds.width, bounds.height])
       .start()
