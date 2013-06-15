@@ -221,8 +221,8 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   refresh: ->
-    bounds.x = d3.extent(force.nodes(), (d) -> return d.x )
-    bounds.y = d3.extent(force.nodes(), (d) -> return d.y )
+    bounds.x = d3.extent(force.nodes(), (d) -> return d.x ) if force.nodes().length > 0
+    bounds.y = d3.extent(force.nodes(), (d) -> return d.y ) if force.nodes().length > 0
     bounds.height = Math.max((window.innerHeight-40), (bounds.y[1]+100))
     bounds.width = Math.max(window.innerWidth, (bounds.x[1]+100))
     #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)
