@@ -97,7 +97,7 @@ module.exports = class CanvasView extends View
     #d3.select(@).classed 'moving', false
     #force.resume()
     #force.start()
-
+    
 
 
   # ----------------------------------
@@ -116,8 +116,8 @@ module.exports = class CanvasView extends View
     force.links(_.map(
       mediator.links.models, (d)-> 
         data = { source: null, target: null, model: d, view: d.view? }
-        data.source = _.where(force.nodes(), {id: d.get('source').get('_id')})[0]
-        data.target = _.where(force.nodes(), {id: d.get('target').get('_id')})[0]
+        data.source = _.where(force.nodes(), {id: d.get('source')})[0]
+        data.target = _.where(force.nodes(), {id: d.get('target')})[0]
         return data
     ))
 
