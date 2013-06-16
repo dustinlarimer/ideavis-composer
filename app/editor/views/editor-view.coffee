@@ -11,7 +11,7 @@ ToolTextView    = require 'editor/views/tool-text-view'
 module.exports = class EditorView extends CanvasView
   el: '#canvas'
   template: template
-  
+
   initialize: ->
     super
     console.log 'Initializing EditorView'
@@ -30,7 +30,6 @@ module.exports = class EditorView extends CanvasView
     @activate_pointer()
 
 
-
   # ----------------------------------
   # KEYBOARD SHORTCUTS
   # ----------------------------------
@@ -44,7 +43,6 @@ module.exports = class EditorView extends CanvasView
 
   help: ->
     console.log 'Keyboard shortcuts:\n' + JSON.stringify(@shortcuts, null, 4)
-
 
 
   # ----------------------------------
@@ -70,5 +68,4 @@ module.exports = class EditorView extends CanvasView
     @removeSubview 'tool_view'
     @toolbar_view = new ToolTextView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
-
 

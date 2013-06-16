@@ -5,11 +5,13 @@ module.exports = class LinkView extends View
   autoRender: true
   
   initialize: (data={}) ->
-    console.log 'Initializing LinkView [...]'
     @paths = [{}]
-    
+    @subscribeEvent 'clear_active_links', @deactivate
+
+  deactivate: ->
+    d3.select(@el).classed 'active', false
+
   render: ->
-    console.log 'Rendering LinkView [...]'
     d3.select(@el)
       .selectAll('path')
       .data(@paths)

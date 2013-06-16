@@ -37,3 +37,4 @@ module.exports = class ToolLinkView extends View
       _target = d
       unless _target.model.id is _source.model.id
         mediator.links.create {source: _source.model.id, target: _target.model.id}
+
