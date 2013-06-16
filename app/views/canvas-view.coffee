@@ -11,8 +11,6 @@ LinkView = require 'views/link-view'
 module.exports = class CanvasView extends View
   el: '#canvas'
   template: template
-  regions:
-    '#stage': 'stage'
 
   initialize: ->
     super
@@ -67,37 +65,34 @@ module.exports = class CanvasView extends View
           _target.x + ',' + _target.y
       )
 
+
+
   # ----------------------------------
   # NODE GROUP METHODS
   # ----------------------------------
 
-  drag_group_start: (d, i) ->
-    console.log 'drag_group_start'
+  drag_node_start: (d, i) ->
+    console.log 'drag_node_start'
     mediator.selected_node = d
     mediator.publish 'clear_active_nodes'
-    #d.view.activate()
-    #d3.select(@).classed 'moving', true
     d3.select(@).classed 'active', true
-    #force.stop()
+    force.tick()
 
-  drag_group_move: (d, i) ->
-    console.log 'drag_group_move'
+  drag_node_move: (d, i) ->
+    console.log 'drag_node_move'
     mediator.selected_node = null
     d.x = d3.event.x
     d.y = d3.event.y
     d.px = d.x
     d.py = d.y
-    #d.view.dectivate()
     d3.select(@).classed 'active', false
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ')')
-    #force.tick()
+    force.tick()
   
-  drag_group_end: (d, i) ->
-    console.log 'drag_group_end'
-    #d3.select(@).classed 'moving', false
-    #force.resume()
-    #force.start()
-    
+  drag_node_end: (d, i) ->
+    console.log 'drag_node_end'
+    force.tick()
+
 
 
   # ----------------------------------
@@ -106,16 +101,18 @@ module.exports = class CanvasView extends View
 
   draw: ->
     console.log 'draw: ->'
+
+
     # DATA ---------------------
 
     force.nodes(_.map(
       mediator.nodes.models, (d,i)-> 
         return { id: d.get('_id'), x: d.get('x'), y: d.get('y'), model: d, view: d.view?, weight: 0 }
     ))
-
+    
     force.links(_.map(
       mediator.links.models, (d)-> 
-        console.log d
+        #console.log d
         data = { source: null, target: null, model: d, view: d.view? }
         data.source = _.where(force.nodes(), {id: d.get('source')})[0]
         data.target = _.where(force.nodes(), {id: d.get('target')})[0]
@@ -125,10 +122,10 @@ module.exports = class CanvasView extends View
 
     # NODE ---------------------
 
-    drag_node_group = d3.behavior.drag()
-      .on('dragstart', @drag_group_start)
-      .on('drag', @drag_group_move)
-      .on('dragend', @drag_group_end)
+    node_drag_events = d3.behavior.drag()
+      .on('dragstart', @drag_node_start)
+      .on('drag', @drag_node_move)
+      .on('dragend', @drag_node_end)
     
     mediator.node = mediator.vis
       .selectAll('g.nodeGroup')
@@ -138,7 +135,7 @@ module.exports = class CanvasView extends View
       .enter()
       .append('svg:g')
       .attr('class', 'nodeGroup')
-      .call(drag_node_group)
+      .call(node_drag_events)
       .transition()
         .ease Math.sqrt
 
@@ -148,6 +145,7 @@ module.exports = class CanvasView extends View
     mediator.node
       .exit()
       .remove()
+
 
     # LINK ---------------------
 
@@ -216,6 +214,7 @@ module.exports = class CanvasView extends View
     @draw()
 
 
+
   # ----------------------------------
   # REFRESH CANVAS
   # ----------------------------------
@@ -233,3 +232,5 @@ module.exports = class CanvasView extends View
     force
       .size([bounds.width, bounds.height])
       .start()
+
+
