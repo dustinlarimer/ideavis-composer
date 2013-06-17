@@ -29,11 +29,13 @@ module.exports = class ToolPointerView extends View
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
 
+    @delegate 'click', '#canvas_background', @deselect_all
+
     @subscribeEvent 'node_removed', @prune_links
 
   remove: ->
     # Unbind delgated events ------
-    # @$el.off 'event', '#selector'
+    @$el.off 'click', '#canvas_background'
     
     # Unbind D3 Events ------------
     d3.selectAll('g.nodeGroup')
@@ -144,3 +146,14 @@ module.exports = class ToolPointerView extends View
     link_group.view.dispose()
     link_group.model.destroy()
 
+
+  # ----------------------------------
+  # MISC METHODS
+  # ----------------------------------
+
+  deselect_all: ->
+    d3.selectAll('g.nodeGroup').classed 'active', false
+    mediator.selected_node = null
+    
+    d3.selectAll('g.linkGroup').classed 'active', false
+    mediator.selected_link = null
