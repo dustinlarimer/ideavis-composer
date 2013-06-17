@@ -1,0 +1,26 @@
+<table class="table table-condensed">
+	<tr>
+		<th>X</th>
+		<th>Y</th>
+		<th>Rotate</th>
+		<th>Scale</th>
+	</tr>
+	<tr>
+		<td><input type="text" style="width: 40px" value="{{x}}" /></td>
+		<td><input type="text" style="width: 40px" value="{{y}}" /></td>
+		<td>{{rotate}}</td>
+		<td>{{scale}}</td>
+	</tr>
+	<tr>
+		<th colspan="2">Shape Fill</th>
+		<td colspan="2">{{fill}}</td>
+	</tr>
+	<tr>
+		<th colspan="2">Stroke</th>
+		<td colspan="2">{{stroke_width}}px, {{stroke}}</td>
+	</tr>
+</table>
+
+<label class="checkbox">
+	<input type="checkbox" checked="{{visible}}"> Visible
+</label>

@@ -5,8 +5,8 @@ module.exports = class NodeView extends View
   autoRender: true
   
   initialize: (data={}) ->
-    @paths = _.where(@model.get('nested'), {type: 'path'})
-    @texts = _.where(@model.get('nested'), {type: 'text'})
+    @paths = @model.paths.models
+    @texts = @model.texts.models
     @subscribeEvent 'clear_active_nodes', @deactivate
 
   deactivate: ->
@@ -32,16 +32,16 @@ module.exports = class NodeView extends View
       .data(@paths)
       .enter()
       .append('svg:path')
-        .attr('d', (d)-> d.path)
-        .attr('cx', (d)-> d.x)
-        .attr('cy', (d)-> d.y)
-        .attr('fill', (d)-> d.fill)
-        .attr('stroke', (d)-> d.stroke)
-        .attr('stroke-width', (d)-> d.stroke_width) 
+        .attr('d', (d)-> d.get('path'))
+        .attr('cx', (d)-> d.get('x'))
+        .attr('cy', (d)-> d.get('y'))
+        .attr('fill', (d)-> d.get('fill'))
+        .attr('stroke', (d)-> d.get('stroke'))
+        .attr('stroke-width', (d)-> d.get('stroke_width'))
     
     d3.select(@el)
       .selectAll('text')
       .data(@texts)
       .enter()
       .append('svg:text')
-      .text((d)-> d.text)
+      .text((d)-> d.get('text'))

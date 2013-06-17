@@ -1,5 +1,9 @@
 Model = require 'models/base/model'
+
+Paths = require 'models/paths'
 Path = require 'models/path'
+
+Texts = require 'models/texts'
 Text = require 'models/text'
 
 module.exports = class Node extends Model
@@ -14,7 +18,5 @@ module.exports = class Node extends Model
   initialize: (data={}) ->
     super
     _.extend({}, data)
-    
-    #@paths = _.where(@get('nested'), {type: 'path'})
-    #@texts = _.where(@get('nested'), {type: 'text'})
-    #console.log @paths
+    @paths = new Paths _.where(@get('nested'), {type: 'path'})
+    @texts = new Texts _.where(@get('nested'), {type: 'text'})

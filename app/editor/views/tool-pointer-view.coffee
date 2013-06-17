@@ -106,11 +106,11 @@ module.exports = class ToolPointerView extends View
       d.model.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
     else
       d3.select(@).classed 'active', true
-      mediator.publish 'activate_node_detail', d.model
+      mediator.publish 'activate_detail', d.model
 
   node_detail_view: (d) ->
     d3.select(@).classed 'active', true
-    mediator.publish 'activate_node_detail', d.model
+    mediator.publish 'activate_detail', d.model
 
   destroy_node_group: (node_group) ->
     node_group.view.dispose()
@@ -156,6 +156,8 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   deselect_all: ->
+    mediator.publish 'deactivate_detail'
+    
     d3.selectAll('g.nodeGroup').classed 'active', false
     mediator.selected_node = null
     
