@@ -76,7 +76,6 @@ module.exports = class CanvasView extends View
     mediator.selected_node = d
     mediator.publish 'clear_active_nodes'
     d3.select(@).classed 'active', true
-    force.tick()
 
   drag_node_move: (d, i) ->
     console.log 'drag_node_move'
@@ -91,7 +90,7 @@ module.exports = class CanvasView extends View
   
   drag_node_end: (d, i) ->
     console.log 'drag_node_end'
-    force.tick()
+    force.start()
 
 
 
