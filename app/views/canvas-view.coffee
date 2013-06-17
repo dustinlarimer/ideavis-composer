@@ -204,11 +204,11 @@ module.exports = class CanvasView extends View
       .start()
     
     @subscribeEvent 'node_created', @draw
-    @subscribeEvent 'node_updated', @refresh
+    @subscribeEvent 'node_updated', @draw
     @subscribeEvent 'node_removed', @refresh
 
     @subscribeEvent 'link_created', @draw
-    @subscribeEvent 'link_updated', @refresh
+    @subscribeEvent 'link_updated', @draw
     @subscribeEvent 'link_removed', @refresh
     
     @draw()

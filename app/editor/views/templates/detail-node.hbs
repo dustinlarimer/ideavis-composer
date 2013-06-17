@@ -1,19 +1,19 @@
 <div class="detail-panel-bucket">
 	<h3>Node Attributes</h3>
+	<form id="node-attributes">
 	<table class="table table-condensed">
 		<tr>
 			<th>X</th>
 			<th>Y</th>
 			<th>Rotate</th>
 			<th>Scale</th>
-			<th>Weight</th>
 		</tr>
 		<tr>
-			<td>{{x}}</td>
-			<td>{{y}}</td>
+			<td><input id="node-attr-x" type="text" style="width: 40px" value="{{x}}" /></td>
+			<td><input id="node-attr-y" type="text" style="width: 40px" value="{{y}}" /></td>
 			<td>{{rotate}}</td>
 			<td>{{scale}}</td>
-			<td>{{weight}}</td>
 		</tr>
 	</table>
+	</form>
 </div>

@@ -86,7 +86,6 @@ module.exports = class ToolPointerView extends View
     console.log 'pointer:node_drag_start'
     mediator.selected_node = d
     mediator.publish 'clear_active_nodes'
-    d3.select(@).classed 'active', true
     
     #polymorphize this shit
     mediator.selected_link = null
@@ -94,6 +93,7 @@ module.exports = class ToolPointerView extends View
 
   node_drag_move: (d, i) ->
     console.log 'pointer:node_drag_move'
+    mediator.selected_node = null
     d.x = d3.event.x
     d.y = d3.event.y
     d.px = d.x
@@ -102,11 +102,15 @@ module.exports = class ToolPointerView extends View
   
   node_drag_stop: (d, i) ->
     console.log 'pointer:node_drag_stop'
-    d.model.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
+    if mediator.selected_node is null
+      d.model.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
+    else
+      d3.select(@).classed 'active', true
+      mediator.publish 'activate_node_detail', d.model
 
   node_detail_view: (d) ->
+    d3.select(@).classed 'active', true
     mediator.publish 'activate_node_detail', d.model
-    console.log '[trigger node detail view]'
 
   destroy_node_group: (node_group) ->
     node_group.view.dispose()
