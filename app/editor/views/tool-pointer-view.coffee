@@ -103,6 +103,7 @@ module.exports = class ToolPointerView extends View
     d.model.set({x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY})
 
   node_detail_view: (d) ->
+    mediator.publish 'activate_node_detail', d.model
     console.log '[trigger node detail view]'
 
   destroy_node_group: (node_group) ->

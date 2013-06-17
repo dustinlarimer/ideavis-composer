@@ -226,7 +226,7 @@ module.exports = class CanvasView extends View
     bounds.width = Math.max(window.innerWidth, (bounds.x[1]+100))
     #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)
     
-    $('#canvas, #stage, #stage svg, #stage svg rect')
+    $('#canvas, #stage, #stage svg, #stage svg #canvas_background')
       .attr('height', bounds.height)
       .attr('width', bounds.width);    
     force

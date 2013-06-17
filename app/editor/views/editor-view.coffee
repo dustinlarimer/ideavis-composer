@@ -8,6 +8,8 @@ ToolNodeView    = require 'editor/views/tool-node-view'
 ToolLinkView    = require 'editor/views/tool-link-view'
 ToolTextView    = require 'editor/views/tool-text-view'
 
+DetailView = require 'editor/views/detail-view'
+
 module.exports = class EditorView extends CanvasView
   el: '#canvas'
   template: template
@@ -26,6 +28,7 @@ module.exports = class EditorView extends CanvasView
   render: ->
     super
     console.log 'Rendering EditorView [...]'
+    @subview 'detail_view', new DetailView
     @subview 'tool_view', @toolbar_view = null
     @activate_pointer()
 
