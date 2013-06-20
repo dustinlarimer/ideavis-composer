@@ -81,7 +81,7 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   node_drag_start: (d, i) ->
-    console.log 'pointer:node_drag_start'
+    #console.log 'pointer:node_drag_start'
     mediator.selected_node = d
     mediator.publish 'clear_active_nodes'
     
@@ -90,16 +90,18 @@ module.exports = class ToolPointerView extends View
     mediator.publish 'clear_active_links'
 
   node_drag_move: (d, i) ->
-    console.log 'pointer:node_drag_move'
+    #console.log 'pointer:node_drag_move'
     mediator.selected_node = null
+    d.scale = d.model.get('scale')
+    d.rotate = d.model.get('rotate')
     d.x = d3.event.x
     d.y = d3.event.y
     d.px = d.x
     d.py = d.y
-    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ')')
+    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')')
   
   node_drag_stop: (d, i) ->
-    console.log 'pointer:node_drag_stop'
+    #console.log 'pointer:node_drag_stop'
     if mediator.selected_node is null
       d.model.set x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY
     else

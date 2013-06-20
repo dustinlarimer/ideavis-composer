@@ -5,15 +5,21 @@ module.exports = class NodeView extends View
   autoRender: true
   
   initialize: (data={}) ->
+    super
     @paths = @model.paths.models
     @texts = @model.texts.models
     @subscribeEvent 'deactivate_detail', @deactivate
     @subscribeEvent 'clear_active_nodes', @deactivate
 
   render: ->
+    super
     @build_paths()
     @build_texts()
     @build_parent_bounding_box()
+
+  remove: ->
+    console.log '[NodeView Removed]'
+    super
 
   activate: ->
     @deactivate()
@@ -35,7 +41,6 @@ module.exports = class NodeView extends View
   # ----------------------------------
   build_parent_bounding_box: =>
     _parent = d3.select(@el)[0][0].getBBox()
-    console.log _parent.x
     d3.select(@el)
       .selectAll('rect.parent_bounds')
       .data([{}])
@@ -49,6 +54,8 @@ module.exports = class NodeView extends View
         .attr('x', (d)-> return _parent.x - 15)
         .attr('y', (d)-> return _parent.y - 15)
         .style('stroke-dasharray', '4,4')
+        .transition()
+          .ease Math.sqrt
 
 
   # ----------------------------------

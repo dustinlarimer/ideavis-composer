@@ -44,8 +44,8 @@ module.exports = class CanvasView extends View
   force.on 'tick', ->
     
     mediator.node
-      .attr('transform', (d)-> return 'translate('+ d.x + ',' + d.y + ')')
-    
+      .attr('transform', (d)-> return 'translate('+ d.x + ',' + d.y + ') scale(' + d.model.get('scale') + ') rotate(' + d.model.get('rotate') + ')')
+
     mediator.link.select('path')
       .attr('d', (d)->
         _target = _.where(force.nodes(), {id: d.target.id})[0]
@@ -81,12 +81,14 @@ module.exports = class CanvasView extends View
   drag_node_move: (d, i) ->
     console.log 'drag_node_move'
     mediator.selected_node = null
+    d.scale = d.model.get('scale')
+    d.rotate = d.model.get('rotate')
     d.x = d3.event.x
     d.y = d3.event.y
     d.px = d.x
     d.py = d.y
     d3.select(@).classed 'active', false
-    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ')')
+    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')')
     force.tick()
   
   drag_node_end: (d, i) ->
@@ -100,11 +102,10 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   draw: ->
-    console.log 'draw: ->'
-
-
+    #console.log 'draw: ->'
+    
     # DATA ---------------------
-
+    
     force.nodes(_.map(
       mediator.nodes.models, (d,i)-> 
         return { id: d.get('_id'), x: d.get('x'), y: d.get('y'), model: d, view: d.view?, weight: 0 }
@@ -135,6 +136,7 @@ module.exports = class CanvasView extends View
       .enter()
       .append('svg:g')
       .attr('class', 'nodeGroup')
+      #.attr('transform', (d)-> return 'scale(' + d.model.get('scale') + ') rotate(' + d.model.get('rotate') + ')' )
       .call(node_drag_events)
       .transition()
         .ease Math.sqrt

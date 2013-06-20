@@ -9,7 +9,7 @@ Text = require 'models/text'
 module.exports = class Node extends Model
   defaults:
     rotate: 0
-    scale: 0
+    scale: 1
     x: 0 
     y: 0
     weight: 1

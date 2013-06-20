@@ -17,7 +17,8 @@ module.exports = class DetailNodeView extends View
     console.log 'Initialized DetailNodeView for Node #' + @model.id
     console.log @model
     
-    @delegate 'change', '#node-attributes input', @update_attr
+    @delegate 'change', 'input', @update_attr
+
 
   listen:
     'change model': 'render'
@@ -27,5 +28,9 @@ module.exports = class DetailNodeView extends View
     @subview 'detail-node-paths', new DetailNodePathsView collection: @model.paths, region: 'paths'
     @subview 'detail-node-texts', new DetailNodeTextsView collection: @model.texts, region: 'texts'
 
-  update_attr: ->
-    @model.set x: $('#node-attr-x').val(), y: $('#node-attr-y').val()
+  update_attr: =>
+    _x = $('#node-attr-x').val()
+    _y = $('#node-attr-y').val()
+    _rotate = $('#node-attr-rotate').val()
+    _scale = $('#node-attr-scale').val()
+    @model.set x: _x, y: _y, rotate: _rotate, scale: _scale
