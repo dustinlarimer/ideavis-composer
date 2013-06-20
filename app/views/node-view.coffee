@@ -33,19 +33,21 @@ module.exports = class NodeView extends View
   # ----------------------------------
   # BUILD Parent Bounding Box
   # ----------------------------------
-  build_parent_bounding_box: ->
+  build_parent_bounding_box: =>
+    _parent = d3.select(@el)[0][0].getBBox()
+    console.log _parent.x
     d3.select(@el)
-      .selectAll('rect')
+      .selectAll('rect.parent_bounds')
       .data([{}])
       .enter()
       .insert('rect', 'g.nodePath')
-        .attr('class', 'bounds')
+        .attr('class', 'bounds parent_bounds')
         .attr('fill', 'transparent')
         .attr('opacity', 0)
-        .attr('x', (d)-> -50.5)
-        .attr('y', (d)-> -50.5)
-        .attr('width', '101')
-        .attr('height', '101')
+        .attr('height', (d)-> return _parent.height + 30)
+        .attr('width', (d)-> return _parent.width + 30)
+        .attr('x', (d)-> return _parent.x - 15)
+        .attr('y', (d)-> return _parent.y - 15)
         .style('stroke-dasharray', '4,4')
 
 
@@ -106,8 +108,8 @@ module.exports = class NodeView extends View
         .each((d,i)->
           this.ref = $(this).next('text')[0].getBoundingClientRect()
           d.height = this.ref.height + 10
-          d.width = this.ref.width + 30
-          d.x = -1 * this.ref.width/2 - 15
+          d.width = this.ref.width + 20
+          d.x = -1 * this.ref.width/2 - 10
           d.y = -1 * this.ref.height/2 - 10
         )
         .attr('height', (d)-> return d.height)
@@ -149,5 +151,7 @@ module.exports = class NodeView extends View
   drag_text_end: (d,i) =>
     console.log 'node:drag_text_end'
     d.set x: d.x, y: d.y
-
+    
+    d3.select(@el).select('rect.parent_bounds').remove()
+    @build_parent_bounding_box()
 
