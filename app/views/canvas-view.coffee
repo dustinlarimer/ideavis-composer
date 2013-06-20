@@ -42,7 +42,7 @@ module.exports = class CanvasView extends View
   get_force: -> return force
 
   force.on 'tick', ->
-    console.log 'tick!'
+    
     mediator.node
       .attr('transform', (d)-> return 'translate('+ d.x + ',' + d.y + ')')
     

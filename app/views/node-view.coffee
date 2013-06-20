@@ -10,9 +10,15 @@ module.exports = class NodeView extends View
     @subscribeEvent 'deactivate_detail', @deactivate
 
   render: ->
-    # ----------------------------------
-    # Bounding Box (Group)
-    # ----------------------------------
+    @build_bounding_box()
+    @build_paths()
+    @build_texts()
+
+
+  # ----------------------------------
+  # Bounding Box (Group)
+  # ----------------------------------
+  build_bounding_box: ->
     d3.select(@el)
       .selectAll('rect')
       .data([{}])
@@ -27,10 +33,10 @@ module.exports = class NodeView extends View
         .attr('height', '101')
         .style('stroke-dasharray', '4,4')
 
-
-    # ----------------------------------
-    # @Paths
-    # ----------------------------------
+  # ----------------------------------
+  # @Paths
+  # ----------------------------------
+  build_paths: ->
     d3.select(@el)
       .selectAll('g.nodePath')
       .data(@paths)
@@ -47,10 +53,10 @@ module.exports = class NodeView extends View
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
 
-
-    # ----------------------------------
-    # @Texts
-    # ----------------------------------
+  # ----------------------------------
+  # @Texts
+  # ----------------------------------
+  build_texts: ->
     d3.select(@el)
       .selectAll('g.nodeText')
       .data(@texts)
@@ -113,26 +119,21 @@ module.exports = class NodeView extends View
 
   deactivate: ->
     d3.select(@el).selectAll('path.origin').remove()
-    d3.select(@el).selectAll('g.nodeText rect.bounds').remove()
-    d3.select(@el).selectAll('g.nodeText')
-      .call(d3.behavior.drag()
-        .on('dragstart', null)
-        .on('drag', null)
-        .on('dragend', null))
-
+    d3.select(@el).selectAll('g.nodePath').remove()
+    d3.select(@el).selectAll('g.nodeText').remove()
+    @build_paths()
+    @build_texts()
 
   drag_text_start: (d,i) =>
-    d3.event.sourceEvent.stopPropagation()
-    console.log @model.texts
+    console.log 'node:drag_text_start'
 
   drag_text_move: (d,i) ->
-    d3.event.sourceEvent.stopPropagation()
     d.x = d3.event.x
     d.y = d3.event.y
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ')')
 
   drag_text_end: (d,i) =>
-    d3.event.sourceEvent.stopPropagation()
+    console.log 'node:drag_text_end'
     d.set x: d.x, y: d.y
 
 
