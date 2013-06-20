@@ -17,14 +17,12 @@ module.exports = class ToolPointerView extends View
         .on('dragstart', @node_drag_start)
         .on('drag', @node_drag_move)
         .on('dragend', @node_drag_stop))
-      .on('dblclick', @node_detail_view)
     
     d3.selectAll('g.linkGroup')
       .call(d3.behavior.drag()
         .on('dragstart', @link_drag_start)
         .on('drag', @link_drag_move)
         .on('dragend', @link_drag_stop))
-      .on('dblclick', @link_detail_view)
 
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
@@ -66,10 +64,6 @@ module.exports = class ToolPointerView extends View
     'backspace' : 'keypress_delete'
     'delete'    : 'keypress_delete'
     'del'       : 'keypress_delete'
-    'up'        : 'keypress_up'
-    'down'      : 'keypress_down'
-    'left'      : 'keypress_left'
-    'right'     : 'keypress_right'
 
   keypress_delete: (e) ->
     console.log 'Delete!'
@@ -81,29 +75,6 @@ module.exports = class ToolPointerView extends View
       mediator.selected_link = null
     e.preventDefault()
 
-  keypress_up: (e) ->
-    e.preventDefault()
-    if mediator.selected_node?
-      _y = mediator.selected_node.model.get('y') - 10
-      mediator.selected_node.model.set y: _y
-
-  keypress_down: (e) ->
-    e.preventDefault()
-    if mediator.selected_node?
-      _y = mediator.selected_node.model.get('y') + 10
-      mediator.selected_node.model.set y: _y
-
-  keypress_left: (e) ->
-    e.preventDefault()
-    if mediator.selected_node?
-      _x = mediator.selected_node.model.get('x') - 10
-      mediator.selected_node.model.set x: _x
-
-  keypress_right: (e) ->
-    e.preventDefault()
-    if mediator.selected_node?
-      _x = mediator.selected_node.model.get('x') + 10
-      mediator.selected_node.model.set x: _x
 
   # ----------------------------------
   # NODE METHODS
@@ -132,12 +103,9 @@ module.exports = class ToolPointerView extends View
     if mediator.selected_node is null
       d.model.set x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY
     else
+      d.view.activate()
       d3.select(@).classed 'active', true
       mediator.publish 'activate_detail', d.model
-
-  node_detail_view: (d) ->
-    d3.select(@).classed 'active', true
-    mediator.publish 'activate_detail', d.model
 
   destroy_node_group: (node_group) ->
     node_group.view.dispose()
@@ -164,9 +132,6 @@ module.exports = class ToolPointerView extends View
   link_drag_stop: (d,i) ->
     console.log 'pointer:link_drag_stop'
 
-  link_detail_view: (d) ->
-    console.log '[trigger link detail view]'
-
   prune_links: (dead_node) ->
     d3.selectAll('g.linkGroup').each((d,i) => 
       if d.source.id is dead_node.id or d.target.id is dead_node.id
@@ -184,6 +149,7 @@ module.exports = class ToolPointerView extends View
 
   deselect_all: ->
     mediator.publish 'deactivate_detail'
+    mediator.publish 'clear_active_links'
     
     d3.selectAll('g.nodeGroup').classed 'active', false
     mediator.selected_node = null

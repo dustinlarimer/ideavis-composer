@@ -42,7 +42,7 @@ module.exports = class CanvasView extends View
   get_force: -> return force
 
   force.on 'tick', ->
-    
+    console.log 'tick!'
     mediator.node
       .attr('transform', (d)-> return 'translate('+ d.x + ',' + d.y + ')')
     
@@ -76,6 +76,7 @@ module.exports = class CanvasView extends View
     mediator.selected_node = d
     mediator.publish 'clear_active_nodes'
     d3.select(@).classed 'active', true
+    force.start()
 
   drag_node_move: (d, i) ->
     console.log 'drag_node_move'
@@ -232,4 +233,8 @@ module.exports = class CanvasView extends View
       .size([bounds.width, bounds.height])
       .start()
 
+  $ ->
+    setInterval (->
+      force.start()
+    ), 7000
 

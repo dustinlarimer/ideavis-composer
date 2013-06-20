@@ -20,3 +20,11 @@ module.exports = class Node extends Model
     _.extend({}, data)
     @paths = new Paths _.where(@get('nested'), {type: 'path'})
     @texts = new Texts _.where(@get('nested'), {type: 'text'})
+    
+    @subscribeEvent 'text_updated', @update_nested
+
+  update_nested: ->
+    _nested = []
+    _.each(@paths.toJSON(), (p)-> _nested.push p)
+    _.each(@texts.toJSON(), (t)-> _nested.push t)
+    @set nested: _nested

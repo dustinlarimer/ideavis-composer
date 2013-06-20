@@ -47,7 +47,6 @@ module.exports = class EditorView extends CanvasView
   help: ->
     console.log 'Keyboard shortcuts:\n' + JSON.stringify(@shortcuts, null, 4)
 
-
   # ----------------------------------
   # TOOLBAR METHODS
   # ----------------------------------

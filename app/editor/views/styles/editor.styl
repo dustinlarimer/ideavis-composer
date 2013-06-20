@@ -91,19 +91,27 @@ body {
 }
 
 
-.nodeGroup:hover rect.element_bounds,
-.nodeGroup.active rect.element_bounds {
-  stroke: #d7d7d7;
-  stroke-width: 1px;
+.nodeGroup rect.bounds {
+  stroke: #000000;
+  stroke-width: 1;
+  opacity: 0;
 }
 
-.nodeGroup.active path {
+.nodeGroup:hover rect.bounds {
+  opacity: .05
+}
+.nodeGroup.active rect.bounds,
+.nodeGroup.active path.origin {
+  opacity: .2
+}
+
+/*.nodeGroup.active path.artifact {
   fill: #ff7f0e;
   stroke: #ff7f0e;
 }
-.linkGroup.active path {
+.linkGroup.active path.artifact {
 	opacity: 1;
-}
+}*/
 
 .drag_line {
   stroke: #999;
