@@ -8,22 +8,37 @@ module.exports = class NodeView extends View
     @paths = @model.paths.models
     @texts = @model.texts.models
     @subscribeEvent 'deactivate_detail', @deactivate
+    @subscribeEvent 'clear_active_nodes', @deactivate
 
   render: ->
-    @build_bounding_box()
+    @build_paths()
+    @build_texts()
+    @build_parent_bounding_box()
+
+  activate: ->
+    @deactivate()
+    d3.select(@el).classed 'active', true
+    @build_artifact_bounding_boxes()
+    @build_origin()
+
+  deactivate: ->
+    d3.select(@el).classed 'active', false
+    d3.select(@el).select('path.origin').remove()
+    d3.select(@el).selectAll('g.nodePath').remove()
+    d3.select(@el).selectAll('g.nodeText').remove()
     @build_paths()
     @build_texts()
 
 
   # ----------------------------------
-  # Bounding Box (Group)
+  # BUILD Parent Bounding Box
   # ----------------------------------
-  build_bounding_box: ->
+  build_parent_bounding_box: ->
     d3.select(@el)
       .selectAll('rect')
       .data([{}])
       .enter()
-      .append('svg:rect')
+      .insert('rect', 'g.nodePath')
         .attr('class', 'bounds')
         .attr('fill', 'transparent')
         .attr('opacity', 0)
@@ -33,8 +48,9 @@ module.exports = class NodeView extends View
         .attr('height', '101')
         .style('stroke-dasharray', '4,4')
 
+
   # ----------------------------------
-  # @Paths
+  # BUILD @Paths
   # ----------------------------------
   build_paths: ->
     d3.select(@el)
@@ -53,8 +69,9 @@ module.exports = class NodeView extends View
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
 
+
   # ----------------------------------
-  # @Texts
+  # BUILD @Texts
   # ----------------------------------
   build_texts: ->
     d3.select(@el)
@@ -72,10 +89,10 @@ module.exports = class NodeView extends View
           .text((d)-> d.get('text'))
 
 
-  activate: ->
-    # ----------------------------------
-    # Bounding Boxes (Texts)
-    # ----------------------------------
+  # ----------------------------------
+  # BUILD Artifact Bounding Boxes
+  # ----------------------------------
+  build_artifact_bounding_boxes: ->
     d3.select(@el)
       .selectAll('g.nodeText')
       .call(d3.behavior.drag()
@@ -88,7 +105,6 @@ module.exports = class NodeView extends View
         .style('stroke-dasharray', '4,4')
         .each((d,i)->
           this.ref = $(this).next('text')[0].getBoundingClientRect()
-          console.log this.ref
           d.height = this.ref.height + 10
           d.width = this.ref.width + 30
           d.x = -1 * this.ref.width/2 - 15
@@ -100,14 +116,15 @@ module.exports = class NodeView extends View
         .attr('y', (d)-> return d.y)
 
 
-    # ----------------------------------
-    # Bounds Center Origin
-    # ----------------------------------
+  # ----------------------------------
+  # BUILD Center Origin
+  # ----------------------------------
+  build_origin: ->
     d3.select(@el)
       .selectAll('path.origin')
       .data([{}])
       .enter()
-      .append('svg:path')
+      .insert('path', 'g.nodeText')
         .attr('class', 'origin')
         .attr('d', 'M 0,-12 L 0,12 M -12,0 L 12,0')
         .attr('fill', 'transparent')
@@ -115,14 +132,11 @@ module.exports = class NodeView extends View
         .attr('stroke-width', 1)
         .attr('opacity', 0)
         .style('stroke-dasharray', '4,1')
-    
 
-  deactivate: ->
-    d3.select(@el).selectAll('path.origin').remove()
-    d3.select(@el).selectAll('g.nodePath').remove()
-    d3.select(@el).selectAll('g.nodeText').remove()
-    @build_paths()
-    @build_texts()
+
+  # ----------------------------------
+  # DRAG Methods
+  # ----------------------------------
 
   drag_text_start: (d,i) =>
     console.log 'node:drag_text_start'

@@ -15,14 +15,11 @@ module.exports = class DetailView extends View
     super
     console.log '[-- Detail view activated --]'
     @subview 'detail-tray', null
-    
     @subscribeEvent 'activate_detail', @activate_detail
     @subscribeEvent 'deactivate_detail', @deactivate_detail
 
   activate_detail: (model) ->
-    console.log 'Received model:'
     @subview 'detail-tray', new DetailNodeView model: model, region: 'tray'
 
   deactivate_detail: ->
-    console.log 'Turning DetailView off'
     @removeSubview 'detail-tray'

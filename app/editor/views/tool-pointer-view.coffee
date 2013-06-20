@@ -104,7 +104,6 @@ module.exports = class ToolPointerView extends View
       d.model.set x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY
     else
       d.view.activate()
-      d3.select(@).classed 'active', true
       mediator.publish 'activate_detail', d.model
 
   destroy_node_group: (node_group) ->
@@ -148,11 +147,8 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   deselect_all: ->
+    mediator.selected_node = null
+    mediator.selected_link = null
+
     mediator.publish 'deactivate_detail'
     mediator.publish 'clear_active_links'
-    
-    d3.selectAll('g.nodeGroup').classed 'active', false
-    mediator.selected_node = null
-    
-    d3.selectAll('g.linkGroup').classed 'active', false
-    mediator.selected_link = null
