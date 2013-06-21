@@ -26,6 +26,13 @@ module.exports = class NodeView extends View
   activate: ->
     d3.select(@el)
       .classed('active', true)
+      .selectAll('g.nodePath')
+      .call(d3.behavior.drag()
+        .on('dragstart', @drag_path_start)
+        .on('drag', @drag_path_move)
+        .on('dragend', @drag_path_end))
+    d3.select(@el)
+      .classed('active', true)
       .selectAll('g.nodeText')
       .call(d3.behavior.drag()
         .on('dragstart', @drag_text_start)
@@ -166,6 +173,20 @@ module.exports = class NodeView extends View
   # ----------------------------------
   # DRAG Methods
   # ----------------------------------
+
+  drag_path_start: (d,i) =>
+    d.px = d.get('x')
+    d.py = d.get('y')
+
+  drag_path_move: (d,i) ->
+    d.px = d3.event.x
+    d.py = d3.event.y
+    d3.select(@).attr('transform', 'translate('+ d.px + ',' + d.py + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
+
+  drag_path_end: (d,i) =>
+    unless d.px is d.get("x")
+      d.set x: d.px, y: d.py
+      @build_bounding_boxes()
 
   drag_text_start: (d,i) =>
     d.px = d.get('x')
