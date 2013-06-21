@@ -67,7 +67,8 @@ module.exports = class NodeView extends View
           .attr('d', (d)-> d.get('path'))
     path
       .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
-
+      .selectAll('path.artifact')
+      .attr('d', (d)-> d.get('path'))
 
   # ----------------------------------
   # BUILD @Texts
@@ -138,8 +139,6 @@ module.exports = class NodeView extends View
         .style('stroke-dasharray', '4,4')
         .each((d,i)->
           this.ref = $(this).next('text')[0].getBoundingClientRect()
-          #console.log d.get('font_size')
-          console.log this.ref
           d.height = this.ref.height + d.get('font_size')/4
           d.width = this.ref.width + d.get('font_size')/2
           d.x = -1 * this.ref.width/2 - d.get('font_size')/4

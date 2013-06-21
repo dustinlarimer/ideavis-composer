@@ -9,7 +9,7 @@ module.exports = class Text extends Model
     stroke_width: 0,
     rotate: 0,
     font_family: 'Helvetica Neue',
-    font_size:  24,
+    font_size:  14,
     font_weight: 'normal',
     x: 0,
     y: 0,
