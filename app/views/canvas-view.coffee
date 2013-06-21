@@ -2,10 +2,7 @@ mediator = require 'mediator'
 View = require 'views/base/view'
 template = require 'views/templates/canvas'
 
-Node = require 'models/node'
 NodeView = require 'views/node-view'
-
-Link = require 'models/link'
 LinkView = require 'views/link-view'
 
 module.exports = class CanvasView extends View
@@ -136,7 +133,6 @@ module.exports = class CanvasView extends View
       .enter()
       .append('svg:g')
       .attr('class', 'nodeGroup')
-      #.attr('transform', (d)-> return 'scale(' + d.model.get('scale') + ') rotate(' + d.model.get('rotate') + ')' )
       .call(node_drag_events)
       .transition()
         .ease Math.sqrt

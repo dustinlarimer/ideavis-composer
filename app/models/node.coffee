@@ -21,6 +21,7 @@ module.exports = class Node extends Model
     @paths = new Paths _.where(@get('nested'), {type: 'path'})
     @texts = new Texts _.where(@get('nested'), {type: 'text'})
     
+    @subscribeEvent 'path_updated', @update_nested
     @subscribeEvent 'text_updated', @update_nested
 
   update_nested: ->

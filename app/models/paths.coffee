@@ -5,3 +5,21 @@ Path = require 'models/path'
 
 module.exports = class Paths extends Collection
   model: Path
+
+  initialize: ->
+    @on 'add', @path_created
+    @on 'change', @path_updated
+    @on 'remove', @path_removed
+
+  path_created: =>
+    console.log '[pub] path_created'
+    @publishEvent 'path_created', this
+
+  path_updated: (path) =>
+    console.log '[pub] path_updated'
+    console.log path
+    @publishEvent 'path_updated'
+
+  path_removed: (node) =>
+    console.log '[pub] path_removed'
+    @publishEvent 'path_removed', node
