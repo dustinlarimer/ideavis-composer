@@ -8,6 +8,7 @@ module.exports = class NodeView extends View
     super
     @paths = @model.paths.models
     @texts = @model.texts.models
+    #@deactivate()
     
     @subscribeEvent 'deactivate_detail', @deactivate
     @subscribeEvent 'clear_active_nodes', @deactivate
@@ -50,6 +51,7 @@ module.exports = class NodeView extends View
       .enter()
       .append('svg:g')
         .attr('class', 'nodePath')
+        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
         .append('svg:path')
           .attr('class', 'artifact')
           .attr('fill', (d)-> d.get('fill'))
@@ -57,8 +59,7 @@ module.exports = class NodeView extends View
           .attr('stroke-width', (d)-> d.get('stroke_width'))
           .attr('d', (d)-> d.get('path'))
     path
-      .selectAll('path.artifact')
-      .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ')' )
+      .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
 
 
   # ----------------------------------
@@ -71,13 +72,22 @@ module.exports = class NodeView extends View
       .enter()
       .append('svg:g')
         .attr('class', 'nodeText')
-        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ')' )
+        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
         .append('svg:text')
           .attr('class', 'artifact')
+          .attr('font-family', (d)-> d.get('font_family'))
+          .attr('font-size', (d)-> d.get('font_size'))
+          .attr('font-weight', (d)-> d.get('font_weight'))
           .attr('dx', 0)
           .attr('dy', 0)
           .attr('text-anchor', 'middle')
           .text((d)-> d.get('text'))
+    text
+      .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
+      .selectAll('text.artifact')
+      .attr('font-family', (d)-> d.get('font_family'))
+      .attr('font-size', (d)-> d.get('font_size'))
+      .attr('font-weight', (d)-> d.get('font_weight'))
 
 
   # ----------------------------------
@@ -106,9 +116,11 @@ module.exports = class NodeView extends View
         .transition()
           .ease Math.sqrt
 
+
   # ----------------------------------
   # BUILD Artifact Bounding Boxes
   # ----------------------------------
+
   build_artifact_bounding_boxes: ->
     # TEXT
     d3.select(@el)
@@ -119,10 +131,12 @@ module.exports = class NodeView extends View
         .style('stroke-dasharray', '4,4')
         .each((d,i)->
           this.ref = $(this).next('text')[0].getBoundingClientRect()
-          d.height = this.ref.height + 10
-          d.width = this.ref.width + 20
-          d.x = -1 * this.ref.width/2 - 10
-          d.y = -1 * this.ref.height/2 - 10
+          #console.log d.get('font_size')
+          console.log this.ref
+          d.height = this.ref.height + d.get('font_size')/4
+          d.width = this.ref.width + d.get('font_size')/2
+          d.x = -1 * this.ref.width/2 - d.get('font_size')/4
+          d.y = -1 * this.ref.height/2 - d.get('font_size')/2
         )
         .attr('height', (d)-> return d.height)
         .attr('width', (d)-> return d.width)
@@ -133,6 +147,7 @@ module.exports = class NodeView extends View
   # ----------------------------------
   # BUILD Center Origin
   # ----------------------------------
+
   build_origin: ->
     d3.select(@el)
       .selectAll('path.origin')
@@ -153,17 +168,15 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   drag_text_start: (d,i) =>
-    #console.log 'node:drag_text_start'
     d.px = d.get('x')
     d.py = d.get('y')
 
   drag_text_move: (d,i) ->
     d.px = d3.event.x
     d.py = d3.event.y
-    d3.select(@).attr('transform', 'translate('+ d.px + ',' + d.py + ')')
+    d3.select(@).attr('transform', 'translate('+ d.px + ',' + d.py + ') rotate(' + d.get('rotate') + ')' )
 
   drag_text_end: (d,i) =>
-    #console.log 'node:drag_text_end'    
     unless d.px is d.get("x")
       d.set x: d.px, y: d.py
       @build_bounding_boxes()

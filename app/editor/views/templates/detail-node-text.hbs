@@ -1,11 +1,36 @@
 <table class="table table-condensed">
 	<tr>
+		<th>X</th>
+		<th>Y</th>
+		<th>Rotate</th>
+		<th> </th>
+	</tr>
+	<tr>
+		<td><input id="text-attr-x" type="text" style="width: 40px" value="{{x}}" /></td>
+		<td><input id="text-attr-y" type="text" style="width: 40px" value="{{y}}" /></td>
+		<td><input id="text-attr-rotate" type="text" style="width: 40px" value="{{rotate}}" /></td>
+		<td> </td>
+	</tr>
+	<tr>
 		<th colspan="2">Font Family</th>
 		<td colspan="2">{{font_family}}</td>
 	</tr>
 	<tr>
 		<th colspan="2">Font Size</th>
-		<td colspan="2">{{font_size}}px, {{font_weight}}</td>
+		<td colspan="2"><input id="text-attr-fontsize" type="text" style="width: 40px" value="{{font_size}}" /> px</td>
+	</tr>
+	<tr>
+		<th colspan="2">Font Weight</th>
+		<td colspan="2">
+			<select id="text-attr-fontweight" style="width: 60px">
+				<option>---</option>
+				<option value="200">200</option>
+				<option value="300">300</option>
+				<option value="400">400</option>
+				<option value="500">500</option>
+				<option value="600">600</option>
+				<option value="700">700</option>
+			</select>
 	</tr>
 	<tr>
 		<th colspan="2">Color</th>
@@ -14,18 +39,6 @@
 	<tr>
 		<th colspan="2">Stroke</th>
 		<td colspan="2">{{stroke_width}}px, {{stroke}}</td>
-	</tr>
-	<tr>
-		<th>X</th>
-		<th>Y</th>
-		<th>Rotate</th>
-		<th> </th>
-	</tr>
-	<tr>
-		<td><input type="text" style="width: 40px" value="{{x}}" /></td>
-		<td><input type="text" style="width: 40px" value="{{y}}" /></td>
-		<td>{{rotate}}</td>
-		<td> </td>
 	</tr>
 </table>
 
