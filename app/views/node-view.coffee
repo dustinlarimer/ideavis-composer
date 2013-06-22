@@ -6,18 +6,20 @@ module.exports = class NodeView extends View
   
   initialize: (data={}) ->
     super
-    @paths = @model.paths.models
+    #@paths = @model.paths.models
     @texts = @model.texts.models
-    #@deactivate()
-    
     @subscribeEvent 'deactivate_detail', @deactivate
-    @subscribeEvent 'clear_active_nodes', @deactivate
+    @subscribeEvent 'clear_active_nodes', @clear
+    
+    @listenTo @model.paths, 'change', @build_paths
+    @listenTo @model.texts, 'change', @build_texts
 
   render: ->
     super
     @build_paths()
     @build_texts()
     @build_bounding_boxes()
+    console.log '[NodeView Rendered]'
 
   remove: ->
     console.log '[NodeView Removed]'
@@ -31,52 +33,66 @@ module.exports = class NodeView extends View
         .on('dragstart', @drag_text_start)
         .on('drag', @drag_text_move)
         .on('dragend', @drag_text_end))
-    #d3.select(@el)
-    #  .classed('active', true)
-    #  .selectAll('g.nodePath')
-    #  .call(d3.behavior.drag()
-    #    .on('dragstart', @drag_path_start)
-    #    .on('drag', @drag_path_move)
-    #    .on('dragend', @drag_path_end))
     @build_origin()
 
   deactivate: ->
-    d3.select(@el).classed 'active', false
     d3.select(@el).select('path.origin').remove()
     d3.select(@el).selectAll('g.nodePath').remove()
     d3.select(@el).selectAll('g.nodeText').remove()
+    @clear()
     @render()
 
+  clear: ->
+    d3.select(@el).classed 'active', false
 
   # ----------------------------------
   # BUILD @Paths
   # ----------------------------------
   build_paths: =>
-    path = d3.select(@el).selectAll('g.nodePath')
+    path = d3.select(@el)
+      .selectAll('g.nodePath')
+      .data(@model.paths.models)
+    
     path
-      .data(@paths)
       .enter()
       .append('svg:g')
         .attr('class', 'nodePath')
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
         .append('svg:path')
           .attr('class', 'artifact')
+          .attr('d', (d)-> d.get('path'))
           .attr('fill', (d)-> d.get('fill'))
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
-          .attr('d', (d)-> d.get('path'))
+    
     path
-      .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
+      .transition()
+        .ease(Math.sqrt)
+        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
+    
+    path
       .selectAll('path.artifact')
-      .attr('d', (d)-> d.get('path'))
+        .attr('d', (d)-> d.get('path'))
+        .transition()
+          .ease(Math.sqrt)
+          .attr('fill', (d)-> d.get('fill'))
+          .attr('stroke', (d)-> d.get('stroke'))
+          .attr('stroke-width', (d)-> d.get('stroke_width'))
+    
+    path
+      .exit()
+      .remove()
+
 
   # ----------------------------------
   # BUILD @Texts
   # ----------------------------------
-  build_texts: ->
-    text = d3.select(@el).selectAll('g.nodeText')
+  build_texts: ->    
+    text = d3.select(@el)
+      .selectAll('g.nodeText')
+      .data(@model.texts.models)
+
     text
-      .data(@texts)
       .enter()
       .append('svg:g')
         .attr('class', 'nodeText')
@@ -90,13 +106,21 @@ module.exports = class NodeView extends View
           .attr('dy', 0)
           .attr('text-anchor', 'middle')
           .text((d)-> d.get('text'))
+    
     text
-      .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
-      .selectAll('text.artifact')
-      .attr('font-family', (d)-> d.get('font_family'))
-      .attr('font-size', (d)-> d.get('font_size'))
-      .attr('font-weight', (d)-> d.get('font_weight'))
+      .transition()
+        .ease(Math.sqrt)
+        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
 
+    text
+      .selectAll('text.artifact')
+        .attr('font-family', (d)-> d.get('font_family'))
+        .attr('font-size', (d)-> d.get('font_size'))
+        .attr('font-weight', (d)-> d.get('font_weight'))
+    
+    text
+      .exit()
+      .remove()
 
   # ----------------------------------
   # BUILD Bounding Boxes
@@ -172,20 +196,6 @@ module.exports = class NodeView extends View
   # ----------------------------------
   # DRAG Methods
   # ----------------------------------
-
-  #drag_path_start: (d,i) =>
-  #  d.px = d.get('x')
-  #  d.py = d.get('y')
-
-  #drag_path_move: (d,i) ->
-  #  d.px = d3.event.x
-  #  d.py = d3.event.y
-  #  d3.select(@).attr('transform', 'translate('+ d.px + ',' + d.py + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
-
-  #drag_path_end: (d,i) =>
-  #  unless d.px is d.get("x")
-  #    d.set x: d.px, y: d.py
-  #    @build_bounding_boxes()
 
   drag_text_start: (d,i) =>
     d.px = d.get('x')

@@ -17,9 +17,8 @@ module.exports = class Paths extends Collection
 
   path_updated: (path) =>
     console.log '[pub] path_updated'
-    console.log path
     @publishEvent 'path_updated'
 
-  path_removed: (node) =>
+  path_removed: (path) =>
     console.log '[pub] path_removed'
-    @publishEvent 'path_removed', node
+    @publishEvent 'path_removed', path

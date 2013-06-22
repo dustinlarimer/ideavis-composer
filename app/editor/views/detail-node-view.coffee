@@ -15,12 +15,11 @@ module.exports = class DetailNodeView extends View
   initialize: (data={}) ->
     super
     console.log 'Initialized DetailNodeView for Node #' + @model.id
-    console.log @model
     
     @delegate 'change', '#node-attrs input', @update_attr
 
-  listen:
-    'change model': 'render'
+  #listen:
+  #  'change model': 'render'
 
   render: ->
     super
@@ -28,8 +27,9 @@ module.exports = class DetailNodeView extends View
     @subview 'detail-node-texts', new DetailNodeTextsView collection: @model.texts, region: 'texts'
 
   update_attr: =>
+    console.log 'updating attr'
     _x = $('#node-attr-x').val()
     _y = $('#node-attr-y').val()
     _rotate = $('#node-attr-rotate').val()
     _scale = $('#node-attr-scale').val()
-    @model.set x: _x, y: _y, rotate: _rotate, scale: _scale
+    @model.save({x: _x, y: _y, rotate: _rotate, scale: _scale})

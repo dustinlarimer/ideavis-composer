@@ -6,7 +6,7 @@ Text = require 'models/text'
 module.exports = class Texts extends Collection
   model: Text
 
-  initialize: ->
+  initialize: (data={}) ->
     @on 'add', @text_created
     @on 'change', @text_updated
     @on 'remove', @text_removed
@@ -17,9 +17,8 @@ module.exports = class Texts extends Collection
 
   text_updated: (text) =>
     console.log '[pub] text_updated'
-    console.log text
     @publishEvent 'text_updated'
 
-  text_removed: (node) =>
+  text_removed: (text) =>
     console.log '[pub] text_removed'
-    @publishEvent 'text_removed', node
+    @publishEvent 'text_removed', text

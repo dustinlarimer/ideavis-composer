@@ -8,8 +8,8 @@ module.exports = class DetailNodeTextView extends View
 
   initialize: ->
     super
-    console.log 'Initializing DetailNodeTextView'
-    console.log @model
+    #console.log 'Initializing DetailNodeTextView'
+    #console.log @model
     @delegate 'change', 'input', @update_attributes
     @delegate 'change', 'select', @update_attributes
 

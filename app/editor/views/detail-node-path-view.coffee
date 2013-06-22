@@ -8,8 +8,8 @@ module.exports = class DetailNodePathView extends View
 
   initialize: ->
     super
-    console.log 'Initializing DetailNodePathView'
-    console.log @model
+    #console.log 'Initializing DetailNodePathView'
+    #console.log @model
     @delegate 'change', 'input', @update_attributes
     @delegate 'click', '#path-attr-shape button', @update_shape
 
@@ -17,6 +17,7 @@ module.exports = class DetailNodePathView extends View
     'change model': 'render'
 
   update_attributes: =>
+    console.log 'path:update_attributes'
     _x = $('#path-attr-x').val()
     _y = $('#path-attr-y').val()
     _rotate = $('#path-attr-rotate').val()

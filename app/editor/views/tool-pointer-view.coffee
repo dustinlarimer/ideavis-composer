@@ -101,9 +101,9 @@ module.exports = class ToolPointerView extends View
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')')
   
   node_drag_stop: (d, i) ->
-    #console.log 'pointer:node_drag_stop'
+    console.log 'pointer:node_drag_stop'
     if mediator.selected_node is null
-      d.model.set x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY
+      d.model.save x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY
     else
       d.view.activate()
       mediator.publish 'activate_detail', d.model

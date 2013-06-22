@@ -3,7 +3,7 @@ Model = require 'models/base/model'
 module.exports = class Path extends Model
   defaults:
     type: 'path',
-    path: '',
+    path: 'M 0, 0  m -50, 0  a 50,50 0 1,0 100,0  a 50,50 0 1,0 -100,0',
     fill: '#FBFBFB',
     stroke: '#E5E5E5',
     stroke_width: 1,
@@ -16,7 +16,7 @@ module.exports = class Path extends Model
   initialize: (data={}) ->
     super
     _.extend({}, data)
-    @setPath('circle') unless @get('path')?
+    #@setPath('circle') unless @get('path')?
 
   setPath: (shape) ->
     @set('path', @buildPath(shape))
@@ -32,4 +32,5 @@ module.exports = class Path extends Model
         break
       when 'hexagon'
         path = 'M 0,-50 L 43,-25 L 43,25 L 0,50 L -43,25 L -43,-25 L 0,-50'
+        break
     return path
