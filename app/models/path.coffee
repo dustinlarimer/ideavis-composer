@@ -16,27 +16,20 @@ module.exports = class Path extends Model
   initialize: (data={}) ->
     super
     _.extend({}, data)
-    #@setPath('circle')
+    @setPath('circle') unless @get('path')?
 
   setPath: (shape) ->
     @set('path', @buildPath(shape))
 
   buildPath: (shape) =>
-    size = 0
-    segments = 0
+    path = ''
     switch shape
       when 'circle'
-        size = 4800
-        segments = 360
+        path = 'M 0, 0  m -50, 0  a 50,50 0 1,0 100,0  a 50,50 0 1,0 -100,0'
         break
       when 'square'
-        size = 9600
-        segments = 16
+        path = 'M -50,-50 L 50,-50 L 50,50 L -50,50 L -50,-50'
         break
       when 'hexagon'
-        size = 6400
-        segments = 6
-    d = d3.superformula().type(shape).size(size).segments(segments)
-    return d()
-
-  #defaultPath: return d3.superformula().type("hexagon").size(4800).segments(6)
+        path = 'M 0,-50 L 43,-25 L 43,25 L 0,50 L -43,25 L -43,-25 L 0,-50'
+    return path
