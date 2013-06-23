@@ -37,12 +37,12 @@ module.exports = class CanvasView extends View
   force = d3.layout.force()
 
   force.on 'tick', ->
-    
+    console.log 'tick!'
     mediator.node
       .transition()
       .ease(Math.sqrt)
       .attr('transform', (d)->
-        return 'translate('+ d.x + ',' + d.y + ') scale(' + d.model.get('scale') + ') rotate(' + d.model.get('rotate') + ')'
+        return 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')'
       )
 
     mediator.link.select('path')
@@ -104,7 +104,7 @@ module.exports = class CanvasView extends View
   # ----------------------------------
   init_artifacts: ->
     _.each(mediator.nodes.models, (node,i) => 
-      force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), model: node }
+      force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), rotate: node.get('rotate'), scale: node.get('scale'), model: node }
     )
     _.each(mediator.links.models, (link,i) => 
       _source = _.where(force.nodes(), {id: link.get('source')})[0]
@@ -119,17 +119,20 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   add_node: (node) ->
-    force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), model: node }
+    force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), rotate: node.get('rotate'), scale: node.get('scale'), model: node }
     @draw()
 
   update_node: (node) ->
     _.each(force.nodes(), (d,i)->
       if d.id is node.id
-        d.x = parseInt(d.model.get('x'))
-        d.y = parseInt(d.model.get('y'))
+        d.x = node.get('x')
+        d.y = node.get('y') 
+        d.rotate = node.get('rotate')
+        d.scale = node.get('scale') or 1
         d.px = d.x
         d.py = d.y
     )
+    @refresh()
 
   remove_node: (node_id) ->
     _node = _.findWhere(force.nodes(), {id: node_id})
@@ -160,7 +163,6 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   draw: ->
-    _nodes = force.nodes()
 
     # NODE ---------------------
     
@@ -171,7 +173,7 @@ module.exports = class CanvasView extends View
     
     mediator.node = mediator.vis
       .selectAll('g.nodeGroup')
-      .data(_nodes)
+      .data(force.nodes())
 
     mediator.node
       .enter()
@@ -240,6 +242,8 @@ module.exports = class CanvasView extends View
       .size([bounds.width, bounds.height])
       #.start()
     
+    @subscribeEvent 'refresh_canvas', @refresh
+    
     @subscribeEvent 'node_created', @add_node
     @subscribeEvent 'node_updated', @update_node
     @subscribeEvent 'node_removed', @remove_node
@@ -256,7 +260,6 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   refresh: ->
-    console.log force.nodes().length
     bounds.x = d3.extent(force.nodes(), (d) -> return d.x ) if force.nodes().length > 0
     bounds.y = d3.extent(force.nodes(), (d) -> return d.y ) if force.nodes().length > 0
     bounds.height = Math.max((window.innerHeight-40), (bounds.y[1]+100))
@@ -270,9 +273,4 @@ module.exports = class CanvasView extends View
     force
       .size([bounds.width, bounds.height])
       .start()
-
-  $ ->
-    setInterval (->
-      force.start()
-    ), 7000
 

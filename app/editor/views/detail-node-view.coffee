@@ -28,8 +28,8 @@ module.exports = class DetailNodeView extends View
 
   update_attr: =>
     console.log 'updating attr'
-    _x = $('#node-attr-x').val()
-    _y = $('#node-attr-y').val()
-    _rotate = $('#node-attr-rotate').val()
-    _scale = $('#node-attr-scale').val()
+    _x = parseInt($('#node-attr-x').val())
+    _y = parseInt($('#node-attr-y').val())
+    _rotate = parseInt($('#node-attr-rotate').val())
+    _scale = parseInt($('#node-attr-scale').val())
     @model.save({x: _x, y: _y, rotate: _rotate, scale: _scale})

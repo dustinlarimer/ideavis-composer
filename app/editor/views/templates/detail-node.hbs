@@ -1,29 +1,33 @@
 <div class="detail-panel-bucket" id="node-attrs">
-	<h3>Node Attributes</h3>
 	<form id="node-attributes">
-		<table class="table table-condensed">
-			<tr>
-				<th>X</th>
-				<th>Y</th>
-				<th>Rotate</th>
-				<th>Scale</th>
-			</tr>
-			<tr>
-				<td><input id="node-attr-x" type="text" style="width: 40px" value="{{x}}" /></td>
-				<td><input id="node-attr-y" type="text" style="width: 40px" value="{{y}}" /></td>
-				<td><input id="node-attr-rotate" type="text" style="width: 40px" value="{{rotate}}" /></td>
-				<td><input id="node-attr-scale" type="text" style="width: 40px" value="{{scale}}" /></td>
-			</tr>
-		</table>
+		<div class="row-fluid">
+			<div class="span4">
+				<label><strong>x</strong></label>
+				<div class="input-append">
+					<input id="node-attr-x" class="span3 text-center" type="text" value="{{x}}">
+					<span class="add-on">px</span>
+				</div>
+			</div>
+			<div class="span4">
+				<label><strong>y</strong></label>
+				<div class="input-append">
+					<input id="node-attr-y" class="span3 text-center" type="text" value="{{y}}">
+					<span class="add-on">px</span>
+				</div>
+			</div>
+			<div class="span4">
+				<label><strong>r<sup>&#186;</sup></strong></label>
+				<div class="input-append">
+					<input id="node-attr-rotate" class="span3 text-center" type="text" value="{{rotate}}">
+					<span class="add-on">&nbsp;&#186;&nbsp;</span>
+				</div>
+			</div>
+		</div>
 	</form>
 </div>
 <hr/>
 
-<div class="detail-panel-bucket" id="node-paths">
-	<h4>Shape</h4>
-</div>
+<div class="detail-panel-bucket" id="node-paths"></div>
 <hr/>
 
-<div class="detail-panel-bucket" id="node-texts">
-	<h4>Text</h4>
-</div>
+<div class="detail-panel-bucket" id="node-texts"></div>

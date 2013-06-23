@@ -1,35 +1,73 @@
-<table class="table table-condensed">
-	<tr>
-		<th>X</th>
-		<th>Y</th>
-		<th>Rotate</th>
-		<th>Scale</th>
-	</tr>
-	<tr>
-		<td><input id="path-attr-x" type="text" style="width: 40px" value="{{x}}" /></td>
-		<td><input id="path-attr-y" type="text" style="width: 40px" value="{{y}}" /></td>
-		<td><input id="path-attr-rotate" type="text" style="width: 40px" value="{{rotate}}" /></td>
-		<td><input id="path-attr-scale" type="text" style="width: 40px" value="{{scale}}" /></td>
-	</tr>
-	<tr>
-		<th colspan="4">
-			<div class="btn-group" id="path-attr-shape" data-toggle="buttons-radio">
-				<button type="button" class="btn btn-info" value="circle">Circle</button>
-				<button type="button" class="btn btn-info" value="square">Square</button>
-				<button type="button" class="btn btn-info" value="hexagon">Hexagon</button>
-			</div>
-		</th>
-	</tr>
-	<tr>
-		<th colspan="2">Shape Fill</th>
-		<td colspan="2">{{fill}}</td>
-	</tr>
-	<tr>
-		<th colspan="2">Stroke</th>
-		<td colspan="2">{{stroke_width}}px, {{stroke}}</td>
-	</tr>
-</table>
+<h4>
+	Shape 
+	<small class="pull-right">
+		<label class="checkbox">
+			<input id="path-attr-visible" type="checkbox" checked="{{visible}}"> Show
+		</label>
+	</small>
+</h4>
 
-<label class="checkbox">
-	<input type="checkbox" checked="{{visible}}"> Visible
-</label>
+<div class="row-fluid">
+	<div class="span4">
+		<label>Size</label>
+		<div class="input-append">
+  		<input id="path-attr-scale" class="span3 text-center" type="text" value="{{scale}}">
+  		<span class="add-on">px</span>
+		</div>
+	</div>
+	<div class="span8">
+		<label>Form</label>
+		<div class="btn-group" id="path-attr-shape" data-toggle="buttons-radio">
+			<button type="button" class="btn btn-inverse" value="circle">cr</button>
+			<button type="button" class="btn btn-inverse" value="square">sq</button>
+			<button type="button" class="btn btn-inverse" value="hexagon">hx</button>
+		</div>
+	</div>
+</div>
+
+
+<div class="row-fluid">
+	<div class="span4">
+		<label>Fill</label>
+		<input id="path-attr-fill" class="span12 text-center" type="text" value="{{fill}}">
+	</div>
+	<div class="span8">
+		<label>Stroke</label>
+		<div class="row-fluid">
+			<div class="span4">
+				<div class="input-append">
+  				<input id="path-attr-strokewidth" class="span3 text-center" type="text" value="{{stroke_width}}">
+  				<span class="add-on">px</span>
+				</div>
+			</div>
+			<div class="span6 offset2">
+				<input id="path-attr-stroke" class="span12 text-center" type="text" value="{{stroke}}">
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="row-fluid">
+	<div class="span4">
+		<label>x</label>
+		<div class="input-append">
+			<input id="path-attr-x" class="span3 text-center" type="text" value="{{x}}">
+			<span class="add-on">px</span>
+		</div>
+	</div>
+		<div class="span4">
+		<label>y</label>
+		<div class="input-append">
+			<input id="path-attr-y" class="span3 text-center" type="text" value="{{y}}">
+			<span class="add-on">px</span>
+		</div>
+	</div>
+		<div class="span4">
+		<label>r<sup>&#186;</sup></label>
+		<div class="input-append">
+			<input id="path-attr-rotate" class="span3 text-center" type="text" value="{{rotate}}">
+			<span class="add-on">&nbsp;&#186;&nbsp;</span>
+		</div>
+	</div>
+</div>

@@ -32,6 +32,7 @@ body {
 
 #toolbar .btn-group > .btn {
 	background: rgba(0,0,0,.25)
+	border-color: rgba(0,0,0,.2)
 	border-radius: 4px;
 	margin: 0 0 5px;
 	padding: 4px 7px;
@@ -53,18 +54,74 @@ body {
 	color: #fff;
 	font-size: 12px;
 	min-height: 100px;
+	padding: 0 0 5px;
 	position: fixed;
 	right: 10px;
 	width: 240px;
 }
+
 #detail .detail-panel-header {
-  border-bottom: 1px solid #d7d7d7;
 	padding: 0 10px;
 }
 #detail .detail-panel-bucket {
   padding: 0 10px;
 }
 #detail .detail-panel-bucket table { margin: 0; }
+
+
+#detail h2 {
+	font-size: 14px; 
+	line-height: 14px;
+	margin: 8px 0 0;
+	text-transform: uppercase;
+}
+#detail h4 {
+	font-size: 14px;
+	margin: 10px 0 5px;
+}
+
+
+#detail form { margin: 0; }
+#detail hr { 
+  border-top: medium none;
+	border-bottom: 1px solid rgba(0,0,0,.5);
+	box-shadow: 0 1px 1px rgba(255,255,255,.2);
+	margin: 5px 0;
+}
+
+#detail label {
+	color: #a7a7a7;
+	font-size: 12px;
+	margin-bottom: 0px;
+}
+#detail label strong { 
+	color: #e5e5e5; 
+	display: block;
+}
+
+#detail input { 
+	background: #757575; 
+	border-color: #4d4d4d;
+	color: #e5e5e5;
+	font-size: 12px;
+	margin-bottom: 5px;
+}
+#detail .input-append {
+	margin-bottom: 0px;
+}
+
+#detail .btn-group { width: 100%; }
+#detail .btn-group .btn { width: 33%; }
+
+#detail .input-append .add-on, 
+#detail .input-prepend .add-on { 
+  background: #333;
+  border-color: #555;
+  color: #e5e5e5;
+	height: auto;
+	text-shadow: none;
+}
+
 
 #canvas, #stage {
 	/*height: 100%;*/

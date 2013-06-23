@@ -23,12 +23,12 @@ module.exports = class ToolPointerView extends View
         .on('dragstart', @link_drag_start)
         .on('drag', @link_drag_move)
         .on('dragend', @link_drag_stop))
-
+    
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
-
+    
     @delegate 'click', '#canvas_background', @deselect_all
-
+    
     @subscribeEvent 'node_removed', @prune_links
 
   remove: ->
@@ -80,7 +80,8 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   node_drag_start: (d, i) ->
-    #console.log 'pointer:node_drag_start'
+    mediator.publish 'refresh_canvas'
+    
     mediator.selected_node = d
     mediator.publish 'clear_active_nodes'
     
@@ -102,7 +103,7 @@ module.exports = class ToolPointerView extends View
   node_drag_stop: (d, i) ->
     console.log 'pointer:node_drag_stop'
     if mediator.selected_node is null
-      d.model.save x: d3.event.sourceEvent.layerX, y: d3.event.sourceEvent.layerY
+      d.model.save x: d.x, y: d.y
     else
       d.view.activate()
       mediator.publish 'activate_detail', d.model

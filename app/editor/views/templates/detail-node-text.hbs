@@ -1,4 +1,86 @@
-<table class="table table-condensed">
+<h4>
+	Label 
+	<small class="pull-right">
+		<label class="checkbox">
+			<input type="checkbox" checked="{{visible}}"> Show
+		</label>
+	</small>
+</h4>
+
+<div class="row-fluid">
+	<div class="span12">
+		<label>Text</label>
+		<input id="text-attr-text" class="span12" type="text" value="{{text}}">
+	</div>
+</div>
+
+<div class="row-fluid">
+	<div class="span4">
+		<label>Size</label>
+		<div class="input-append">
+  		<input id="text-attr-scale" class="span3 text-center" type="text" value="{{font_size}}">
+  		<span class="add-on">px</span>
+		</div>
+	</div>
+	<div class="span8">
+		<label>Form</label>
+		<div class="btn-group" id="text-attr-shape" data-toggle="buttons-radio">
+			<button type="button" class="btn btn-inverse" value="bold"><b>B</b></button>
+			<button type="button" class="btn btn-inverse" value="italic"><i>I</i></button>
+			<button type="button" class="btn btn-inverse" value="underline"><u>U</u></button>
+		</div>
+	</div>
+</div>
+
+<div class="row-fluid">
+	<div class="span4">
+		<label>Fill</label>
+		<input id="text-attr-fill" class="span12 text-center" type="text" value="{{fill}}">
+	</div>
+	<div class="span8">
+		<label>Stroke</label>
+		<div class="row-fluid">
+			<div class="span4">
+				<div class="input-append">
+  				<input id="text-attr-strokewidth" class="span3 text-center" type="text" value="{{stroke_width}}">
+  				<span class="add-on">px</span>
+				</div>
+			</div>
+			<div class="span6 offset2">
+				<input id="text-attr-stroke" class="span12 text-center" type="text" value="{{stroke}}">
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row-fluid">
+	<div class="span4">
+		<label>x</label>
+		<div class="input-append">
+			<input id="text-attr-x" class="span3 text-center" type="text" value="{{x}}">
+			<span class="add-on">px</span>
+		</div>
+	</div>
+		<div class="span4">
+		<label>y</label>
+		<div class="input-append">
+			<input id="text-attr-y" class="span3 text-center" type="text" value="{{y}}">
+			<span class="add-on">px</span>
+		</div>
+	</div>
+		<div class="span4">
+		<label>r<sup>&#186;</sup></label>
+		<div class="input-append">
+			<input id="text-attr-rotate" class="span3 text-center" type="text" value="{{rotate}}">
+			<span class="add-on">&nbsp;&#186;&nbsp;</span>
+		</div>
+	</div>
+</div>
+
+
+
+
+<table class="table table-condensed" style="display: none;">
 	<tr>
 		<th>X</th>
 		<th>Y</th>
@@ -41,7 +123,3 @@
 		<td colspan="2">{{stroke_width}}px, {{stroke}}</td>
 	</tr>
 </table>
-
-<label class="checkbox">
-	<input type="checkbox" checked="{{visible}}"> Visible
-</label>
