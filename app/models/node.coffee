@@ -24,9 +24,14 @@ module.exports = class Node extends Model
     @listenTo @paths, 'change', @update_nested
     @listenTo @texts, 'change', @update_nested
 
-  save: ->
-    console.log '[SAVE]'
+  destroy: ->
     super
+    console.log '[NODE DESTROYED]'
+    @publishEvent 'node_removed', @id
+
+  save: ->
+    super
+    console.log '[NODE SAVED]'
     @publishEvent 'node_updated', @
 
   update_nested: ->

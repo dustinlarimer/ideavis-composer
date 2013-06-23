@@ -66,14 +66,13 @@ module.exports = class ToolPointerView extends View
     'del'       : 'keypress_delete'
 
   keypress_delete: (e) ->
-    console.log 'Delete!'
+    e.preventDefault()
     if mediator.selected_node?
       @destroy_node_group(mediator.selected_node)
       mediator.selected_node = null
     if mediator.selected_link?
       @destroy_link_group(mediator.selected_link)
       mediator.selected_link = null
-    e.preventDefault()
 
 
   # ----------------------------------
@@ -133,9 +132,9 @@ module.exports = class ToolPointerView extends View
   link_drag_stop: (d,i) ->
     console.log 'pointer:link_drag_stop'
 
-  prune_links: (dead_node) ->
+  prune_links: (node_id) ->
     d3.selectAll('g.linkGroup').each((d,i) => 
-      if d.source.id is dead_node.id or d.target.id is dead_node.id
+      if d.source.id is node_id or d.target.id is node_id
         @destroy_link_group(d)
     )
 

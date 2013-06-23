@@ -35,7 +35,6 @@ module.exports = class CanvasView extends View
     y: [0, viewport.height()-40]
 
   force = d3.layout.force()
-  get_force: -> return force
 
   force.on 'tick', ->
     
@@ -50,21 +49,24 @@ module.exports = class CanvasView extends View
       .transition()
       .ease(Math.sqrt)
       .attr('d', (d)->
-        _target = _.where(force.nodes(), {id: d.target.id})[0]
-        _source = _.where(force.nodes(), {id: d.source.id})[0]
-        lx1 = _source.x - 5
-        ly1 = _source.y - 5
-        lx2 = _target.x - 5
-        ly2 = _target.y - 5
-        return '' +
-          'M' + 
-          _source.x + ',' + _source.y + ' ' +
-          'L' +
-          lx1 + ',' + ly1 + ' ' +
-          'L' +
-          lx2 + ',' + ly2 + ' ' +
-          'L' +
-          _target.x + ',' + _target.y
+        _target = _.findWhere(force.nodes(), {id: d.target.id})
+        _source = _.findWhere(force.nodes(), {id: d.source.id})
+        if _target? and _source?
+          lx1 = _source.x - 5
+          ly1 = _source.y - 5
+          lx2 = _target.x - 5
+          ly2 = _target.y - 5
+          return '' +
+            'M' + 
+            _source.x + ',' + _source.y + ' ' +
+            'L' +
+            lx1 + ',' + ly1 + ' ' +
+            'L' +
+            lx2 + ',' + ly2 + ' ' +
+            'L' +
+            _target.x + ',' + _target.y
+        else
+          return 'M 0,0'
       )
 
 
@@ -77,7 +79,6 @@ module.exports = class CanvasView extends View
     console.log 'drag_node_start'
     mediator.selected_node = d
     mediator.publish 'clear_active_nodes'
-    d3.select(@).classed 'active', true
     force.start()
 
   drag_node_move: (d, i) ->
@@ -89,7 +90,6 @@ module.exports = class CanvasView extends View
     d.y = d3.event.y
     d.px = d.x
     d.py = d.y
-    #d3.select(@).classed 'active', false
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')')
     force.tick()
   
@@ -100,30 +100,26 @@ module.exports = class CanvasView extends View
 
 
   # ----------------------------------
-  # DRAW CANVAS ELEMENTS
+  # Initialize Artifacts
   # ----------------------------------
-
-  
-
   init_artifacts: ->
-    force.nodes(_.map(
-      mediator.nodes.models, (d,i)-> 
-        return { id: d.get('_id'), x: d.get('x'), y: d.get('y'), model: d, view: d.view?, weight: 0 }
-    ))
-    force.links(_.map(
-      mediator.links.models, (d)-> 
-        #console.log d
-        data = { source: null, target: null, model: d, view: d.view? }
-        data.source = _.where(force.nodes(), {id: d.get('source')})[0]
-        data.target = _.where(force.nodes(), {id: d.get('target')})[0]
-        return data
-    ))
+    _.each(mediator.nodes.models, (node,i) => 
+      force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), model: node }
+    )
+    _.each(mediator.links.models, (link,i) => 
+      _source = _.where(force.nodes(), {id: link.get('source')})[0]
+      _target = _.where(force.nodes(), {id: link.get('target')})[0]
+      force.links().push { id: link.id, source: _source, target: _target, model: link }
+    )
     @draw()
 
+
+  # ----------------------------------
+  # Manage Nodes
+  # ----------------------------------
+
   add_node: (node) ->
-    console.log 'adding'
-    console.log node
-    force.nodes().push({ id: node.get('_id'), x: parseInt(node.get('x')), y: parseInt(node.get('7')), model: node, view: node.view?, weight: 0 })
+    force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), model: node }
     @draw()
 
   update_node: (node) ->
@@ -135,22 +131,39 @@ module.exports = class CanvasView extends View
         d.py = d.y
     )
 
-
-  remove_node: (node) ->
-    _.map(force.nodes(), (d,i)-> 
-      if d.model.id == node.id
-        force.nodes().splice(i)
-    )
+  remove_node: (node_id) ->
+    _node = _.findWhere(force.nodes(), {id: node_id})
+    _index = force.nodes().indexOf(_node)
+    force.nodes().splice(_index,1)
     @refresh()
 
+
+  # ----------------------------------
+  # Manage Links
+  # ----------------------------------
+
   add_link: (link) ->
-    console.log 'adding'
+    _source = _.where(force.nodes(), {id: link.get('source')})[0]
+    _target = _.where(force.nodes(), {id: link.get('target')})[0]
+    force.links().push { id: link.id, source: _source, target: _target, model: link }
     @draw()
 
+  remove_link: (link_id) ->
+    _link = _.findWhere(force.links(), {id: link_id})
+    _index = force.links().indexOf(_link)
+    force.links().splice(_index,1)
+    @refresh()
+
+
+  # ----------------------------------
+  # Draw Layout
+  # ----------------------------------
+
   draw: ->
+    _nodes = force.nodes()
 
     # NODE ---------------------
-
+    
     node_drag_events = d3.behavior.drag()
       .on('dragstart', @drag_node_start)
       .on('drag', @drag_node_move)
@@ -158,7 +171,7 @@ module.exports = class CanvasView extends View
     
     mediator.node = mediator.vis
       .selectAll('g.nodeGroup')
-      .data(force.nodes())
+      .data(_nodes)
 
     mediator.node
       .enter()
@@ -184,8 +197,6 @@ module.exports = class CanvasView extends View
       .enter()
       .insert('svg:g', 'g.nodeGroup')
       .attr('class', 'linkGroup')
-
-    mediator.link
       .each((d,i)-> d.view = new LinkView({model: d.model, el: @}))
 
     mediator.link
@@ -234,8 +245,7 @@ module.exports = class CanvasView extends View
     @subscribeEvent 'node_removed', @remove_node
 
     @subscribeEvent 'link_created', @add_link
-    @subscribeEvent 'link_updated', @draw
-    @subscribeEvent 'link_removed', @refresh
+    @subscribeEvent 'link_removed', @remove_link
     
     @init_artifacts()
 
@@ -246,6 +256,7 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   refresh: ->
+    console.log force.nodes().length
     bounds.x = d3.extent(force.nodes(), (d) -> return d.x ) if force.nodes().length > 0
     bounds.y = d3.extent(force.nodes(), (d) -> return d.y ) if force.nodes().length > 0
     bounds.height = Math.max((window.innerHeight-40), (bounds.y[1]+100))

@@ -11,18 +11,12 @@ module.exports = class Links extends Collection
     @url = '/compositions/' + mediator.canvas.id + '/links/'
     @fetch()
     @on 'add', @link_created
-    @on 'change', @link_updated
-    @on 'remove', @link_removed
+    #@on 'remove', @link_removed
 
-  link_created: =>
+  link_created: (link) =>
     console.log '[pub] link_created'
-    @publishEvent 'link_created', this
+    @publishEvent 'link_created', link
 
-  link_updated: (link) =>
-    link.save()
-    console.log '[pub] link_updated'
-    @publishEvent 'link_updated'
-
-  link_removed: =>
+  link_removed: (link) =>
     console.log '[pub] link_removed'
-    @publishEvent 'link_removed'
+    @publishEvent 'link_removed', link.id

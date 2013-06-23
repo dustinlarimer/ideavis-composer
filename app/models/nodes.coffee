@@ -11,17 +11,12 @@ module.exports = class Nodes extends Collection
     @url = '/compositions/' + mediator.canvas.id + '/nodes/'
     @fetch()
     @on 'add', @node_created
-    #@on 'change', @node_updated
-    @on 'remove', @node_removed
+    #@on 'remove', @node_removed
 
   node_created: (node) =>
     console.log '[pub] node_created'
     @publishEvent 'node_created', node
 
-  node_updated: (node) =>
-    console.log '[pub] node_updated'
-    @publishEvent 'node_updated'
-
   node_removed: (node) =>
     console.log '[pub] node_removed'
-    @publishEvent 'node_removed', node
+    @publishEvent 'node_removed', node.id

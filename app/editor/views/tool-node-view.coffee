@@ -25,4 +25,4 @@ module.exports = class ToolNodeView extends View
     super
 
   create_node: (e) ->
-    mediator.nodes.create x: e.offsetX, y: e.offsetY
+    mediator.nodes.create {x: e.offsetX, y: e.offsetY}, {wait: true}

@@ -69,15 +69,14 @@ module.exports = class NodeView extends View
       .transition()
         .ease(Math.sqrt)
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
+        .attr('fill', (d)-> d.get('fill'))
+        .attr('stroke', (d)-> d.get('stroke'))
+        .attr('stroke-width', (d)-> d.get('stroke_width'))
     
     path
       .selectAll('path.artifact')
-        .attr('d', (d)-> d.get('path'))
-        .transition()
-          .ease(Math.sqrt)
-          .attr('fill', (d)-> d.get('fill'))
-          .attr('stroke', (d)-> d.get('stroke'))
-          .attr('stroke-width', (d)-> d.get('stroke_width'))
+      .attr('d', (d)-> d.get('path'))
+          
     
     path
       .exit()
