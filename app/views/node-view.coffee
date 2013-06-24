@@ -171,15 +171,12 @@ module.exports = class NodeView extends View
         .style('stroke-dasharray', '4,4')
         .each((d,i)->
           this.ref = $(this).next('text')[0].getBoundingClientRect()
-          d.height = this.ref.height + d.get('font_size')/4
-          d.width = this.ref.width + d.get('font_size')/2
-          d.x = -1 * this.ref.width/2 - d.get('font_size')/4
-          d.y = -1 * this.ref.height/2 - d.get('font_size')/2
+          d.width = this.ref.width
         )
-        .attr('height', (d)-> return d.height)
-        .attr('width', (d)-> return d.width)
-        .attr('x', (d)-> return d.x)
-        .attr('y', (d)-> return d.y)
+        .attr('height', (d)-> return d.get('font_size') - d.get('font_size')/4 + 10)
+        .attr('width', (d)-> return d.width + 10)
+        .attr('x', (d)-> return -1 * (d.width/2) - 5)
+        .attr('y', (d)-> return -1 * d.get('font_size')/2 - d.get('font_size')/4 - 5)
 
 
   # ----------------------------------

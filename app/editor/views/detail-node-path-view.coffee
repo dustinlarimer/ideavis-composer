@@ -18,10 +18,10 @@ module.exports = class DetailNodePathView extends View
 
   update_attributes: =>
     console.log 'path:update_attributes'
-    _x = $('#path-attr-x').val()
-    _y = $('#path-attr-y').val()
-    _rotate = $('#path-attr-rotate').val()
-    _scale = $('#path-attr-scale').val()
+    _x = $('#path-attr-x').val() or 0
+    _y = $('#path-attr-y').val() or 0
+    _rotate = $('#path-attr-rotate').val() or 0
+    _scale = $('#path-attr-scale').val() or 1
     _fill = $('#path-attr-fill').val() or 'none'
     _stroke = $('#path-attr-stroke').val() or 'none'
     _stroke_width = $('#path-attr-stroke_width').val() or 0

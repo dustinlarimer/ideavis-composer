@@ -18,11 +18,11 @@ module.exports = class DetailNodeTextView extends View
 
   update_attributes: =>
     _text = $('#text-attr-text').val()
-    _x = $('#text-attr-x').val()
-    _y = $('#text-attr-y').val()
-    _rotate = $('#text-attr-rotate').val()
-    _fontsize = $('#text-attr-font_size').val()
-    _fontweight = $('#text-attr-font_weight').val()
+    _x = $('#text-attr-x').val() or 0
+    _y = $('#text-attr-y').val() or 0
+    _rotate = $('#text-attr-rotate').val() or 0
+    _fontsize = $('#text-attr-font_size').val() or 14
+    _fontweight = $('#text-attr-font_weight').val() or 'normal'
     _fill = $('#text-attr-fill').val() or 'none'
     _stroke = $('#text-attr-stroke').val() or 'none'
     _stroke_width = $('#text-attr-stroke_width').val() or 0
