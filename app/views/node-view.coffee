@@ -69,13 +69,14 @@ module.exports = class NodeView extends View
       .transition()
         .ease(Math.sqrt)
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
-        .attr('fill', (d)-> d.get('fill'))
-        .attr('stroke', (d)-> d.get('stroke'))
-        .attr('stroke-width', (d)-> d.get('stroke_width'))
+        .selectAll('path.artifact')
+          .attr('fill', (d)-> d.get('fill'))
+          .attr('stroke', (d)-> d.get('stroke'))
+          .attr('stroke-width', (d)-> d.get('stroke_width'))
     
     path
       .selectAll('path.artifact')
-      .attr('d', (d)-> d.get('path'))
+        .attr('d', (d)-> d.get('path'))
           
     
     path
@@ -98,21 +99,29 @@ module.exports = class NodeView extends View
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
         .append('svg:text')
           .attr('class', 'artifact')
+          .text((d)-> d.get('text'))
+          .attr('dx', 0)
+          .attr('dy', 0)
           .attr('font-family', (d)-> d.get('font_family'))
           .attr('font-size', (d)-> d.get('font_size'))
           .attr('font-weight', (d)-> d.get('font_weight'))
-          .attr('dx', 0)
-          .attr('dy', 0)
+          .attr('fill', (d)-> d.get('fill'))
+          .attr('stroke', (d)-> d.get('stroke'))
+          .attr('stroke-width', (d)-> d.get('stroke_width'))
           .attr('text-anchor', 'middle')
-          .text((d)-> d.get('text'))
     
     text
       .transition()
         .ease(Math.sqrt)
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
+        .selectAll('text.artifact')
+          .attr('fill', (d)-> d.get('fill'))
+          .attr('stroke', (d)-> d.get('stroke'))
+          .attr('stroke-width', (d)-> d.get('stroke_width'))
 
     text
       .selectAll('text.artifact')
+        .text((d)-> d.get('text'))
         .attr('font-family', (d)-> d.get('font_family'))
         .attr('font-size', (d)-> d.get('font_size'))
         .attr('font-weight', (d)-> d.get('font_weight'))

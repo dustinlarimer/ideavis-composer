@@ -13,13 +13,17 @@ module.exports = class DetailNodeTextView extends View
     @delegate 'change', 'input', @update_attributes
     @delegate 'change', 'select', @update_attributes
 
-  listen:
-    'change model': 'render'
+  #listen:
+  #  'change model': 'render'
 
   update_attributes: =>
+    _text = $('#text-attr-text').val()
     _x = $('#text-attr-x').val()
     _y = $('#text-attr-y').val()
     _rotate = $('#text-attr-rotate').val()
-    _fontsize = $('#text-attr-fontsize').val()
-    _fontweight = $('#text-attr-fontweight').val()
-    @model.set x: _x, y: _y, rotate: _rotate, font_size: _fontsize, font_weight: _fontweight
+    _fontsize = $('#text-attr-font_size').val()
+    _fontweight = $('#text-attr-font_weight').val()
+    _fill = $('#text-attr-fill').val() or 'none'
+    _stroke = $('#text-attr-stroke').val() or 'none'
+    _stroke_width = $('#text-attr-stroke_width').val() or 0
+    @model.set text: _text, x: _x, y: _y, rotate: _rotate, font_size: _fontsize, font_weight: _fontweight, fill: _fill, stroke: _stroke, stroke_width: _stroke_width
