@@ -37,7 +37,7 @@ module.exports = class CanvasView extends View
   force = d3.layout.force()
 
   force.on 'tick', ->
-    console.log 'tick!'
+    
     mediator.node
       .transition()
       .ease(Math.sqrt)
@@ -84,7 +84,7 @@ module.exports = class CanvasView extends View
   drag_node_move: (d, i) ->
     console.log 'drag_node_move'
     mediator.selected_node = null
-    d.scale = d.model.get('scale')
+    d.scale = d.model.get('scale') or 1
     d.rotate = d.model.get('rotate')
     d.x = d3.event.x
     d.y = d3.event.y
@@ -262,11 +262,17 @@ module.exports = class CanvasView extends View
   refresh: ->
     bounds.x = d3.extent(force.nodes(), (d) -> return d.x ) if force.nodes().length > 0
     bounds.y = d3.extent(force.nodes(), (d) -> return d.y ) if force.nodes().length > 0
-    bounds.height = Math.max((window.innerHeight-40), (bounds.y[1]+100))
-    bounds.width = Math.max(window.innerWidth, (bounds.x[1]+100))
+    bounds.height = Math.max((window.innerHeight-50), (bounds.y[1]+100))
+    bounds.width = Math.max(window.innerWidth-50, (bounds.x[1]+320))
     #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)
     
-    $('#canvas, #stage, #stage svg, #stage svg #canvas_background')
+    $('#canvas')
+      .attr('height', bounds.height)
+      .attr('width', bounds.width)
+    $('#stage')
+      .attr('height', bounds.height)
+      .attr('width', bounds.width-50)
+    $('#stage svg, #stage svg #canvas_background')
       .attr('height', bounds.height)
       .attr('width', bounds.width)
     

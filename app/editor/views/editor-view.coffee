@@ -8,6 +8,7 @@ ToolNodeView    = require 'editor/views/tool-node-view'
 ToolLinkView    = require 'editor/views/tool-link-view'
 ToolTextView    = require 'editor/views/tool-text-view'
 
+HeaderView = require 'editor/views/header-view'
 DetailView = require 'editor/views/detail-view'
 
 module.exports = class EditorView extends CanvasView
@@ -28,6 +29,8 @@ module.exports = class EditorView extends CanvasView
   render: ->
     super
     console.log 'Rendering EditorView [...]'
+    
+    @subview 'header_view', new HeaderView model: mediator.canvas
     @subview 'detail_view', new DetailView
     @subview 'tool_view', @toolbar_view = null
     @activate_pointer()

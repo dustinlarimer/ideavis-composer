@@ -4,61 +4,157 @@
    Editor styles
    ========================================================================== */
 
-body {
-	/*background: #fbfbfb;
-	overflow: hidden;*/
-}
+body
+  padding 0
 
-#controls {
-	position: absolute;
-	top: 12px;
-	z-index: 1;
-}
+#canvas
+  background #e5e5e5
 
-#toolbar {
-  background: rgba(0,0,0,.5);
-	border-radius: 4px;
-	left: 10px;
-	padding: 5px 5px 0;
-	position: fixed;
-	z-index: 1;
-}
-#toolbar hr {
-	margin: 1px 0 5px;
-	border-top: 1px solid #666;
-	border-bottom: 1px solid #999;
-}
-#toolbar .btn-group+.btn-group { margin-left: 0px; }
+.navbar
+  .navbar-inner
+    background rgba(0,0,0,.75)
+    border medium none
+    box-shadow none
+  
+  .container
+    padding 5px 0
+    width auto
+  
+  .brand
+    color #fff
+    font-size 15px
+    margin 0
+    padding 10px 10px
+    text-align center
+    text-shadow none
+    width 50px
 
-#toolbar .btn-group > .btn {
-	background: rgba(0,0,0,.25)
-	border-color: rgba(0,0,0,.2)
-	border-radius: 4px;
-	margin: 0 0 5px;
-	padding: 4px 7px;
-	text-shadow: 0 1px 1px rgba(0,0,0,.75)
-	width: 100%;
-}
-#toolbar .btn-group > .btn:focus,
-#toolbar .btn-group > .btn:hover {
-	background: rgba(0,0,0,.35)
-}
-#toolbar .btn-group > .btn.active {
-	background: rgba(0,0,0,.5)
-}
+  form.navbar-form
+    input
+      background rgba(0,0,0,.2)
+      border-radius 2px
+      border medium none
+      box-shadow inset 1px 1px 1px rgba(0,0,0,.25)
+      color #fff !important
+      font-size 16px
+      font-weight 700
+      height auto
+      margin-left 12px
+      padding 6px 10px 4px
+      text-shadow 1px 1px 1px rgba(0,0,0,.25)
+    input::-webkit-input-placeholder
+      font-size 12px
+      font-weight lighter
+      line-height 22px
+    input::-moz-placeholder
+      font-size 12px
+      font-weight lighter
+      line-height 22px
+  
+#stage
+  background #fff
+  margin 0 0 0 50px
+  padding 50px 0 0
 
 
-#detail {
-	background: rgba(0,0,0,.67)
-	border-radius: 4px;
-	color: #fff;
-	font-size: 12px;
-	min-height: 100px;
-	padding: 0 0 5px;
-	position: fixed;
-	right: 10px;
-	width: 240px;
-}
+#controls
+  position absolute
+  top 0
+ 	z-index 1
+
+  #toolbar
+    padding 62px 10px 0
+    position absolute
+    z-index 1
+    
+    hr
+      border-top 1px solid rgba(0,0,0,.2)
+      border-bottom 1px solid #fff
+      margin 0 0 12px
+    
+    .btn-group+.btn-group
+      margin-left 0
+    
+    .btn-group > .btn
+      background rgba(0,0,0,.20)
+      border medium none
+      border-radius 4px
+      box-shadow none
+      height 28px
+      margin 0 0 12px
+      padding 4px
+      text-align center
+      transition background .25s
+      width 28px
+      &:hover, &:focus
+        background rgba(0,0,0,.35)
+      &.active
+        background rgba(0,169,167,.5)
+
+  #detail
+    background rgba(0,0,0,.75)
+    border-radius 4px
+    color #fff
+    font-size 12px
+    min-height 100px
+    padding 0 0 5px
+    position fixed
+    right 10px
+    top 62px
+    width 240px
+    
+    h2
+      font-size 14px
+      line-height 14px
+      margin 8px 0 0
+      text-transform uppercase
+    
+    h4
+      font-size 14px
+      margin 10px 0 5px
+
+    hr
+      border-top medium none
+      border-bottom 1px solid rgba(0,0,0,.5)
+      box-shadow 0 1px 1px rgba(255,255,255,.2)
+      margin 5px 0
+
+    form
+      margin 0
+
+    label
+      color #a7a7a7
+      font-size 12px
+      margin-bottom 0
+
+      strong
+        color #e5e5e5
+        display block
+
+    input
+      background #4d4d4d
+      border-color #282828
+      box-shadow inset 1px 1px 1px rgba(0,0,0,.2)
+      color #fff
+      font-size 12px
+      margin-bottom 5px
+
+    .input-append,
+    .input-prepend
+      margin-bottom 0
+      .add-on
+        background #333
+        border-color #282828
+        color #a7a7a7
+        font-size 11px
+        height auto
+        text-shadow none
+
+    .btn-group
+      width 100%
+
+      .btn
+        width 33%
 
 #detail .detail-panel-header {
 	padding: 0 10px;
@@ -69,72 +165,8 @@ body {
 #detail .detail-panel-bucket table { margin: 0; }
 
 
-#detail h2 {
-	font-size: 14px; 
-	line-height: 14px;
-	margin: 8px 0 0;
-	text-transform: uppercase;
-}
-#detail h4 {
-	font-size: 14px;
-	margin: 10px 0 5px;
-}
 
 
-#detail form { margin: 0; }
-#detail hr { 
-  border-top: medium none;
-	border-bottom: 1px solid rgba(0,0,0,.5);
-	box-shadow: 0 1px 1px rgba(255,255,255,.2);
-	margin: 5px 0;
-}
-
-#detail label {
-	color: #a7a7a7;
-	font-size: 12px;
-	margin-bottom: 0px;
-}
-#detail label strong { 
-	color: #e5e5e5; 
-	display: block;
-}
-
-#detail input { 
-	background: #757575; 
-	border-color: #4d4d4d;
-	color: #e5e5e5;
-	font-size: 12px;
-	margin-bottom: 5px;
-}
-#detail .input-append {
-	margin-bottom: 0px;
-}
-
-#detail .btn-group { width: 100%; }
-#detail .btn-group .btn { width: 33%; }
-
-#detail .input-append .add-on, 
-#detail .input-prepend .add-on { 
-  background: #333;
-  border-color: #555;
-  color: #e5e5e5;
-	height: auto;
-	text-shadow: none;
-}
-
-
-#canvas, #stage {
-	/*height: 100%;*/
-	position: absolute;
-	width: 100%;
-}
-
-#canvas {
-	top: 40px;
-}
-#stage {
-	top: 0px;
-}
 
 
 /*

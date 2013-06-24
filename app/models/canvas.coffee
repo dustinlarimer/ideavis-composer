@@ -8,7 +8,7 @@ module.exports = class Canvas extends Model
   initialize: (data={}) ->
     super
     _.extend({}, data)
-    @on 'change', @canvas_attributes_updated
+    @on 'sync', @canvas_attributes_updated
 
   fetch: (options = {}) ->
     @beginSync()
