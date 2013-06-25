@@ -81,16 +81,12 @@ module.exports = class ToolPointerView extends View
 
   node_drag_start: (d, i) ->
     mediator.publish 'refresh_canvas'
-    
+    mediator.publish 'clear_active'
     mediator.selected_node = d
-    mediator.publish 'clear_active_nodes'
+    mediator.selected_link = null 
     
-    #polymorphize this shit
-    mediator.selected_link = null
-    mediator.publish 'clear_active_links'
 
   node_drag_move: (d, i) ->
-    #console.log 'pointer:node_drag_move'
     mediator.selected_node = null
     d.fixed = true
     d.x = d3.event.x
@@ -102,7 +98,6 @@ module.exports = class ToolPointerView extends View
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')')
   
   node_drag_stop: (d, i) ->
-    console.log 'pointer:node_drag_stop'
     if mediator.selected_node is null
       d.model.save x: d.x, y: d.y
     else
@@ -120,19 +115,20 @@ module.exports = class ToolPointerView extends View
 
   link_drag_start: (d,i) ->
     console.log 'pointer:link_drag_start'
+    mediator.publish 'refresh_canvas'
+    mediator.publish 'clear_active'
     mediator.selected_link = d
-    mediator.publish 'clear_active_links'
-    d3.select(@).classed 'active', true
-    
-    #polymorphize this shit
     mediator.selected_node = null
-    mediator.publish 'clear_active_nodes'
 
   link_drag_move: (d,i) ->
     console.log 'pointer:link_drag_move'
+    mediator.selected_link = null
 
   link_drag_stop: (d,i) ->
     console.log 'pointer:link_drag_stop'
+    if mediator.selected_link?
+      d.view.activate()
+      #mediator.publish 'activate_detail', d.model
 
   prune_links: (node_id) ->
     d3.selectAll('g.linkGroup').each((d,i) => 
@@ -154,4 +150,4 @@ module.exports = class ToolPointerView extends View
     mediator.selected_link = null
 
     mediator.publish 'deactivate_detail'
-    mediator.publish 'clear_active_links'
+    mediator.publish 'clear_active'

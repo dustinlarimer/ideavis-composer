@@ -6,15 +6,19 @@ module.exports = class LinkView extends View
   
   initialize: (data={}) ->
     super
-    @paths = [{}]
-    @subscribeEvent 'clear_active_links', @deactivate
+    @subscribeEvent 'clear_active', @clear
     @source = data.source
     @target = data.target
     
     @baseline = d3.select(@el)
       .append('svg:path')
       .attr('class', 'baseline')
-    
+
+  activate: ->
+    console.log 'Link activated'
+    d3.select(@el)
+      .classed('active', true)
+
   deactivate: ->
     d3.select(@el).classed 'active', false
 
@@ -31,3 +35,6 @@ module.exports = class LinkView extends View
       .attr('stroke-width', 5)
       .attr('fill', 'none')
       .attr('opacity', 0.5)
+
+  clear: ->
+    d3.select(@el).classed 'active', false

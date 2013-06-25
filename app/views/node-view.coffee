@@ -9,7 +9,7 @@ module.exports = class NodeView extends View
     #@paths = @model.paths.models
     @texts = @model.texts.models
     @subscribeEvent 'deactivate_detail', @deactivate
-    @subscribeEvent 'clear_active_nodes', @clear
+    @subscribeEvent 'clear_active', @clear
     
     @listenTo @model.paths, 'change', @build_paths
     @listenTo @model.texts, 'change', @build_texts

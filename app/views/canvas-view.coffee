@@ -43,7 +43,7 @@ module.exports = class CanvasView extends View
       .ease(Math.sqrt)
       .attr('transform', (d)->
         return 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')'
-      )
+      ) if mediator.node?
 
     mediator.link
       .select('path.baseline')
@@ -60,12 +60,31 @@ module.exports = class CanvasView extends View
                    .tension(0)
                    .interpolate('cardinal-closed')
           return line(data)
-      )
+      ) if mediator.link?
 
 
 
   # ----------------------------------
-  # NODE GROUP METHODS
+  # Initialize Artifacts
+  # ----------------------------------
+
+  init_artifacts: ->
+    _.each(mediator.nodes.models, (node,i) => 
+      force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), rotate: node.get('rotate'), scale: node.get('scale'), model: node }
+    )
+    @build_nodes()
+
+    _.each(mediator.links.models, (link,i) => 
+      _source = _.where(force.nodes(), {id: link.get('source')})[0]
+      _target = _.where(force.nodes(), {id: link.get('target')})[0]
+      force.links().push { id: link.id, source: _source, target: _target, model: link }
+    )
+    @build_links()
+
+
+
+  # ----------------------------------
+  # NODES
   # ----------------------------------
 
   drag_node_start: (d, i) ->
@@ -90,30 +109,9 @@ module.exports = class CanvasView extends View
     console.log 'drag_node_end'
     force.start()
 
-
-
-  # ----------------------------------
-  # Initialize Artifacts
-  # ----------------------------------
-  init_artifacts: ->
-    _.each(mediator.nodes.models, (node,i) => 
-      force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), rotate: node.get('rotate'), scale: node.get('scale'), model: node }
-    )
-    _.each(mediator.links.models, (link,i) => 
-      _source = _.where(force.nodes(), {id: link.get('source')})[0]
-      _target = _.where(force.nodes(), {id: link.get('target')})[0]
-      force.links().push { id: link.id, source: _source, target: _target, model: link }
-    )
-    @draw()
-
-
-  # ----------------------------------
-  # Manage Nodes
-  # ----------------------------------
-
   add_node: (node) ->
     force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), rotate: node.get('rotate'), scale: node.get('scale'), model: node }
-    @draw()
+    @build_nodes()
 
   update_node: (node) ->
     _.each(force.nodes(), (d,i)->
@@ -133,31 +131,8 @@ module.exports = class CanvasView extends View
     force.nodes().splice(_index,1)
     @refresh()
 
-
-  # ----------------------------------
-  # Manage Links
-  # ----------------------------------
-
-  add_link: (link) ->
-    _source = _.where(force.nodes(), {id: link.get('source')})[0]
-    _target = _.where(force.nodes(), {id: link.get('target')})[0]
-    force.links().push { id: link.id, source: _source, target: _target, model: link }
-    @draw()
-
-  remove_link: (link_id) ->
-    _link = _.findWhere(force.links(), {id: link_id})
-    _index = force.links().indexOf(_link)
-    force.links().splice(_index,1)
-    @refresh()
-
-
-  # ----------------------------------
-  # Draw Layout
-  # ----------------------------------
-
-  draw: ->
-
-    # NODE ---------------------
+  build_nodes: ->
+    console.log 'building'
     
     node_drag_events = d3.behavior.drag()
       .on('dragstart', @drag_node_start)
@@ -167,7 +142,7 @@ module.exports = class CanvasView extends View
     mediator.node = mediator.vis
       .selectAll('g.nodeGroup')
       .data(force.nodes())
-
+    
     mediator.node
       .enter()
       .append('svg:g')
@@ -176,33 +151,47 @@ module.exports = class CanvasView extends View
         return 'translate('+ d.x + ',' + d.y + ') scale(' + d.model.get('scale') + ') rotate(' + d.model.get('rotate') + ')')
       .each((d,i)-> d.view = new NodeView({model: d.model, el: @}))
       .call(node_drag_events)
-
+    
     mediator.node
       .exit()
       .remove()
+    
+    @refresh()
 
 
-    # LINK ---------------------
 
+  # ----------------------------------
+  # LINKS
+  # ----------------------------------
+
+  add_link: (link) ->
+    _source = _.where(force.nodes(), {id: link.get('source')})[0]
+    _target = _.where(force.nodes(), {id: link.get('target')})[0]
+    force.links().push { id: link.id, source: _source, target: _target, model: link }
+    @build_links()
+
+  remove_link: (link_id) ->
+    _link = _.findWhere(force.links(), {id: link_id})
+    _index = force.links().indexOf(_link)
+    force.links().splice(_index,1)
+    @refresh()
+
+  build_links: ->
+    force.stop()
     mediator.link = mediator.vis
       .selectAll('g.linkGroup')
       .data(force.links())
-
+    
     mediator.link
       .enter()
       .insert('svg:g', 'g.nodeGroup')
       .attr('class', 'linkGroup')
       .each((d,i)-> d.view = new LinkView({model: d.model, el: @, source: d.source, target: d.target}))
-
+    
     mediator.link
       .exit()
       .remove()
     
-
-    # DONE ---------------------
-
-    #d3.event.preventDefault() if d3.event
-    force.start()
     @refresh()
 
 
