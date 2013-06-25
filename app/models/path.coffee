@@ -2,15 +2,15 @@ Model = require 'models/base/model'
 
 module.exports = class Path extends Model
   defaults:
-    type: 'path',
-    path: 'M 0, 0  m -50, 0  a 50,50 0 1,0 100,0  a 50,50 0 1,0 -100,0',
-    fill: '#FBFBFB',
-    stroke: '#E5E5E5',
-    stroke_width: 1,
-    rotate: 0,
-    scale: 1,
-    x: 0,
-    y: 0,
+    type: 'path'
+    path: 'M 0, 0  m -50, 0  a 50,50 0 1,0 100,0  a 50,50 0 1,0 -100,0'
+    fill: '#FBFBFB'
+    stroke: '#E5E5E5'
+    stroke_width: 1
+    rotate: 0
+    scale: 1
+    x: 0
+    y: 0
     visible: true
 
   initialize: (data={}) ->

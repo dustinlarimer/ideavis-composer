@@ -173,37 +173,27 @@ body
  *	Demo styles
  */
 
-.nodeGroup {
+g.nodeGroup,
+g.linkGroup {
 	cursor: pointer;
 }
 
-.nodeGroup path.bounds,
-.nodeGroup rect.bounds {
+path.bounds,
+rect.bounds {
   stroke: #000000;
   stroke-width: 1;
   opacity: 0;
 }
 
-.nodeGroup:hover path.bounds
-.nodeGroup:hover rect.bounds {
-  opacity: .05
+g.nodeGroup:hover .bounds {
+  opacity: .25
 }
 
-.nodeGroup.active path.bounds,
-.nodeGroup.active rect.bounds,
-.nodeGroup.active path.origin {
-  opacity: .2
+.nodeGroup.active .bounds, .nodeGroup.active:hover .bounds,
+.nodeGroup.active rect.bounds, .nodeGroup.active:hover rect.bounds,
+.nodeGroup.active path.origin, .nodeGroup.active:hover path.origin {
+  opacity: .5
 }
-
-/*.nodeGroup.active path.artifact {
-  fill: #ff7f0e;
-  stroke: #ff7f0e;
-}
-.linkGroup.active path.artifact {
-	opacity: 1;
-}*/
-
-
 
 
 

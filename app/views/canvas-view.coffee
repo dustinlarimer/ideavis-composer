@@ -53,12 +53,15 @@ module.exports = class CanvasView extends View
         _target = _.findWhere(force.nodes(), {id: d.target.id})
         _source = _.findWhere(force.nodes(), {id: d.source.id})
         if _target? and _source?
-          data = [ { x: _source.x, y: _source.y }, { x: _target.x, y: _target.y } ]
+          data = [ 
+            { x: _source.x, y: _source.y }, 
+            { x: _target.x, y: _target.y }
+          ]
           line = d3.svg.line()
                    .x((d)-> return d.x)
                    .y((d)-> return d.y)
                    .tension(0)
-                   .interpolate('cardinal-closed')
+                   .interpolate('step-after')
           return line(data)
       ) if mediator.link?
 
