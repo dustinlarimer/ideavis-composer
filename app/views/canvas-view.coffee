@@ -45,28 +45,21 @@ module.exports = class CanvasView extends View
         return 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')'
       )
 
-    mediator.link.select('path')
+    mediator.link
+      .select('path.baseline')
       .transition()
       .ease(Math.sqrt)
       .attr('d', (d)->
         _target = _.findWhere(force.nodes(), {id: d.target.id})
         _source = _.findWhere(force.nodes(), {id: d.source.id})
         if _target? and _source?
-          lx1 = _source.x - 5
-          ly1 = _source.y - 5
-          lx2 = _target.x - 5
-          ly2 = _target.y - 5
-          return '' +
-            'M' + 
-            _source.x + ',' + _source.y + ' ' +
-            'L' +
-            lx1 + ',' + ly1 + ' ' +
-            'L' +
-            lx2 + ',' + ly2 + ' ' +
-            'L' +
-            _target.x + ',' + _target.y
-        else
-          return 'M 0,0'
+          data = [ { x: _source.x, y: _source.y }, { x: _target.x, y: _target.y } ]
+          line = d3.svg.line()
+                   .x((d)-> return d.x)
+                   .y((d)-> return d.y)
+                   .tension(0)
+                   .interpolate('cardinal-closed')
+          return line(data)
       )
 
 
@@ -199,7 +192,7 @@ module.exports = class CanvasView extends View
       .enter()
       .insert('svg:g', 'g.nodeGroup')
       .attr('class', 'linkGroup')
-      .each((d,i)-> d.view = new LinkView({model: d.model, el: @}))
+      .each((d,i)-> d.view = new LinkView({model: d.model, el: @, source: d.source, target: d.target}))
 
     mediator.link
       .exit()

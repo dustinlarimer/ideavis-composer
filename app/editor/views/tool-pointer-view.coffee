@@ -92,12 +92,13 @@ module.exports = class ToolPointerView extends View
   node_drag_move: (d, i) ->
     #console.log 'pointer:node_drag_move'
     mediator.selected_node = null
-    d.scale = d.model.get('scale') or 1
-    d.rotate = d.model.get('rotate')
+    d.fixed = true
     d.x = d3.event.x
     d.y = d3.event.y
     d.px = d.x
     d.py = d.y
+    d.scale = d.model.get('scale') or 1
+    d.rotate = d.model.get('rotate')
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')')
   
   node_drag_stop: (d, i) ->
