@@ -51,22 +51,46 @@ module.exports = class LinkView extends View
   # ----------------------------------
   build_markers: =>
     console.log @model.get('marker_end')
-    d3.select('defs')
+    marker_end = d3.select('defs')
       .append('svg:marker')
         .attr('id', 'link_' + @model.id + '_marker_end')
-        #.attr('viewBox', '0 0 10 10')
-        .attr('viewBox', '-30 -10 30 20')
-        .attr('refX', 0)
-        #.attr('refY', 5)
-        .attr('refY', 0)
+
+    marker_end
         .attr('markerUnits', 'strokeWidth')
-        .attr('markerHeight', 30)
-        .attr('markerWidth', 10)
         .attr('orient', 'auto')
+        .attr('refX', 0)
+        .attr('refY', 0)
+
+    #marker_end
+    #    .attr('viewBox', '0 -5 10 10')
+    #    .attr('markerHeight', 3)
+    #    .attr('markerWidth', 4)
+    #    .append('svg:path')
+    #      .attr('d', 'M 0,0 m 0,-5 L 10,0 L 0,5 z')
+    #      .attr('fill', '#333333')
+
+    #'reverse'
+    sw = @model.get('stroke_width') # 20
+    rev_w = 2 * sw
+    rev_min_x = -2 * sw
+    rev_min_y = -1 * sw/2
+    rev_max_y = sw/2
+    
+    rev_px = 30 # 'user says 10px'
+    rev_scale = rev_px / sw
+ 
+    rev_v = '' + rev_min_x + ' ' + rev_min_y + ' ' + rev_w + ' ' + sw
+    rev_d = 'M 0,0 m 0,' + rev_min_y + ' L ' + rev_min_x + ',0 L 0,' + rev_max_y + ' z'
+    
+    marker_end
+        .attr('viewBox', rev_v)
+        .attr('markerHeight', 1*rev_scale)
+        .attr('markerWidth', 2*rev_scale)
         .append('svg:path')
-          .attr('d', 'M 0,0 m 0,-10 L -30,0 L 0,10 z')
+          .attr('d', rev_d)
+          #.attr('d', 'M 0,0 m 0,-10 L -20,0 L 0,10 z')
           .attr('fill', '#3498DB')
-          #.attr('d', 'M 0,0 L 10,5 L 0,10 z')
+          .attr('opacity', .75)
 
 
 
