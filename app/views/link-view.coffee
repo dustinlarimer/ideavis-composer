@@ -41,7 +41,7 @@ module.exports = class LinkView extends View
       .attr('stroke-linecap', 'round')
       .attr('stroke-linejoin', 'round')
       .attr('stroke-opacity', .75)
-      .attr('stroke-width', 5)
+      .attr('stroke-width', (d)-> d.model.get('stroke_width'))
       .attr('fill', 'none')
       .attr('marker-end', (d)-> return 'url(#' + 'link_' + d.id + '_marker_end)')
 
@@ -70,17 +70,16 @@ module.exports = class LinkView extends View
     #      .attr('fill', '#333333')
 
     #'reverse'
-    sw = @model.get('stroke_width') # 20
+    sw = @model.get('stroke_width')
     rev_w = 2 * sw
     rev_min_x = -2 * sw
     rev_min_y = -1 * sw/2
     rev_max_y = sw/2
-    
-    rev_px = 30 # 'user says 10px'
-    rev_scale = rev_px / sw
- 
     rev_v = '' + rev_min_x + ' ' + rev_min_y + ' ' + rev_w + ' ' + sw
     rev_d = 'M 0,0 m 0,' + rev_min_y + ' L ' + rev_min_x + ',0 L 0,' + rev_max_y + ' z'
+    
+    rev_width_px = 30 # 'user says 30px'
+    rev_scale = rev_width_px / sw
     
     marker_end
         .attr('viewBox', rev_v)
@@ -90,13 +89,5 @@ module.exports = class LinkView extends View
           .attr('d', rev_d)
           #.attr('d', 'M 0,0 m 0,-10 L -20,0 L 0,10 z')
           .attr('fill', '#3498DB')
-          .attr('opacity', .75)
-
-
-
-
-
-
-
-
+          .attr('opacity', .5)
 
