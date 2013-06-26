@@ -55,13 +55,11 @@ module.exports = class CanvasView extends View
         _interpolation = d.model.get('interpolation')
         if _target? and _source?
           data = []
-          data.push { x: _source.x, y: _source.y }
-          # { x: _source.x - d.model.get('source_offset')[0], y: _source.y - d.model.get('source_offset')[1] }
+          data.push { x: _source.x + d.model.get('offsets')[0][0], y: _source.y + d.model.get('offsets')[0][1] }
           _.each(d.model.get('midpoints'), (d,i)->
             data.push { x: d[0], y: d[1] }
           )
-          data.push { x: _target.x, y: _target.y }
-          # { x: _target.x - d.model.get('target_offset')[0], y: _target.y - d.model.get('target_offset')[1] }
+          data.push { x: _target.x + d.model.get('offsets')[1][0], y: _target.y + d.model.get('offsets')[1][1] }
           line = d3.svg.line()
                    .x((d)-> return d.x)
                    .y((d)-> return d.y)
@@ -141,7 +139,6 @@ module.exports = class CanvasView extends View
     @refresh()
 
   build_nodes: ->
-    console.log 'building'
     
     node_drag_events = d3.behavior.drag()
       .on('dragstart', @drag_node_start)
