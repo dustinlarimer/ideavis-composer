@@ -217,6 +217,8 @@ module.exports = class CanvasView extends View
       .append('svg:svg')
       .attr('pointer-events', 'all');
     
+    mediator.outer.append('svg:defs')
+    
     mediator.outer.append('svg:rect')
       .attr('id', 'canvas_background')
       .attr('fill', '#fff');
