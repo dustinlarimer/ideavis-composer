@@ -54,12 +54,14 @@ module.exports = class CanvasView extends View
         _source = _.findWhere(force.nodes(), {id: d.source.id})
         _interpolation = d.model.get('interpolation')
         if _target? and _source?
-          data = [ 
-            { x: _source.x, y: _source.y }, 
-            #{ x: _source.x+50, y: _source.y+50 }, 
-            #{ x: _target.x-50, y: _target.y-50 }
-            { x: _target.x, y: _target.y }
-          ]
+          data = []
+          data.push { x: _source.x, y: _source.y }
+          # { x: _source.x - d.model.get('source_offset')[0], y: _source.y - d.model.get('source_offset')[1] }
+          _.each(d.model.get('midpoints'), (d,i)->
+            data.push { x: d[0], y: d[1] }
+          )
+          data.push { x: _target.x, y: _target.y }
+          # { x: _target.x - d.model.get('target_offset')[0], y: _target.y - d.model.get('target_offset')[1] }
           line = d3.svg.line()
                    .x((d)-> return d.x)
                    .y((d)-> return d.y)

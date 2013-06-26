@@ -32,9 +32,12 @@ module.exports = class LinkView extends View
   build_baseline: =>
     @baseline
       .attr('stroke', 'lightblue')
+      .attr('stroke-dasharray', 'none')
+      .attr('stroke-linecap', 'round')
+      .attr('stroke-linejoin', 'round')
+      .attr('stroke-opacity', .75)
       .attr('stroke-width', 5)
       .attr('fill', 'none')
-      .attr('opacity', 1)
 
   clear: ->
     d3.select(@el).classed 'active', false

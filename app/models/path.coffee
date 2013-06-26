@@ -28,9 +28,9 @@ module.exports = class Path extends Model
         path = 'M 0, 0  m -50, 0  a 50,50 0 1,0 100,0  a 50,50 0 1,0 -100,0'
         break
       when 'square'
-        path = 'M -50,-50 L 50,-50 L 50,50 L -50,50 L -50,-50'
+        path = 'M -50,-50 L 50,-50 L 50,50 L -50,50 Z'
         break
       when 'hexagon'
-        path = 'M 0,-50 L 43,-25 L 43,25 L 0,50 L -43,25 L -43,-25 L 0,-50'
+        path = 'M 0,-50 L 43,-25 L 43,25 L 0,50 L -43,25 L -43,-25 Z'
         break
     return path

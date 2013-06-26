@@ -4,16 +4,18 @@ module.exports = class Link extends Model
   defaults:
     source: null
     target: null
-    start_point: [0,0]
-    end_point: [0,0]
-    mid_points: []
+    source_offset: [0,0]
+    target_offset: [0,0]
+    midpoints: []
+    marker_start: {}
+    marker_end: {}
     interpolation: 'linear'
     stroke: 'lightblue'
     stroke_dasharray: []
     stroke_linecap: 'round'
     stroke_linejoin: ''
     stroke_opacity: 1
-    stroke_width: 1
+    stroke_width: 5
 
   interpolation_types: ['linear', 'step-before', 'step-after', 'basis', 'cardinal']
 
@@ -22,7 +24,6 @@ module.exports = class Link extends Model
     _.extend({}, data)
     @interpolation = @interpolation_types[0] unless data.interpolation
     console.log @interpolation
-    
 
   save: ->
     console.log '[SAVE]'
