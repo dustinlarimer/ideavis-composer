@@ -19,9 +19,9 @@ module.exports = class Path extends Model
     #@setPath('circle') unless @get('path')?
 
   setPath: (shape) ->
-    @set('path', @buildPath(shape))
+    @set('path', @build_path(shape))
 
-  buildPath: (shape) =>
+  build_path: (shape) =>
     path = ''
     switch shape
       when 'circle'

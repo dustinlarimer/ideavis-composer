@@ -128,7 +128,7 @@ module.exports = class ToolPointerView extends View
     console.log 'pointer:link_drag_stop'
     if mediator.selected_link?
       d.view.activate()
-      #mediator.publish 'activate_detail', d.model
+      mediator.publish 'activate_detail', d.model
 
   prune_links: (node_id) ->
     d3.selectAll('g.linkGroup').each((d,i) => 

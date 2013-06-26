@@ -34,7 +34,7 @@ module.exports = class LinkView extends View
       .attr('stroke', 'lightblue')
       .attr('stroke-width', 5)
       .attr('fill', 'none')
-      .attr('opacity', 0.5)
+      .attr('opacity', 1)
 
   clear: ->
     d3.select(@el).classed 'active', false
