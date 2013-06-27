@@ -4,7 +4,7 @@ module.exports = class Link extends Model
   defaults:
     source: null
     target: null
-    offsets: [[0,0],[0,0]]
+    endpoints: [[0,0],[0,0]]
     midpoints: []
     markers: []
     interpolation: 'linear'
@@ -20,8 +20,8 @@ module.exports = class Link extends Model
   initialize: (data={}) ->
     super
     _.extend({}, data)
-    @interpolation = @interpolation_types[0] unless data.interpolation
-    #console.log @interpolation
+    #@interpolation = @interpolation_types[4] unless data.interpolation
+    console.log @interpolation
 
   save: ->
     console.log '[SAVE]'

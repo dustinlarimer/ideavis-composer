@@ -46,7 +46,7 @@ module.exports = class CanvasView extends View
       ) if mediator.node?
 
     mediator.link
-      .select('path.baseline')
+      .selectAll('path.baseline, path.tickline')
       .transition()
       .ease(Math.sqrt)
       .attr('d', (d)->
@@ -54,12 +54,14 @@ module.exports = class CanvasView extends View
         _source = _.findWhere(force.nodes(), {id: d.source.id})
         _interpolation = d.model.get('interpolation')
         if _target? and _source?
+          _endpoints = d.model.get('endpoints')
+          _midpoints = d.model.get('midpoints')
           data = []
-          data.push { x: _source.x + d.model.get('offsets')[0][0], y: _source.y + d.model.get('offsets')[0][1] }
-          _.each(d.model.get('midpoints'), (d,i)->
-            data.push { x: d[0], y: d[1] }
+          data.push { x: _source.x + _endpoints[0][0], y: _source.y + _endpoints[0][1] }
+          _.each(_midpoints, (m,i)->
+            data.push { x: _source.x + _midpoints[i][0], y: _source.y + _midpoints[i][1] }
           )
-          data.push { x: _target.x + d.model.get('offsets')[1][0], y: _target.y + d.model.get('offsets')[1][1] }
+          data.push { x: _target.x + _endpoints[1][0], y: _target.y + _endpoints[1][1] }
           line = d3.svg.line()
                    .x((d)-> return d.x)
                    .y((d)-> return d.y)

@@ -84,7 +84,6 @@ module.exports = class ToolPointerView extends View
     mediator.publish 'clear_active'
     mediator.selected_node = d
     mediator.selected_link = null 
-    
 
   node_drag_move: (d, i) ->
     mediator.selected_node = null

@@ -6,19 +6,20 @@ module.exports = class LinkView extends View
   
   initialize: (data={}) ->
     super
+    
     @subscribeEvent 'deactivate_detail', @deactivate
     @subscribeEvent 'clear_active', @clear
-    @source = data.source
-    @target = data.target
     
+    @source = data.source
+    @target = data.target    
     @baseline = d3.select(@el)
       .append('svg:path')
         .attr('class', 'baseline')
-    #@filter = d3.select('defs')
 
   render: ->
     super
     @build_baseline()
+    console.log '[LinkView Rendered]'
 
   remove: ->
     @deactivate()
@@ -31,12 +32,24 @@ module.exports = class LinkView extends View
     @build_points()
 
   deactivate: ->
+    console.log '[LinkView Deactivated]'
     @controls?.remove()
     @filter?.remove()
-    @points?.call(d3.behavior.drag()
-          .on('dragstart', null)
-          .on('drag', null)
-          .on('dragend', null)).remove()
+    
+    d3.select(@el).select('path.tickline')
+      .call(d3.behavior.drag()
+        .on('dragend', null))
+      .remove()
+    
+    @baseline.attr('visibility', 'visible')
+    @endpoints?.call(d3.behavior.drag()
+      .on('dragstart', null)
+      .on('drag', null)
+      .on('dragend', null)).remove()
+    @midpoints?.call(d3.behavior.drag()
+      .on('dragend', null)).remove()
+    #@clear()
+    @render()
 
   clear: ->
     d3.select(@el).classed 'active', false
@@ -143,13 +156,13 @@ module.exports = class LinkView extends View
     feMerge.append('svg:feMergeNode')
       .attr('in', 'SourceGraphic')
 
-    offsets = [
-      { x: @source.x + @model.get('offsets')[0][0], y: @source.y + @model.get('offsets')[0][1] },
-      { x: @target.x + @model.get('offsets')[1][0], y: @target.y + @model.get('offsets')[1][1] }
+    endpoint_data = [
+      { x: @source.x + @model.get('endpoints')[0][0], y: @source.y + @model.get('endpoints')[0][1] },
+      { x: @target.x + @model.get('endpoints')[1][0], y: @target.y + @model.get('endpoints')[1][1] }
     ]
-
-    @points = @controls.selectAll('circle.point')
-      .data(offsets)
+    @controls.selectAll('circle.endpoint').remove()
+    @endpoints = @controls.selectAll('circle.endpoint')
+      .data(endpoint_data)
       .enter()
       .append('svg:circle')
         .attr('class', 'point')
@@ -159,23 +172,102 @@ module.exports = class LinkView extends View
         .attr('r', 10)
         .attr('fill', '#fff')
         .call(d3.behavior.drag()
-          .on('dragstart', @drag_point_start)
-          .on('drag', @drag_point_move)
-          .on('dragend', @drag_point_end))
+          .on('dragstart', @drag_endpoint_start)
+          .on('drag', @drag_endpoint_move)
+          .on('dragend', @drag_endpoint_end))
 
-  drag_point_start: (d,i) ->
+    midpoint_data = []
+    _.each(@model.get('midpoints'), (d,i)=>
+      midpoint_data.push { x: @source.x + d[0], y: @source.y + d[1] }
+    )
+    @controls.selectAll('circle.midpoint').remove()
+    @midpoints = @controls.selectAll('circle.midpoint')
+      .data(midpoint_data)
+      .enter()
+      .append('svg:circle')
+        .attr('class', 'point')
+        .attr('cx', (d)-> return d.x)
+        .attr('cy', (d)-> return d.y)
+        .attr('r', 5)
+        .attr('fill', '#757575')
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 3)
+        .call(d3.behavior.drag()
+          .on('dragstart', @drag_midpoint_start)
+          .on('drag', @drag_midpoint_move)
+          .on('dragend', @drag_midpoint_end))
+
+    @baseline.attr('visibility', 'hidden')
+    d3.select(@el).select('path.tickline').remove()
+    tickline = d3.select(@el)
+      .append('svg:path')
+        .attr('class', 'tickline')
+        .attr('stroke', => return @baseline.attr('stroke'))
+        .attr('stroke-dasharray', => return @baseline.attr('stroke-dasharray'))
+        .attr('stroke-linecap', => return @baseline.attr('stroke-linecap')) 
+        .attr('stroke-linejoin', => return @baseline.attr('stroke-linejoin'))
+        .attr('stroke-opacity', => return @baseline.attr('stroke-opacity'))
+        .attr('stroke-width', => return @baseline.attr('stroke-width'))
+        .attr('fill', 'none')
+        .attr('marker-end', => return @baseline.attr('marker-end'))
+        .attr('d', => return @baseline.attr('d'))
+        .call(d3.behavior.drag()
+          .on('dragend', @create_midpoint))
+
+
+  # ----------------------------------
+  # Endpoint Methods
+  # ----------------------------------
+
+  drag_endpoint_start: (d,i) ->
     #console.log 'Dragging: ' + i
 
-  drag_point_move: (d,i) ->
+  drag_endpoint_move: (d,i) ->
     d.x = d3.event.x
     d.y = d3.event.y
     d3.select(@)
       .attr('cx', (d)-> return d.x)
       .attr('cy', (d)-> return d.y)
 
-  drag_point_end: (d,i) =>
+  drag_endpoint_end: (d,i) =>
     if i is 0
-      @model.save offsets: [ [(d.x-@source.x),(d.y-@source.y)], @model.get('offsets')[1] ]
+      @model.save endpoints: [ [(d.x-@source.x),(d.y-@source.y)], @model.get('endpoints')[1] ]
+      console.log 'Updated Source endpoint'
     else
-      @model.save offsets: [ @model.get('offsets')[0], [(d.x-@target.x),(d.y-@target.y)] ]
+      @model.save endpoints: [ @model.get('endpoints')[0], [(d.x-@target.x),(d.y-@target.y)] ]
+      console.log 'Updated Target endpoint'
     mediator.publish 'refresh_canvas'
+
+
+  # ----------------------------------
+  # Midpoint Methods
+  # ----------------------------------
+
+  create_midpoint: (d,i) =>
+    _all = d.model.get('midpoints')
+    _new = [[(d3.event.sourceEvent.offsetX - @source.x),(d3.event.sourceEvent.offsetY - @source.y)]]
+    console.log _new
+    @model.save midpoints: _.union(_all, _new)
+    @build_points()
+    mediator.publish 'refresh_canvas'
+
+  drag_midpoint_start: (d,i) =>
+    #console.log 'midpoint:dragstart'
+
+  drag_midpoint_move: (d,i) ->
+    d.x = d3.event.x
+    d.y = d3.event.y
+    d3.select(@)
+      .attr('cx', (d)-> return d.x)
+      .attr('cy', (d)-> return d.y)
+
+  drag_midpoint_end: (d,i) =>
+    _midpoints = @model.get('midpoints')
+    _midpoints[i][0] = d.x-@source.x
+    _midpoints[i][1] = d.y-@source.y
+    @model.save midpoints: _midpoints
+    #console.log 'midpoint:dragend'
+    mediator.publish 'refresh_canvas'
+
+
+
