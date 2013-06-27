@@ -21,6 +21,7 @@ module.exports = class LinkView extends View
     @build_baseline()
 
   remove: ->
+    @deactivate()
     console.log '[LinkView Removed]'
     super
 

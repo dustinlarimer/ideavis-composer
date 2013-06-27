@@ -7,8 +7,6 @@ module.exports = class Link extends Model
     offsets: [[0,0],[0,0]]
     midpoints: []
     markers: []
-    #marker_start: {}
-    #marker_end: {}
     interpolation: 'linear'
     stroke: 'lightblue'
     stroke_dasharray: []
