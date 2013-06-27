@@ -7,7 +7,7 @@ module.exports = class Link extends Model
     endpoints: [[0,0],[0,0]]
     midpoints: []
     markers: []
-    interpolation: 'linear'
+    interpolation: 'basis'
     stroke: 'lightblue'
     stroke_dasharray: []
     stroke_linecap: 'round'
