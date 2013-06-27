@@ -26,6 +26,7 @@ module.exports = class Application extends Chaplin.Application
     
     mediator.outer = undefined
     mediator.vis = undefined
+    mediator.defs = undefined
     
     mediator.node = undefined
     mediator.selected_node = undefined

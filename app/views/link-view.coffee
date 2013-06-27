@@ -14,6 +14,7 @@ module.exports = class LinkView extends View
     @baseline = d3.select(@el)
       .append('svg:path')
         .attr('class', 'baseline')
+    #@filter = d3.select('defs')
 
   render: ->
     super
@@ -30,6 +31,7 @@ module.exports = class LinkView extends View
 
   deactivate: ->
     @controls?.remove()
+    @filter?.remove()
     @points?.call(d3.behavior.drag()
           .on('dragstart', null)
           .on('drag', null)
@@ -114,6 +116,32 @@ module.exports = class LinkView extends View
       .append('svg:g')
         .attr('id', 'link_controls')
 
+    mediator.defs.selectAll('filter#link_point_drop_shadow').remove()
+    @filter = mediator.defs.append('svg:filter')
+      .attr('id', 'link_point_drop_shadow')
+      .attr('x', '-15%')
+      .attr('y', '-10%')
+      .attr('height', '130%')
+      .attr('width', '130%')
+
+    @filter.append('svg:feGaussianBlur')
+      .attr('in', 'SourceAlpha')
+      .attr('stdDeviation', 1)
+
+    @filter.append('svg:feOffset')
+      .attr('dx', 0)
+      .attr('dy', 1)
+
+    @filter.append('svg:feComponentTransfer')
+      .append('feFuncA')
+        .attr('type', 'linear')
+        .attr('slope', '0.5')
+
+    feMerge = @filter.append('feMerge')
+    feMerge.append('svg:feMergeNode')
+    feMerge.append('svg:feMergeNode')
+      .attr('in', 'SourceGraphic')
+
     offsets = [
       { x: @source.x + @model.get('offsets')[0][0], y: @source.y + @model.get('offsets')[0][1] },
       { x: @target.x + @model.get('offsets')[1][0], y: @target.y + @model.get('offsets')[1][1] }
@@ -124,12 +152,11 @@ module.exports = class LinkView extends View
       .enter()
       .append('svg:circle')
         .attr('class', 'point')
+        .style('filter', 'url(#link_point_drop_shadow)')
         .attr('cx', (d)-> return d.x)
         .attr('cy', (d)-> return d.y)
         .attr('r', 10)
         .attr('fill', '#fff')
-        .attr('stroke', 'pink')
-        .attr('stroke-width', 3)
         .call(d3.behavior.drag()
           .on('dragstart', @drag_point_start)
           .on('drag', @drag_point_move)
@@ -150,4 +177,4 @@ module.exports = class LinkView extends View
       @model.save offsets: [ [(d.x-@source.x),(d.y-@source.y)], @model.get('offsets')[1] ]
     else
       @model.save offsets: [ @model.get('offsets')[0], [(d.x-@target.x),(d.y-@target.y)] ]
-
+    mediator.publish 'refresh_canvas'
