@@ -11,10 +11,12 @@ module.exports = class LinkView extends View
     @subscribeEvent 'clear_active', @clear
     
     @source = data.source
-    @target = data.target    
+    @target = data.target
     @baseline = d3.select(@el)
       .append('svg:path')
         .attr('class', 'baseline')
+
+    @selected_endpoint = null
 
   render: ->
     super
@@ -169,8 +171,10 @@ module.exports = class LinkView extends View
         .style('filter', 'url(#link_point_drop_shadow)')
         .attr('cx', (d)-> return d.x)
         .attr('cy', (d)-> return d.y)
-        .attr('r', 10)
-        .attr('fill', '#fff')
+        .attr('r', 7)
+        .attr('fill', '#4d4d4d')
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 2)
         .attr('cursor', 'move')
         .call(d3.behavior.drag()
           .on('dragstart', @drag_endpoint_start)
@@ -222,24 +226,26 @@ module.exports = class LinkView extends View
   # Endpoint Methods
   # ----------------------------------
 
-  drag_endpoint_start: (d,i) ->
-    #console.log 'Dragging: ' + i
+  drag_endpoint_start: (d,i) =>
+    @selected_endpoint = d
 
-  drag_endpoint_move: (d,i) ->
+  drag_endpoint_move: (d,i) =>
+    @selected_endpoint = null
     d.x = d3.event.x
     d.y = d3.event.y
-    d3.select(@)
+    d3.select(@endpoints[0][i])
       .attr('cx', (d)-> return d.x)
       .attr('cy', (d)-> return d.y)
 
   drag_endpoint_end: (d,i) =>
-    if i is 0
-      @model.save endpoints: [ [(d.x-@source.x),(d.y-@source.y)], @model.get('endpoints')[1] ]
-      console.log 'Updated Source endpoint'
-    else
-      @model.save endpoints: [ @model.get('endpoints')[0], [(d.x-@target.x),(d.y-@target.y)] ]
-      console.log 'Updated Target endpoint'
-    mediator.publish 'refresh_canvas'
+    if @selected_endpoint is null
+      if i is 0
+        @model.save endpoints: [ [(d.x-@source.x),(d.y-@source.y)], @model.get('endpoints')[1] ]
+        console.log 'Updated Source endpoint'
+      else
+        @model.save endpoints: [ @model.get('endpoints')[0], [(d.x-@target.x),(d.y-@target.y)] ]
+        console.log 'Updated Target endpoint'
+      mediator.publish 'refresh_canvas'
 
 
   # ----------------------------------
