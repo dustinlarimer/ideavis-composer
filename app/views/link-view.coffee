@@ -179,7 +179,7 @@ module.exports = class LinkView extends View
 
     midpoint_data = []
     _.each(@model.get('midpoints'), (d,i)=>
-      midpoint_data.push { x: @source.x + d[0], y: @source.y + d[1] }
+      midpoint_data.push { x: d[0], y: d[1] }
     )
     @controls.selectAll('circle.midpoint').remove()
     @midpoints = @controls.selectAll('circle.midpoint')
@@ -248,7 +248,7 @@ module.exports = class LinkView extends View
 
   create_midpoint: (d,i) =>
     _all = d.model.get('midpoints')
-    _new = [[(d3.event.sourceEvent.offsetX - @source.x),(d3.event.sourceEvent.offsetY - @source.y)]]
+    _new = [[d3.event.sourceEvent.offsetX,d3.event.sourceEvent.offsetY]]
     console.log _new
     @model.save midpoints: _.union(_all, _new)
     @build_points()
@@ -266,8 +266,8 @@ module.exports = class LinkView extends View
 
   drag_midpoint_end: (d,i) =>
     _midpoints = @model.get('midpoints')
-    _midpoints[i][0] = d.x-@source.x
-    _midpoints[i][1] = d.y-@source.y
+    _midpoints[i][0] = d.x
+    _midpoints[i][1] = d.y
     @model.save midpoints: _midpoints
     #console.log 'midpoint:dragend'
     mediator.publish 'refresh_canvas'

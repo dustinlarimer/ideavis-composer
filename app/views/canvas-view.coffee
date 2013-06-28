@@ -59,7 +59,7 @@ module.exports = class CanvasView extends View
           data = []
           data.push { x: _source.x + _endpoints[0][0], y: _source.y + _endpoints[0][1] }
           _.each(_midpoints, (m,i)->
-            data.push { x: _source.x + _midpoints[i][0], y: _source.y + _midpoints[i][1] }
+            data.push { x: _midpoints[i][0], y: _midpoints[i][1] }
           )
           data.push { x: _target.x + _endpoints[1][0], y: _target.y + _endpoints[1][1] }
           line = d3.svg.line()
