@@ -194,6 +194,7 @@ module.exports = class CanvasView extends View
       .enter()
       .insert('svg:g', 'g.nodeGroup')
       .attr('class', 'linkGroup')
+      .attr('pointer-events', 'visibleStroke')
       .each((d,i)-> d.view = new LinkView({model: d.model, el: @, source: d.source, target: d.target}))
     
     mediator.link
