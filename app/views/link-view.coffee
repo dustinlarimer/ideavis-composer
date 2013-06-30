@@ -72,8 +72,8 @@ module.exports = class LinkView extends View
       if @selected_midpoint?
         @destroy_midpoint()
       else
-        console.log '@dispose()'
-        console.log '@model.destroy()'
+        @model.destroy()
+        @dispose()
     return false
 
 
