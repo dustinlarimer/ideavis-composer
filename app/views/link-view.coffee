@@ -105,7 +105,7 @@ module.exports = class LinkView extends View
     marker_end
         .attr('markerUnits', 'strokeWidth')
         .attr('orient', 'auto')
-        .attr('refX', 0)
+        .attr('refX', 0) # endpoint offset, f(strokeWidth)
         .attr('refY', 0)
 
     #marker_end
@@ -283,26 +283,27 @@ module.exports = class LinkView extends View
   # ----------------------------------
 
   create_midpoint: (d,i) =>
-    _all = d.model.get('midpoints')
+    _midpoints = d.model.get('midpoints')
     _new = [[d3.event.sourceEvent.offsetX,d3.event.sourceEvent.offsetY]]
-    #console.log _new
-    @model.save midpoints: _.union(_all, _new)
+    @model.save midpoints: _.union(_midpoints, _new)
     @build_points()
     mediator.publish 'refresh_canvas'
 
   destroy_midpoint: =>
-    _all = @model.get('midpoints')
-    _all.splice(@selected_midpoint.index, 1)
-    @model.save midpoints: _all
+    _midpoints = @model.get('midpoints')
+    _midpoints.splice(@selected_midpoint.index, 1)
+    @model.save midpoints: _midpoints
     @selected_midpoint = null
     @build_points()
     mediator.publish 'refresh_canvas'
 
   drag_midpoint_start: (d,i) =>
+    @midpoints.classed('active', false)
+    d3.select(@midpoints[0][i]).classed('active', true)
     @selected_midpoint = d
+    @selected_midpoint.index = i
 
   drag_midpoint_move: (d,i) =>
-    @selected_midpoint = null
     d.x = d3.event.x
     d.y = d3.event.y
     d3.select(@midpoints[0][i])
@@ -310,16 +311,11 @@ module.exports = class LinkView extends View
       .attr('cy', (d)-> return d.y)
 
   drag_midpoint_end: (d,i) =>
-    if @selected_midpoint is null
-      @midpoints.classed('active', false)
-      _midpoints = @model.get('midpoints')
-      _midpoints[i][0] = d.x
-      _midpoints[i][1] = d.y
-      @model.save midpoints: _midpoints
-      mediator.publish 'refresh_canvas'
-    else 
-      @selected_midpoint.index = i
-      @midpoints.classed('active', false)
-      d3.select(@midpoints[0][i]).classed('active', true)
+    _midpoints = @model.get('midpoints')
+    _midpoints[i][0] = d.x
+    _midpoints[i][1] = d.y
+    @model.save midpoints: _midpoints
+    mediator.publish 'refresh_canvas'
+      
 
 

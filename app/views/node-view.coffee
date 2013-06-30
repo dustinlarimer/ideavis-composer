@@ -104,7 +104,7 @@ module.exports = class NodeView extends View
           .attr('dx', 0)
           .attr('dy', 0)
           .attr('letter-spacing', '0px')
-          .attr('text-decoration', 'underline overline')
+          #.attr('text-decoration', 'underline overline')
           .attr('font-family', (d)-> d.get('font_family'))
           .attr('font-size', (d)-> d.get('font_size'))
           .attr('font-weight', (d)-> d.get('font_weight'))

@@ -253,10 +253,11 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   refresh: ->
-    bounds.x = d3.extent(force.nodes(), (d) -> return d.x ) if force.nodes().length > 0
-    bounds.y = d3.extent(force.nodes(), (d) -> return d.y ) if force.nodes().length > 0
-    bounds.height = Math.max((window.innerHeight-50), (bounds.y[1]+100))
-    bounds.width = Math.max(window.innerWidth-50, (bounds.x[1]+320))
+    canvas_elements = $('#canvas_elements')[0].getBoundingClientRect()
+    bounds.x = canvas_elements.width + 320 # width of DetailView
+    bounds.y = canvas_elements.height + 50
+    bounds.height = Math.max((window.innerHeight-50), bounds.y)
+    bounds.width = Math.max(window.innerWidth-50, bounds.x)
     #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)
     
     $('#canvas')
