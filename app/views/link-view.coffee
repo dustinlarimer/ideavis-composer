@@ -38,7 +38,6 @@ module.exports = class LinkView extends View
     @build_points()
 
   deactivate: ->
-    console.log 'deactivate and unbind key'
     key.unbind 'backspace', 'link'
     
     d3.select(@el).select('path.tickline')
