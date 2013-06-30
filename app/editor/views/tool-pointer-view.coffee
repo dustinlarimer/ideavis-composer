@@ -70,9 +70,9 @@ module.exports = class ToolPointerView extends View
     if mediator.selected_node?
       @destroy_node_group(mediator.selected_node)
       mediator.selected_node = null
-    if mediator.selected_link?
-      @destroy_link_group(mediator.selected_link)
-      mediator.selected_link = null
+    #if mediator.selected_link?
+    #  @destroy_link_group(mediator.selected_link)
+    #  mediator.selected_link = null
 
 
   # ----------------------------------

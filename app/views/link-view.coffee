@@ -6,8 +6,10 @@ module.exports = class LinkView extends View
   
   initialize: (data={}) ->
     super
+    _.extend this, new Backbone.Shortcuts
+    @delegateShortcuts()
     
-    @subscribeEvent 'deactivate_detail', @deactivate
+    #@subscribeEvent 'deactivate_detail', @deactivate
     @subscribeEvent 'clear_active', @clear
     
     @source = data.source
@@ -29,14 +31,15 @@ module.exports = class LinkView extends View
     super
 
   activate: ->
-    console.log 'Link activated'
+    key 'backspace', 'link', @keypress_delete
+    key.setScope 'link'
+    
     d3.select(@el).classed('active', true)
     @build_points()
 
   deactivate: ->
-    console.log '[LinkView Deactivated]'
-    @controls?.remove()
-    @filter?.remove()
+    console.log 'deactivate and unbind key'
+    key.unbind 'backspace', 'link'
     
     d3.select(@el).select('path.tickline')
       .call(d3.behavior.drag()
@@ -49,13 +52,29 @@ module.exports = class LinkView extends View
       .on('drag', null)
       .on('dragend', null)).remove()
     @midpoints?.call(d3.behavior.drag()
+      .on('dragstart', null)
+      .on('drag', null)
       .on('dragend', null)).remove()
-    #@clear()
-    @render()
+    @controls?.remove()
+    @filter?.remove()
 
   clear: ->
     d3.select(@el).classed 'active', false
     @deactivate()
+
+
+  # ----------------------------------
+  # KEYBOARD SHORTCUTS
+  # ----------------------------------
+  keypress_delete: =>
+    console.log 'keypress_delete: =>'
+    if mediator.selected_link and mediator.selected_link.model is @model
+      if @selected_midpoint?
+        @destroy_midpoint()
+      else
+        console.log '@dispose()'
+        console.log '@model.destroy()'
+    return false
 
 
   # ----------------------------------
@@ -188,6 +207,8 @@ module.exports = class LinkView extends View
     @controls.selectAll('circle.midpoint').remove()
     @midpoints = @controls.selectAll('circle.midpoint')
       .data(midpoint_data)
+
+    @midpoints
       .enter()
       .append('svg:circle')
         .attr('class', 'point')
@@ -203,6 +224,15 @@ module.exports = class LinkView extends View
           .on('dragstart', @drag_midpoint_start)
           .on('drag', @drag_midpoint_move)
           .on('dragend', @drag_midpoint_end))
+    @midpoints
+      .exit()
+      .call(d3.behavior.drag()
+        .on('dragstart', null)
+        .on('drag', null)
+        .on('dragend', null))
+      .transition()
+        .ease(Math.sqrt)
+      .remove()
 
     @baseline.attr('visibility', 'hidden')
     d3.select(@el).select('path.tickline').remove()
@@ -255,28 +285,41 @@ module.exports = class LinkView extends View
   create_midpoint: (d,i) =>
     _all = d.model.get('midpoints')
     _new = [[d3.event.sourceEvent.offsetX,d3.event.sourceEvent.offsetY]]
-    console.log _new
+    #console.log _new
     @model.save midpoints: _.union(_all, _new)
     @build_points()
     mediator.publish 'refresh_canvas'
 
-  drag_midpoint_start: (d,i) =>
-    #console.log 'midpoint:dragstart'
+  destroy_midpoint: =>
+    _all = @model.get('midpoints')
+    _all.splice(@selected_midpoint.index, 1)
+    @model.save midpoints: _all
+    @selected_midpoint = null
+    @build_points()
+    mediator.publish 'refresh_canvas'
 
-  drag_midpoint_move: (d,i) ->
+  drag_midpoint_start: (d,i) =>
+    @selected_midpoint = d
+
+  drag_midpoint_move: (d,i) =>
+    @selected_midpoint = null
     d.x = d3.event.x
     d.y = d3.event.y
-    d3.select(@)
+    d3.select(@midpoints[0][i])
       .attr('cx', (d)-> return d.x)
       .attr('cy', (d)-> return d.y)
 
   drag_midpoint_end: (d,i) =>
-    _midpoints = @model.get('midpoints')
-    _midpoints[i][0] = d.x
-    _midpoints[i][1] = d.y
-    @model.save midpoints: _midpoints
-    #console.log 'midpoint:dragend'
-    mediator.publish 'refresh_canvas'
-
+    if @selected_midpoint is null
+      @midpoints.classed('active', false)
+      _midpoints = @model.get('midpoints')
+      _midpoints[i][0] = d.x
+      _midpoints[i][1] = d.y
+      @model.save midpoints: _midpoints
+      mediator.publish 'refresh_canvas'
+    else 
+      @selected_midpoint.index = i
+      @midpoints.classed('active', false)
+      d3.select(@midpoints[0][i]).classed('active', true)
 
 

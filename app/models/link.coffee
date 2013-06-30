@@ -21,7 +21,7 @@ module.exports = class Link extends Model
     super
     _.extend({}, data)
     #@interpolation = @interpolation_types[4] unless data.interpolation
-    console.log @interpolation
+    #console.log @interpolation
 
   save: ->
     console.log '[SAVE]'
