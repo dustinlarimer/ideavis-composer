@@ -97,10 +97,10 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   drag_node_start: (d, i) ->
-    console.log 'drag_node_start'
+    mediator.publish 'refresh_canvas'
     mediator.selected_node = d
     mediator.publish 'clear_active_nodes'
-    force.start()
+    #force.start()
 
   drag_node_move: (d, i) ->
     console.log 'drag_node_move'
@@ -112,11 +112,11 @@ module.exports = class CanvasView extends View
     d.px = d.x
     d.py = d.y
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')')
-    force.tick()
+    #force.tick()
   
   drag_node_end: (d, i) ->
-    console.log 'drag_node_end'
-    force.start()
+    mediator.publish 'refresh_canvas'
+    #force.start()
 
   add_node: (node) ->
     force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), rotate: node.get('rotate'), scale: node.get('scale'), model: node }

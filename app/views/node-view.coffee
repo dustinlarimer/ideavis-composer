@@ -177,7 +177,7 @@ module.exports = class NodeView extends View
           this.ref = $(this).next('text')[0].getBoundingClientRect()
           d.width = this.ref.width
         )
-        .attr('fill', 'pink')
+        #.attr('fill', 'pink')
         .attr('height', (d)-> return d.get('font_size') - d.get('font_size')/4 + 10)
         .attr('width', (d)-> return d.width + 10)
         .attr('x', (d)-> return -1 * (d.width/2) - 5)
