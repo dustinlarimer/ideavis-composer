@@ -102,7 +102,7 @@ module.exports = class NodeView extends View
           .attr('class', 'artifact')
           .text((d)-> d.get('text'))
           .attr('dx', 0)
-          .attr('dy', 0)
+          .attr('dy', (d)-> d.get('font_size')/3)
           .attr('letter-spacing', '0px')
           #.attr('text-decoration', 'underline overline')
           .attr('font-family', (d)-> d.get('font_family'))
@@ -118,6 +118,7 @@ module.exports = class NodeView extends View
         .ease(Math.sqrt)
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
         .selectAll('text.artifact')
+          .attr('dy', (d)-> d.get('font_size')/3)
           .attr('fill', (d)-> d.get('fill'))
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
@@ -176,10 +177,11 @@ module.exports = class NodeView extends View
           this.ref = $(this).next('text')[0].getBoundingClientRect()
           d.width = this.ref.width
         )
+        .attr('fill', 'pink')
         .attr('height', (d)-> return d.get('font_size') - d.get('font_size')/4 + 10)
         .attr('width', (d)-> return d.width + 10)
         .attr('x', (d)-> return -1 * (d.width/2) - 5)
-        .attr('y', (d)-> return -1 * d.get('font_size')/2 - d.get('font_size')/4 - 5)
+        .attr('y', (d)-> return -1 * d.get('font_size')/2 - d.get('font_size')/4 - 5 + d.get('font_size')/3)
 
 
   # ----------------------------------
