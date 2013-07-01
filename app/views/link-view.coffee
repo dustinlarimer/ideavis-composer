@@ -82,6 +82,7 @@ module.exports = class LinkView extends View
   build_baseline: =>
     @build_markers()
     @baseline
+      .attr('shape-rendering', 'geometricPrecision')
       .attr('stroke', 'pink')
       .attr('stroke-dasharray', 'none')
       .attr('stroke-linecap', 'round')
