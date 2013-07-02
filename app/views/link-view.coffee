@@ -99,6 +99,9 @@ module.exports = class LinkView extends View
   build_markers: =>
     #console.log @model.get('marker_end')
     marker_end = d3.select('defs')
+      #.selectAll('marker')
+      #.data(['type', 'type2', 'type3'])
+      #.enter()
       .append('svg:marker')
         .attr('id', 'link_' + @model.id + '_marker_end')
 

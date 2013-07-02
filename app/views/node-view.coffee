@@ -102,7 +102,7 @@ module.exports = class NodeView extends View
         .append('svg:text')
           .attr('class', 'artifact')
           .text((d)-> d.get('text'))
-          .attr('shape-rendering', 'crispEdges')
+          .attr('text-rendering', 'optimizeLegibility')
           .attr('dx', 0)
           .attr('dy', (d)-> d.get('font_size')/3)
           .attr('letter-spacing', '0px')

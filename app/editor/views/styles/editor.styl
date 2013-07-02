@@ -56,7 +56,6 @@ body
   margin 0 0 0 50px
   padding 50px 0 0
 
-
 #controls
   position absolute
   top 0
@@ -90,6 +89,26 @@ body
         background rgba(0,0,0,.35)
       &.active
         background rgba(0,169,167,.5)
+
+    #tool-pointer,
+    #tool-node,
+    #tool-link,
+    #tool-text
+      background-position 50% 50%
+      background-repeat no-repeat
+      background-size 100%
+
+    #tool-pointer
+      background-image url('/images/toolbar-pointer.png')
+
+    #tool-node
+      background-image url('/images/toolbar-node.png')
+
+    #tool-link
+      background-image url('/images/toolbar-link.png')
+
+    #tool-text
+      background-image url('/images/toolbar-text.png')
 
   #detail
     background rgba(0,0,0,.75)

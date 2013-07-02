@@ -65,8 +65,16 @@ module.exports = class CanvasView extends View
           line = d3.svg.line()
                    .x((d)-> return d.x)
                    .y((d)-> return d.y)
-                   .interpolate(_interpolation)
-          return line(data)
+                   .interpolate(_interpolation)(data)
+          if _interpolation is 'basis' and _midpoints.length > 0
+            _curves = line.split('C')
+            _last = _curves.pop()
+            _line = _curves.join('C')
+            data = _last.split(',')
+            _line += 'L' + data.slice(data.length - 2).join(',')
+            return _line
+          else
+            return line
         else
           return 'M 0,0'
       ) if mediator.link?
@@ -261,11 +269,11 @@ module.exports = class CanvasView extends View
     #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)
     
     $('#canvas')
-      .attr('height', bounds.height)
-      .attr('width', bounds.width)
+      .css('height', bounds.height+50)
+      .css('width', bounds.width+50)
     $('#stage')
-      .attr('height', bounds.height)
-      .attr('width', bounds.width-50)
+      .css('height', bounds.height + 50)
+      .css('width', bounds.width)
     $('#stage svg, #stage svg #canvas_background')
       .attr('height', bounds.height)
       .attr('width', bounds.width)
