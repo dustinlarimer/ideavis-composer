@@ -11,9 +11,11 @@ module.exports = class LinkView extends View
 
     @source = data.source
     @target = data.target
+    
     @baseline = d3.select(@el)
       .append('svg:path')
         .attr('class', 'baseline')
+    
     @marker_start = mediator.defs.selectAll('marker' + '#link_' + @model.id + '_marker_start')
     @marker_end = mediator.defs.selectAll('marker' + '#link_' + @model.id + '_marker_end')
     @selected_endpoint = null
@@ -105,7 +107,6 @@ module.exports = class LinkView extends View
   # ----------------------------------
   build_markers: =>
     #console.log @model.get('marker_end')
-
     #unless @model.marker_start.get('type') is 'none'
     
     @marker_start = @marker_start.data([@model.marker_start])
@@ -114,69 +115,62 @@ module.exports = class LinkView extends View
       .append('svg:marker')
         .attr('id', 'link_' + @model.id + '_marker_start')
         .attr('class', 'marker-start')
-    
-    @marker_end = @marker_end.data([@model.marker_end])
-    @marker_end
-      .enter()
-      .append('svg:marker')
-        .attr('id', 'link_' + @model.id + '_marker_end')
-        .attr('class', 'marker-end')
+        .attr('markerUnits', 'strokeWidth')
+        .attr('orient', 'auto')
+        .attr('refY', 0)
 
     @marker_start
-        .attr('markerUnits', 'strokeWidth')
-        .attr('orient', 'auto')
-        .attr('refX', (d)-> d.get('offset_x'))
-        .attr('refY', 0)
-
-    @marker_end
-        .attr('markerUnits', 'strokeWidth')
-        .attr('orient', 'auto')
-        .attr('refX', (d)-> return d.get('offset_x'))
-        .attr('refY', 0)
-
-    #@marker_end
-    #    .attr('viewBox', '0 -5 10 10')
-    #    .attr('markerHeight', 3)
-    #    .attr('markerWidth', 4)
-    #    .append('svg:path')
-    #      .attr('d', 'M 0,0 m 0,-5 L 10,0 L 0,5 z')
-    #      .attr('fill', '#333333')
-
-    #'reverse'
-    sw = @model.get('stroke_width')
-    rev_w = 2 * sw
-    rev_min_x = -2 * sw
-    rev_min_y = -1 * sw/2
-    rev_max_y = sw/2
-    rev_v = '' + rev_min_x + ' ' + rev_min_y + ' ' + rev_w + ' ' + sw
-    rev_d = 'M 0,0 m 0,' + rev_min_y + ' L ' + rev_min_x + ',0 L 0,' + rev_max_y + ' z'
-    
-    # 'user says 30px'
-    rev_width_px = 30 
-    rev_scale = rev_width_px / sw
-    
-    @marker_end
-        .attr('viewBox', rev_v)
-        .attr('markerHeight', 1*rev_scale)
-        .attr('markerWidth', 2*rev_scale)
+        .each((d,i)=> @generate_marker_path(d))
+        .attr('refX', (d)=> return -1 * d.get('offset_x') / @model.get('stroke_width'))
+        .attr('viewBox', (d)-> d.viewbox)
+        .attr('markerHeight', (d)-> d.markerHeight)
+        .attr('markerWidth', (d)-> d.markerWidth)
         .append('svg:path')
-          .attr('d', rev_d)
-          #.attr('d', 'M 0,0 m 0,-10 L -20,0 L 0,10 z')
+          .attr('d', (d)-> d.path)
           .attr('fill', (d)=> 
             if d.get('fill') is 'none'
               return @model.get('stroke')
             else
               return d.get('fill')
           )
-          .attr('opacity', (d)-> return d.get('fill_opacity'))
+          .attr('shape-rendering', 'geometricPrecision')
+          .attr('fill-opacity', (d)-> return d.get('fill_opacity'))
+          .attr('stroke', (d)-> return d.get('stroke'))
+          .attr('stroke-opacity', (d)-> return d.get('stroke_opacity'))
+          .attr('stroke-width', (d)-> return d.get('stroke'))
 
-    @marker_start
-      .exit()
-      .remove()
+
+    @marker_end = @marker_end.data([@model.marker_end])
+    @marker_end
+      .enter()
+      .append('svg:marker')
+        .attr('id', 'link_' + @model.id + '_marker_end')
+        .attr('class', 'marker-end')
+        .attr('markerUnits', 'strokeWidth')
+        .attr('orient', 'auto')
+        .attr('refY', 0)
     
     @marker_end
-      .exit()
-      .remove()
+        .each((d,i)=> @generate_marker_path(d))
+        .attr('refX', (d)=> return d.get('offset_x') / @model.get('stroke_width'))
+        .attr('viewBox', (d)-> d.viewbox)
+        .attr('markerHeight', (d)-> d.markerHeight)
+        .attr('markerWidth', (d)-> d.markerWidth)
+        .append('svg:path')
+          .attr('d', (d)-> d.path)
+          .attr('fill', (d)=> 
+            if d.get('fill') is 'none'
+              return @model.get('stroke')
+            else
+              return d.get('fill')
+          )
+          .attr('fill-opacity', (d)-> return d.get('fill_opacity'))
+          .attr('stroke', (d)-> return d.get('stroke'))
+          .attr('stroke-opacity', (d)-> return d.get('stroke_opacity'))
+          .attr('stroke-width', (d)-> return d.get('stroke'))
+
+    @marker_start.exit().remove()
+    @marker_end.exit().remove()
 
 
   # ----------------------------------
@@ -285,6 +279,7 @@ module.exports = class LinkView extends View
         .attr('stroke-opacity', => return @baseline.attr('stroke-opacity'))
         .attr('stroke-width', => return @baseline.attr('stroke-width'))
         .attr('fill', 'none')
+        .attr('marker-start', => return @baseline.attr('marker-start'))
         .attr('marker-end', => return @baseline.attr('marker-end'))
         .attr('d', => return @baseline.attr('d'))
         .call(d3.behavior.drag()
@@ -357,4 +352,71 @@ module.exports = class LinkView extends View
     mediator.publish 'refresh_canvas'
       
 
+
+
+
+  # ----------------------------------
+  # GENERATE Markers
+  # ----------------------------------
+  generate_marker_path: (d) =>
+    stroke_width = @model.get('stroke_width')
+    type = d.get('type')
+    width = d.get('width')
+    _w = 2 * stroke_width
+    _scale = width / stroke_width
+    
+    switch type
+      when 'none'
+        d.markerHeight = 0
+        d.markerWidth = 0
+        d.path = 'M 0,0'
+        d.viewbox = '0 0 0 0'
+        break
+      
+      when 'circle'
+        _min = -1 * stroke_width
+        _max = stroke_width
+        d.markerHeight = _scale
+        d.markerWidth = _scale
+        d.path = 'M 0,0  m ' + _min + ',0  a ' + _max + ',' + _max + ' 0 1,0 ' + _w + ',0  a ' + _max + ',' + _max + ' 0 1,0 ' +  _w*-1 + ',0'
+        d.viewbox = '' + _min + ' ' + _min + ' ' + _w + ' ' + _w
+        break
+      
+      when 'square'
+        _min = -1 * stroke_width
+        _max = stroke_width
+        d.markerHeight = _scale
+        d.markerWidth = _scale
+        d.path = 'M ' + _min + ',' + _min + ' L' + _max + ',' + _min + ' L' + _max + ',' + _max + ' L' + _min + ',' + _max + ' Z'
+        d.viewbox = '' + _min + ' ' + _min + ' ' + _w + ' ' + _w
+        break
+      
+      when 'reverse-start'
+        _min_x = 0
+        _max_x = _w
+        _min_y = -1 * stroke_width/2
+        _max_y = stroke_width/2
+        d.markerHeight = 1 * _scale
+        d.markerWidth = 2 * _scale
+        d.path = 'M 0,0 m 0,' + _min_y + ' L ' + _max_x + ',0 L 0,' + _max_y + ' z'
+        d.viewbox = '' + _min_x + ' ' + _min_y + ' ' + _w + ' ' + stroke_width
+        break
+      
+      when 'reverse-end'
+        _min_x = -2 * stroke_width
+        _min_y = -1 * stroke_width/2
+        _max_y = stroke_width/2
+        d.markerHeight = 1 * _scale
+        d.markerWidth = 2 * _scale
+        d.path = 'M 0,0 m 0,' + _min_y + ' L ' + _min_x + ',0 L 0,' + _max_y + ' z'
+        d.viewbox = '' + _min_x + ' ' + _min_y + ' ' + _w + ' ' + stroke_width
+        break
+
+    #@marker_end
+    #    .attr('viewBox', '0 -5 10 10')
+    #    .attr('markerHeight', 3)
+    #    .attr('markerWidth', 4)
+    #    .append('svg:path')
+    #      .attr('d', 'M 0,0 m 0,-5 L 10,0 L 0,5 z')
+    #      .attr('fill', '#333333')
 
