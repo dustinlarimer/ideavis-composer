@@ -8,17 +8,21 @@ module.exports = class LinkView extends View
     super
     _.extend this, new Backbone.Shortcuts
     @delegateShortcuts()
-    
-    #@subscribeEvent 'deactivate_detail', @deactivate
-    @subscribeEvent 'clear_active', @clear
-    
+
     @source = data.source
     @target = data.target
     @baseline = d3.select(@el)
       .append('svg:path')
         .attr('class', 'baseline')
-
+    @marker_start = mediator.defs.selectAll('marker' + '#link_' + @model.id + '_marker_start')
+    @marker_end = mediator.defs.selectAll('marker' + '#link_' + @model.id + '_marker_end')
     @selected_endpoint = null
+    
+    #@subscribeEvent 'deactivate_detail', @deactivate
+    @subscribeEvent 'clear_active', @clear
+
+    @listenTo @model.marker_start, 'change', @build_markers
+    @listenTo @model.marker_end, 'change', @build_markers
 
   render: ->
     super
@@ -26,6 +30,8 @@ module.exports = class LinkView extends View
     console.log '[LinkView Rendered]'
 
   remove: ->
+    @marker_start.remove()
+    @marker_end.remove()
     @deactivate()
     console.log '[LinkView Removed]'
     super
@@ -83,14 +89,15 @@ module.exports = class LinkView extends View
     @build_markers()
     @baseline
       .attr('shape-rendering', 'geometricPrecision')
-      .attr('stroke', 'pink')
-      .attr('stroke-dasharray', 'none')
-      .attr('stroke-linecap', 'round')
-      .attr('stroke-linejoin', 'round')
-      .attr('stroke-opacity', .67)
+      .attr('stroke', (d)=> @model.get('stroke'))
+      .attr('stroke-dasharray', (d)=> @model.get('stroke_dasharray'))
+      .attr('stroke-linecap', (d)=> @model.get('stroke_linecap'))
+      .attr('stroke-linejoin', (d)=> @model.get('stroke_linecap'))
+      .attr('stroke-opacity', (d)=> @model.get('stroke_opacity'))
       .attr('stroke-width', (d)-> d.model.get('stroke_width'))
       .attr('fill', 'none')
-      .attr('marker-end', (d)-> return 'url(#' + 'link_' + d.id + '_marker_end)')
+      .attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
+      .attr('marker-end',   (d)-> 'url(#' + 'link_' + d.id + '_marker_end)')
 
 
   # ----------------------------------
@@ -98,20 +105,36 @@ module.exports = class LinkView extends View
   # ----------------------------------
   build_markers: =>
     #console.log @model.get('marker_end')
-    marker_end = d3.select('defs')
-      #.selectAll('marker')
-      #.data(['type', 'type2', 'type3'])
-      #.enter()
+
+    #unless @model.marker_start.get('type') is 'none'
+    
+    @marker_start = @marker_start.data([@model.marker_start])
+    @marker_start
+      .enter()
+      .append('svg:marker')
+        .attr('id', 'link_' + @model.id + '_marker_start')
+        .attr('class', 'marker-start')
+    
+    @marker_end = @marker_end.data([@model.marker_end])
+    @marker_end
+      .enter()
       .append('svg:marker')
         .attr('id', 'link_' + @model.id + '_marker_end')
+        .attr('class', 'marker-end')
 
-    marker_end
+    @marker_start
         .attr('markerUnits', 'strokeWidth')
         .attr('orient', 'auto')
-        .attr('refX', 0) # endpoint offset, f(strokeWidth)
+        .attr('refX', (d)-> d.get('offset_x'))
         .attr('refY', 0)
 
-    #marker_end
+    @marker_end
+        .attr('markerUnits', 'strokeWidth')
+        .attr('orient', 'auto')
+        .attr('refX', (d)-> return d.get('offset_x'))
+        .attr('refY', 0)
+
+    #@marker_end
     #    .attr('viewBox', '0 -5 10 10')
     #    .attr('markerHeight', 3)
     #    .attr('markerWidth', 4)
@@ -128,19 +151,32 @@ module.exports = class LinkView extends View
     rev_v = '' + rev_min_x + ' ' + rev_min_y + ' ' + rev_w + ' ' + sw
     rev_d = 'M 0,0 m 0,' + rev_min_y + ' L ' + rev_min_x + ',0 L 0,' + rev_max_y + ' z'
     
-    rev_width_px = 30 # 'user says 30px'
+    # 'user says 30px'
+    rev_width_px = 30 
     rev_scale = rev_width_px / sw
     
-    marker_end
+    @marker_end
         .attr('viewBox', rev_v)
         .attr('markerHeight', 1*rev_scale)
         .attr('markerWidth', 2*rev_scale)
         .append('svg:path')
           .attr('d', rev_d)
           #.attr('d', 'M 0,0 m 0,-10 L -20,0 L 0,10 z')
-          .attr('fill', '#3498DB')
-          .attr('opacity', .67)
+          .attr('fill', (d)=> 
+            if d.get('fill') is 'none'
+              return @model.get('stroke')
+            else
+              return d.get('fill')
+          )
+          .attr('opacity', (d)-> return d.get('fill_opacity'))
 
+    @marker_start
+      .exit()
+      .remove()
+    
+    @marker_end
+      .exit()
+      .remove()
 
 
   # ----------------------------------

@@ -1,17 +1,18 @@
 Model = require 'models/base/model'
 
+Marker = require 'models/marker'
+
 module.exports = class Link extends Model
   defaults:
     source: null
     target: null
     endpoints: [[0,0],[0,0]]
     midpoints: []
-    markers: []
+    markers: [ (new Marker type: 'none').toJSON(), (new Marker type: 'none').toJSON() ]
     interpolation: 'basis'
     stroke: 'lightblue'
     stroke_dasharray: []
     stroke_linecap: 'round'
-    stroke_linejoin: ''
     stroke_opacity: 1
     stroke_width: 5
 
@@ -21,7 +22,10 @@ module.exports = class Link extends Model
     super
     _.extend({}, data)
     #@interpolation = @interpolation_types[4] unless data.interpolation
-    #console.log @interpolation
+    @marker_start = new Marker @get('markers')[0]
+    @marker_end = new Marker @get('markers')[1]
+    @listenTo @marker_start, 'change', @update_markers
+    @listenTo @marker_end, 'change', @update_markers
 
   save: ->
     console.log '[SAVE]'
@@ -32,3 +36,9 @@ module.exports = class Link extends Model
     super
     console.log '[LINK DESTROYED]'
     @publishEvent 'link_removed', @id
+
+  update_markers: =>
+    console.log 'Marker changed'
+    _markers = [ @marker_start.toJSON(), @marker_end.toJSON() ]
+    @save markers: _markers
+

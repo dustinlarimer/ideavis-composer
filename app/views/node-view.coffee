@@ -79,7 +79,6 @@ module.exports = class NodeView extends View
     path
       .selectAll('path.artifact')
         .attr('d', (d)-> d.get('path'))
-          
     
     path
       .exit()
