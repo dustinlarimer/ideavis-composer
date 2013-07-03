@@ -16,6 +16,14 @@ module.exports = class LinkView extends View
       .append('svg:path')
         .attr('class', 'baseline')
     
+    @label = d3.select(@el)
+      .append('svg:text')
+    
+    @textline = mediator.defs
+      .append('svg:path')
+        .attr('id', 'link_' + @model.id + '_path')
+        .attr('class', 'textline')
+    
     @marker_start = mediator.defs.selectAll('marker' + '#link_' + @model.id + '_marker_start')
     @marker_end = mediator.defs.selectAll('marker' + '#link_' + @model.id + '_marker_end')
     @selected_endpoint = null
@@ -32,8 +40,11 @@ module.exports = class LinkView extends View
     console.log '[LinkView Rendered]'
 
   remove: ->
-    @marker_start.remove()
-    @marker_end.remove()
+    @baseline?.remove()
+    @textline?.remove()
+    @label?.remove()
+    @marker_start?.remove()
+    @marker_end?.remove()
     @deactivate()
     console.log '[LinkView Removed]'
     super
@@ -100,6 +111,17 @@ module.exports = class LinkView extends View
       .attr('fill', 'none')
       .attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
       .attr('marker-end',   (d)-> 'url(#' + 'link_' + d.id + '_marker_end)')
+
+    @label
+      .attr('fill', (d)=> @model.get('label_fill'))
+      .attr('font-size', (d)=> @model.get('label_font_size'))
+      .append('svg:textPath')
+        .attr('xlink:href', (d)=> '#link_' + @model.id + '_path')
+        .attr('spacing', 'auto')
+        .attr('startOffset', (d)=> @model.get('label_offset_x'))
+        .append('svg:tspan')
+          .attr('dy', (d)=> -1 * @model.get('label_offset_y'))
+          .text((d)=> @model.get('label_text'))
 
 
   # ----------------------------------

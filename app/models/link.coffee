@@ -15,6 +15,11 @@ module.exports = class Link extends Model
     stroke_linecap: 'round'
     stroke_opacity: 1
     stroke_width: 5
+    label_fill: '#999'
+    label_font_size: 12
+    label_offset_x: 75
+    label_offset_y: 5
+    label_text: 'Label'
 
   interpolation_types: ['linear', 'step-before', 'step-after', 'basis', 'cardinal']
 

@@ -54,6 +54,7 @@ module.exports = class CanvasView extends View
         _source = _.findWhere(force.nodes(), {id: d.source.id})
         _interpolation = d.model.get('interpolation')
         if _target? and _source?
+          _def = mediator.defs.select('path#link_' + d.model.id + '_path').transition().ease(Math.sqrt)
           _endpoints = d.model.get('endpoints')
           _midpoints = d.model.get('midpoints')
           data = []
@@ -72,8 +73,10 @@ module.exports = class CanvasView extends View
             _line = _curves.join('C')
             data = _last.split(',')
             _line += 'L' + data.slice(data.length - 2).join(',')
+            _def.attr('d', _line)
             return _line
           else
+            _def.attr('d', line)
             return line
         else
           return 'M 0,0'
@@ -193,7 +196,7 @@ module.exports = class CanvasView extends View
     @refresh()
 
   build_links: ->
-    force.stop()
+    #force.stop()
     mediator.link = mediator.vis
       .selectAll('g.linkGroup')
       .data(force.links())

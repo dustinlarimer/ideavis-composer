@@ -93,10 +93,3 @@ module.exports = class ToolLinkView extends View
     if @source_node? and @target_node?
       mediator.links.create {source: @source_node.id, target: @target_node.id}, {wait: true}
     @placeholder.remove()
-
-  #node_select: (d,i) ->
-  #  if mediator.selected_node?
-  #    _source = mediator.selected_node
-  #    _target = d
-  #    unless _target.model.id is _source.model.id
-  #      mediator.links.create {source: _source.model.id, target: _target.model.id}, {wait: true}
