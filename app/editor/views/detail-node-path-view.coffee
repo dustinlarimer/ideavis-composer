@@ -8,28 +8,28 @@ module.exports = class DetailNodePathView extends View
 
   initialize: ->
     super
-    #console.log 'Initializing DetailNodePathView'
-    #console.log @model
     @delegate 'change', 'input', @update_attributes
-    @delegate 'click', '#path-attr-shape button', @update_shape
+    @delegate 'click', '#path-attribute-shape button', @update_shape
 
   #listen:
   #  'change model': 'update_form'
 
   update_attributes: =>
     console.log 'path:update_attributes'
-    _x = $('#path-attr-x').val() or 0
-    _y = $('#path-attr-y').val() or 0
-    _rotate = $('#path-attr-rotate').val() or 0
-    _scale = $('#path-attr-scale').val() or 1
-    _fill = $('#path-attr-fill').val() or 'none'
-    _stroke = $('#path-attr-stroke').val() or 'none'
-    _stroke_width = $('#path-attr-stroke_width').val() or 0
-    @model.set x: _x, y: _y, rotate: _rotate, scale: _scale, fill: _fill, stroke: _stroke, stroke_width: _stroke_width
+    _x = $('#path-attribute-x').val() or 0
+    _y = $('#path-attribute-y').val() or 0
+    _rotate = $('#path-attribute-rotate').val() or 0
+    _scale = $('#path-attribute-scale').val() or 1
+    _fill = $('#path-attribute-fill').val() or 'none'
+    _fill_opacity = $('#path-attribute-fill-opacity').val()
+    _stroke = $('#path-attribute-stroke').val() or 'none'
+    _stroke_width = $('#path-attribute-stroke-width').val() or 0
+    _stroke_opacity = $('#path-attribute-stroke-opacity').val()
+    @model.set x: _x, y: _y, rotate: _rotate, scale: _scale, fill: _fill, fill_opacity: _fill_opacity, stroke: _stroke, stroke_width: _stroke_width, stroke_opacity: _stroke_opacity
 
   update_form: =>
-    $('#path-attr-x').val(@model.get('x'))
-    $('#path-attr-y').val(@model.get('y'))
+    $('#path-attribute-x').val(@model.get('x'))
+    $('#path-attribute-y').val(@model.get('y'))
 
   update_shape: (e) =>
     _shape = $(e.target).val()

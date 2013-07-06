@@ -5,8 +5,10 @@ module.exports = class Text extends Model
     type: 'text'
     text: 'Text'
     fill: '#000000'
+    fill_opacity: 100
     stroke: null
     stroke_width: 0
+    stroke_opacity: 100
     rotate: 0
     font_family: 'Helvetica Neue'
     font_size:  14

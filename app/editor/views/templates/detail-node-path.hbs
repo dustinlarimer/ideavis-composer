@@ -2,13 +2,13 @@
 
 <div class="row-fluid">
 	<div class="span12">
-		<div class="btn-group" id="path-attr-shape" data-toggle="buttons-radio">
+		<div class="btn-group" id="path-attribute-shape" data-toggle="buttons-radio">
 			<button type="button" class="btn btn-inverse" value="circle">cr</button>
 			<button type="button" class="btn btn-inverse" value="square">sq</button>
 			<button type="button" class="btn btn-inverse" value="hexagon">hx</button>
-			<button type="button" class="btn btn-inverse" value="circle">tr</button>
-			<button type="button" class="btn btn-inverse" value="square">pl</button>
-			<button type="button" class="btn btn-inverse" value="hexagon">(/)</button>
+			<button type="button" class="btn btn-inverse" value="triangle">tr</button>
+			<button type="button" class="btn btn-inverse" value="plus">pl</button>
+			<button type="button" class="btn btn-inverse" value="none">(/)</button>
 		</div>
 	</div>
 </div>
@@ -17,18 +17,18 @@
 	<div class="span4">
 		<label>Area</label>
 		<div class="input-append">
-  		<input class="span9" id="path-attr-scale" type="text" value="{{scale}}">
+  		<input class="span9" id="path-attribute-scale" type="text" value="{{scale}}">
   		<span class="add-on">px</span>
 		</div>
 	</div>
 	<div class="span4">
-		<label>Fill</label>
-		<input class="span12" id="path-attr-fill" type="text" value="{{fill}}">
+		<label><canvas class="fill-preview" style="background-color: {{fill}}"></canvas> Fill</label>
+		<input class="span12" id="path-attribute-fill" type="text" value="{{fill}}">
 	</div>
 	<div class="span4">
 		<label>Alpha</label>
 		<div class="input-append">
-			<input class="span9" id="node-attr-fill-opacity" type="text" value="100">
+			<input class="span9" id="path-attribute-fill-opacity" type="text" value="{{fill_opacity}}">
 			<span class="add-on">%</span>
 		</div>
 	</div>
@@ -38,18 +38,18 @@
 	<div class="span4">
 		<label>Border</label>
 		<div class="input-append">
-  		<input class="span9" id="path-attr-stroke-width" type="text" value="{{stroke_width}}">
+  		<input class="span9" id="path-attribute-stroke-width" type="text" value="{{stroke_width}}">
   		<span class="add-on">px</span>
 		</div>
 	</div>
 	<div class="span4">
-		<label>Stroke</label>
-		<input class="span12" id="path-attr-stroke" type="text" value="{{stroke}}">
+		<label><canvas class="stroke-preview" style="border-color: {{stroke}}"></canvas> Stroke</label>
+		<input class="span12" id="path-attribute-stroke" type="text" value="{{stroke}}">
 	</div>
 	<div class="span4">
 		<label>Alpha</label>
 		<div class="input-append">
-			<input class="span9" id="node-attr-stroke-opacity" type="text" value="100">
+			<input class="span9" id="path-attribute-stroke-opacity" type="text" value="{{stroke_opacity}}">
 			<span class="add-on">%</span>
 		</div>
 	</div>
@@ -58,7 +58,7 @@
 <div class="row-fluid">
 	<div class="span8">
 		<label>Dash</label>
-		<div id="path-attr-stroke-dasharray">
+		<div id="path-attribute-stroke-dasharray">
 			<input class="span2" type="text">
 			<input class="span2" type="text">
 			<input class="span2" type="text">
@@ -69,7 +69,7 @@
 	</div>
 	<div class="span4">
 		<label>Cap</label>
-		<div class="btn-group" id="path-attr-stroke-linecap" data-toggle="buttons-radio">
+		<div class="btn-group" id="path-attribute-stroke-linecap" data-toggle="buttons-radio">
 			<button type="button" class="btn btn-inverse" value="round">r</button>
 			<button type="button" class="btn btn-inverse" value="square">s</button>
 			<button type="button" class="btn btn-inverse" value="butt">b</button>
@@ -81,21 +81,21 @@
 	<div class="span4">
 		<label>x</label>
 		<div class="input-append">
-			<input class="span9" id="path-attr-x" type="text" value="{{x}}">
+			<input class="span9" id="path-attribute-x" type="text" value="{{x}}">
 			<span class="add-on">px</span>
 		</div>
 	</div>
 		<div class="span4">
 		<label>y</label>
 		<div class="input-append">
-			<input class="span9" id="path-attr-y" type="text" value="{{y}}">
+			<input class="span9" id="path-attribute-y" type="text" value="{{y}}">
 			<span class="add-on">px</span>
 		</div>
 	</div>
 		<div class="span4">
 		<label>r<sup>&#186;</sup></label>
 		<div class="input-append">
-			<input class="span9" id="path-attr-rotate" type="text" value="{{rotate}}">
+			<input class="span9" id="path-attribute-rotate" type="text" value="{{rotate}}">
 			<span class="add-on">&nbsp;&#186;&nbsp;</span>
 		</div>
 	</div>

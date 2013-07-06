@@ -41,9 +41,11 @@ module.exports = class CanvasView extends View
     mediator.node
       .transition()
       .ease(Math.sqrt)
+      .attr('opacity', (d)-> d.opacity)
       .attr('transform', (d)->
-        return 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')'
+        return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')'
       ) if mediator.node?
+    #scale(' + d.scale + ') 
 
     mediator.link
       .selectAll('path.baseline, path.tickline')
@@ -90,7 +92,7 @@ module.exports = class CanvasView extends View
 
   init_artifacts: ->
     _.each(mediator.nodes.models, (node,i) => 
-      force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), rotate: node.get('rotate'), scale: node.get('scale'), model: node }
+      force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), scale: node.get('scale'), model: node }
     )
     @build_nodes()
 
@@ -111,26 +113,28 @@ module.exports = class CanvasView extends View
     mediator.publish 'refresh_canvas'
     mediator.selected_node = d
     mediator.publish 'clear_active_nodes'
-    #force.start()
+    # force.start()
 
   drag_node_move: (d, i) ->
     console.log 'drag_node_move'
     mediator.selected_node = null
-    d.scale = d.model.get('scale') or 1
+    #d.scale = d.model.get('scale') or 1
     d.rotate = d.model.get('rotate')
     d.x = d3.event.x
     d.y = d3.event.y
     d.px = d.x
     d.py = d.y
-    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')')
-    #force.tick()
+    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
+    # scale(' + d.scale + ') 
+    # force.tick()
   
   drag_node_end: (d, i) ->
     mediator.publish 'refresh_canvas'
     #force.start()
 
   add_node: (node) ->
-    force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), rotate: node.get('rotate'), scale: node.get('scale'), model: node }
+    force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
+    # scale: node.get('scale'), 
     @build_nodes()
 
   update_node: (node) ->
@@ -138,8 +142,9 @@ module.exports = class CanvasView extends View
       if d.id is node.id
         d.x = node.get('x')
         d.y = node.get('y') 
+        d.opacity = node.get('opacity')/100
         d.rotate = node.get('rotate')
-        d.scale = node.get('scale') or 1
+        #d.scale = node.get('scale') or 1
         d.px = d.x
         d.py = d.y
     )
@@ -166,10 +171,13 @@ module.exports = class CanvasView extends View
       .enter()
       .append('svg:g')
       .attr('class', 'nodeGroup')
+      .attr('opacity', (d)-> d.model.get('opacity')/100)
       .attr('transform', (d)->
-        return 'translate('+ d.x + ',' + d.y + ') scale(' + d.model.get('scale') + ') rotate(' + d.model.get('rotate') + ')')
+        return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.model.get('rotate') + ')'
+      )
       .each((d,i)-> d.view = new NodeView({model: d.model, el: @}))
       .call(node_drag_events)
+    # scale(' + d.model.get('scale') + ') 
     
     mediator.node
       .exit()

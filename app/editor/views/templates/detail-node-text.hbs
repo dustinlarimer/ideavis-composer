@@ -2,26 +2,26 @@
 
 <div class="row-fluid">
 	<div class="span12">
-		<input id="text-attr-text" class="span12" type="text" value="{{text}}">
+		<input id="text-attribute-text" class="span12" type="text" value="{{text}}">
 	</div>
 </div>
 
 <div class="row-fluid">
 	<div class="span4">
-		<label>Size</label>
+		<label>Font Size</label>
 		<div class="input-append">
-  		<input class="span9" id="text-attr-font-size" type="text" value="{{font_size}}">
+  		<input class="span9" id="text-attribute-font-size" type="text" value="{{font_size}}">
   		<span class="add-on">px</span>
 		</div>
 	</div>
 	<div class="span4">
-		<label>Fill</label>
-		<input class="span12" id="text-attr-fill" type="text" value="{{fill}}">
+		<label><canvas class="fill-preview" style="background-color: {{fill}}"></canvas> Fill</label>
+		<input class="span12" id="text-attribute-fill" type="text" value="{{fill}}">
 	</div>
 	<div class="span4">
 		<label>Alpha</label>
 		<div class="input-append">
-			<input class="span9" id="text-attr-fill-opacity" type="text" value="100">
+			<input class="span9" id="text-attribute-fill-opacity" type="text" value="{{fill_opacity}}">
 			<span class="add-on">%</span>
 		</div>
 	</div>
@@ -31,18 +31,18 @@
 	<div class="span4">
 		<label>Outline</label>
 		<div class="input-append">
-  		<input class="span9" id="text-attr-stroke-width" type="text" value="{{font_stroke}}">
+  		<input class="span9" id="text-attribute-stroke-width" type="text" value="{{stroke_width}}">
   		<span class="add-on">px</span>
 		</div>
 	</div>
 	<div class="span4">
-		<label>Stroke</label>
-		<input class="span12" id="text-attr-stroke" type="text" value="#ff0000">
+		<label><canvas class="stroke-preview" style="border-color: {{stroke}}"></canvas> Stroke</label>
+		<input class="span12" id="text-attribute-stroke" type="text" value="#ff0000">
 	</div>
 	<div class="span4">
 		<label>Alpha</label>
 		<div class="input-append">
-			<input class="span9" id="text-attr-stroke-opacity" type="text" value="100">
+			<input class="span9" id="text-attribute-stroke-opacity" type="text" value="{{stroke_opacity}}">
 			<span class="add-on">%</span>
 		</div>
 	</div>
@@ -51,7 +51,7 @@
 <div class="row-fluid">
 	<div class="span8">
 		<label>Style</label>
-		<div class="btn-group" id="text-attr-style" data-toggle="buttons-checkbox">
+		<div class="btn-group" id="text-attribute-style" data-toggle="buttons-checkbox">
 			<button type="button" class="btn btn-inverse" value="bold"><b>B</b></button>
 			<button type="button" class="btn btn-inverse" value="italic"><i>I</i></button>
 			<button type="button" class="btn btn-inverse" value="underline"><u>U</u></button>
@@ -61,7 +61,7 @@
 	<div class="span4">
 		<label>Spacing</label>
 		<div class="input-append">
-  		<input class="span9" id="text-attr-spacing" type="text" value="0">
+  		<input class="span9" id="text-attribute-spacing" type="text" value="0">
   		<span class="add-on">px</span>
 		</div>
 	</div>
@@ -71,21 +71,21 @@
 	<div class="span4">
 		<label>x</label>
 		<div class="input-append">
-			<input class="span9" id="text-attr-x" type="text" value="{{x}}">
+			<input class="span9" id="text-attribute-x" type="text" value="{{x}}">
 			<span class="add-on">px</span>
 		</div>
 	</div>
 		<div class="span4">
 		<label>y</label>
 		<div class="input-append">
-			<input class="span9" id="text-attr-y" type="text" value="{{y}}">
+			<input class="span9" id="text-attribute-y" type="text" value="{{y}}">
 			<span class="add-on">px</span>
 		</div>
 	</div>
 		<div class="span4">
 		<label>r<sup>&#186;</sup></label>
 		<div class="input-append">
-			<input class="span9" id="text-attr-rotate" type="text" value="{{rotate}}">
+			<input class="span9" id="text-attribute-rotate" type="text" value="{{rotate}}">
 			<span class="add-on">&nbsp;&#186;&nbsp;</span>
 		</div>
 	</div>

@@ -159,7 +159,7 @@ body
       font-size 12px
       margin-bottom 5px
       text-align center
-      &#text-attr-text
+      &#text-attribute-text
         text-align left
 
     .input-append,
@@ -182,14 +182,14 @@ body
       .btn
         //width 33%
 
-  #path-attr-shape
+  #path-attribute-shape
     .btn
 	    width 17%
-	#text-attr-style
+	#text-attribute-style
 	  .btn
       width 25%
 
-  #path-attr-stroke-dasharray
+  #path-attribute-stroke-dasharray
     input
       border-left medium none
       border-radius 0
@@ -204,6 +204,14 @@ body
       &:nth-child(even)
         background rgb(100,100,100)
 
+  canvas
+    border 1px solid #333
+    border-radius 50%
+    height 10px
+    width 10px
+    //&.fill-preview
+    &.stroke-preview
+      border-width 2px
 
 
 #detail .detail-panel-header {

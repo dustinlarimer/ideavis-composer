@@ -64,8 +64,10 @@ module.exports = class NodeView extends View
           .attr('shape-rendering', 'geometricPrecision')
           .attr('d', (d)-> d.get('path'))
           .attr('fill', (d)-> d.get('fill'))
+          .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
+          .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
     
     path
       .transition()
@@ -73,8 +75,10 @@ module.exports = class NodeView extends View
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
         .selectAll('path.artifact')
           .attr('fill', (d)-> d.get('fill'))
+          .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
+          .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
     
     path
       .selectAll('path.artifact')
@@ -110,8 +114,10 @@ module.exports = class NodeView extends View
           .attr('font-size', (d)-> d.get('font_size'))
           .attr('font-weight', (d)-> d.get('font_weight'))
           .attr('fill', (d)-> d.get('fill'))
+          .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
+          .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
           .attr('text-anchor', 'middle')
     
     text
@@ -121,8 +127,10 @@ module.exports = class NodeView extends View
         .selectAll('text.artifact')
           .attr('dy', (d)-> d.get('font_size')/3)
           .attr('fill', (d)-> d.get('fill'))
+          .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
+          .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
 
     text
       .selectAll('text.artifact')

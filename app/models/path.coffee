@@ -5,8 +5,10 @@ module.exports = class Path extends Model
     type: 'path'
     path: 'M 0, 0  m -50, 0  a 50,50 0 1,0 100,0  a 50,50 0 1,0 -100,0'
     fill: '#FBFBFB'
+    fill_opacity: 100
     stroke: '#E5E5E5'
     stroke_width: 1
+    stroke_opacity: 100
     rotate: 0
     scale: 1
     x: 0

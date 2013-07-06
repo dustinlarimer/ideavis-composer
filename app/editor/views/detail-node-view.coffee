@@ -14,10 +14,10 @@ module.exports = class DetailNodeView extends View
 
   initialize: (data={}) ->
     super
-    @delegate 'change', '#node-attrs input', @update_attr
+    @delegate 'change', '#node-attributes input', @update_attr
 
-  #listen:
-  #  'change model': 'render'
+  listen:
+    'change model': 'update_view'
 
   render: ->
     super
@@ -26,8 +26,12 @@ module.exports = class DetailNodeView extends View
 
   update_attr: =>
     console.log 'updating attr'
-    _x = parseInt($('#node-attr-x').val())
-    _y = parseInt($('#node-attr-y').val())
-    _rotate = parseInt($('#node-attr-rotate').val())
-    _scale = parseInt($('#node-attr-scale').val())
-    @model.save({x: _x, y: _y, rotate: _rotate, scale: _scale})
+    _x = parseInt($('#node-attribute-x').val())
+    _y = parseInt($('#node-attribute-y').val())
+    _rotate = parseInt($('#node-attribute-rotate').val())
+    _opacity = parseInt($('#node-attribute-opacity').val())
+    @model.save({x: _x, y: _y, rotate: _rotate, opacity: _opacity})
+
+  update_view: =>
+    $('#node-attribute-x').val(@model.get('x'))
+    $('#node-attribute-y').val(@model.get('y'))

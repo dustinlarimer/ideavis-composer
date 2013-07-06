@@ -8,6 +8,7 @@ Text = require 'models/text'
 
 module.exports = class Node extends Model
   defaults:
+    opacity: 100
     rotate: 0
     scale: 1
     x: 0 
