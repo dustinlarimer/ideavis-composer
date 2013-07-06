@@ -11,6 +11,8 @@ body
   background #e5e5e5
 
 .navbar
+  position fixed
+  
   .navbar-inner
     background rgba(0,0,0,.75)
     border medium none
@@ -118,7 +120,8 @@ body
     position fixed
     right 10px
     top 62px
-    width 240px
+    width 300px
+    //width 240px
     
     h2
       font-size 14px
@@ -155,10 +158,14 @@ body
       color #fff
       font-size 12px
       margin-bottom 5px
+      text-align center
+      &#text-attr-text
+        text-align left
 
     .input-append,
     .input-prepend
       margin-bottom 0
+      width 100%
       .add-on
         background #333
         border-color #282828
@@ -166,12 +173,38 @@ body
         font-size 11px
         height auto
         text-shadow none
+        width 24px
 
     .btn-group
+      margin-bottom 5px
       width 100%
 
       .btn
-        width 33%
+        //width 33%
+
+  #path-attr-shape
+    .btn
+	    width 17%
+	#text-attr-style
+	  .btn
+      width 25%
+
+  #path-attr-stroke-dasharray
+    input
+      border-left medium none
+      border-radius 0
+      float left
+      margin 0
+      width 16.6%
+      &:first-child
+        border-left 1px solid rgb(40, 40, 40)
+        border-radius 4px 0 0 4px
+      &:last-child
+        border-radius 0 4px 4px 0
+      &:nth-child(even)
+        background rgb(100,100,100)
+
+
 
 #detail .detail-panel-header {
 	padding: 0 10px;

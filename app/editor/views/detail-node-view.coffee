@@ -14,8 +14,6 @@ module.exports = class DetailNodeView extends View
 
   initialize: (data={}) ->
     super
-    console.log 'Initialized DetailNodeView for Node #' + @model.id
-    
     @delegate 'change', '#node-attrs input', @update_attr
 
   #listen:

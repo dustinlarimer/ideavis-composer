@@ -1,15 +1,7 @@
-<h4>
-	Label 
-	<small class="pull-right">
-		<label class="checkbox">
-			<input type="checkbox" checked="{{visible}}"> Show
-		</label>
-	</small>
-</h4>
+<h4>Label</h4>
 
 <div class="row-fluid">
 	<div class="span12">
-		<label>Text</label>
 		<input id="text-attr-text" class="span12" type="text" value="{{text}}">
 	</div>
 </div>
@@ -18,37 +10,59 @@
 	<div class="span4">
 		<label>Size</label>
 		<div class="input-append">
-  		<input id="text-attr-font_size" class="span3 text-center" type="text" value="{{font_size}}">
+  		<input class="span9" id="text-attr-font-size" type="text" value="{{font_size}}">
   		<span class="add-on">px</span>
 		</div>
 	</div>
-	<div class="span8">
-		<label>Form</label>
-		<div class="btn-group" id="text-attr-shape" data-toggle="buttons-checkbox">
-			<button type="button" class="btn btn-inverse" value="bold"><b>B</b></button>
-			<button type="button" class="btn btn-inverse" value="italic"><i>I</i></button>
-			<button type="button" class="btn btn-inverse" value="underline"><u>U</u></button>
+	<div class="span4">
+		<label>Fill</label>
+		<input class="span12" id="text-attr-fill" type="text" value="{{fill}}">
+	</div>
+	<div class="span4">
+		<label>Alpha</label>
+		<div class="input-append">
+			<input class="span9" id="text-attr-fill-opacity" type="text" value="100">
+			<span class="add-on">%</span>
 		</div>
 	</div>
 </div>
 
 <div class="row-fluid">
 	<div class="span4">
-		<label>Fill</label>
-		<input id="text-attr-fill" class="span12 text-center" type="text" value="{{fill}}">
+		<label>Outline</label>
+		<div class="input-append">
+  		<input class="span9" id="text-attr-stroke-width" type="text" value="{{font_stroke}}">
+  		<span class="add-on">px</span>
+		</div>
 	</div>
-	<div class="span8">
+	<div class="span4">
 		<label>Stroke</label>
-		<div class="row-fluid">
-			<div class="span4">
-				<div class="input-append">
-  				<input id="text-attr-stroke_width" class="span3 text-center" type="text" value="{{stroke_width}}">
-  				<span class="add-on">px</span>
-				</div>
-			</div>
-			<div class="span6 offset2">
-				<input id="text-attr-stroke" class="span12 text-center" type="text" value="{{stroke}}">
-			</div>
+		<input class="span12" id="text-attr-stroke" type="text" value="#ff0000">
+	</div>
+	<div class="span4">
+		<label>Alpha</label>
+		<div class="input-append">
+			<input class="span9" id="text-attr-stroke-opacity" type="text" value="100">
+			<span class="add-on">%</span>
+		</div>
+	</div>
+</div>
+
+<div class="row-fluid">
+	<div class="span8">
+		<label>Style</label>
+		<div class="btn-group" id="text-attr-style" data-toggle="buttons-checkbox">
+			<button type="button" class="btn btn-inverse" value="bold"><b>B</b></button>
+			<button type="button" class="btn btn-inverse" value="italic"><i>I</i></button>
+			<button type="button" class="btn btn-inverse" value="underline"><u>U</u></button>
+			<button type="button" class="btn btn-inverse" value="overline">O&#773;</button>
+		</div>
+	</div>
+	<div class="span4">
+		<label>Spacing</label>
+		<div class="input-append">
+  		<input class="span9" id="text-attr-spacing" type="text" value="0">
+  		<span class="add-on">px</span>
 		</div>
 	</div>
 </div>
@@ -57,69 +71,22 @@
 	<div class="span4">
 		<label>x</label>
 		<div class="input-append">
-			<input id="text-attr-x" class="span3 text-center" type="text" value="{{x}}">
+			<input class="span9" id="text-attr-x" type="text" value="{{x}}">
 			<span class="add-on">px</span>
 		</div>
 	</div>
 		<div class="span4">
 		<label>y</label>
 		<div class="input-append">
-			<input id="text-attr-y" class="span3 text-center" type="text" value="{{y}}">
+			<input class="span9" id="text-attr-y" type="text" value="{{y}}">
 			<span class="add-on">px</span>
 		</div>
 	</div>
 		<div class="span4">
 		<label>r<sup>&#186;</sup></label>
 		<div class="input-append">
-			<input id="text-attr-rotate" class="span3 text-center" type="text" value="{{rotate}}">
+			<input class="span9" id="text-attr-rotate" type="text" value="{{rotate}}">
 			<span class="add-on">&nbsp;&#186;&nbsp;</span>
 		</div>
 	</div>
 </div>
-
-
-
-
-<table class="table table-condensed" style="display: none;">
-	<tr>
-		<th>X</th>
-		<th>Y</th>
-		<th>Rotate</th>
-		<th> </th>
-	</tr>
-	<tr>
-		<td><input id="text-attr-x" type="text" style="width: 40px" value="{{x}}" /></td>
-		<td><input id="text-attr-y" type="text" style="width: 40px" value="{{y}}" /></td>
-		<td><input id="text-attr-rotate" type="text" style="width: 40px" value="{{rotate}}" /></td>
-		<td> </td>
-	</tr>
-	<tr>
-		<th colspan="2">Font Family</th>
-		<td colspan="2">{{font_family}}</td>
-	</tr>
-	<tr>
-		<th colspan="2">Font Size</th>
-		<td colspan="2"><input id="text-attr-font_size" type="text" style="width: 40px" value="{{font_size}}" /> px</td>
-	</tr>
-	<tr>
-		<th colspan="2">Font Weight</th>
-		<td colspan="2">
-			<select id="text-attr-font_weight" style="width: 60px">
-				<option>---</option>
-				<option value="200">200</option>
-				<option value="300">300</option>
-				<option value="400">400</option>
-				<option value="500">500</option>
-				<option value="600">600</option>
-				<option value="700">700</option>
-			</select>
-	</tr>
-	<tr>
-		<th colspan="2">Color</th>
-		<td colspan="2">{{fill}}</td>
-	</tr>
-	<tr>
-		<th colspan="2">Stroke</th>
-		<td colspan="2">{{stroke_width}}px, {{stroke}}</td>
-	</tr>
-</table>
