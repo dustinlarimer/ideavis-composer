@@ -13,8 +13,8 @@ module.exports = class DetailNodeTextView extends View
     @delegate 'change', 'select', @update_attributes
     @delegate 'click', '.btn-group .btn', @modify_style_attribute
 
-  #listen:
-  #  'change model': 'render'
+  listen:
+    'change model': 'update_form'
 
   modify_style_attribute: (e) =>
     _button = $(e.currentTarget)
@@ -32,14 +32,21 @@ module.exports = class DetailNodeTextView extends View
     _stroke = $('#text-attribute-stroke').val() or 'none'
     _stroke_opacity = $('#text-attribute-stroke-opacity').val()
     
-    _bold = $('#text-attribute-style button:eq(0)').val() == 'true' ? true : false
-    _italic = $('#text-attribute-style button:eq(1)').val() == 'true' ? true : false
+    _bold =      $('#text-attribute-style button:eq(0)').val() == 'true' ? true : false
+    _italic =    $('#text-attribute-style button:eq(1)').val() == 'true' ? true : false
     _underline = $('#text-attribute-style button:eq(2)').val() == 'true' ? true : false
-    _overline = $('#text-attribute-style button:eq(3)').val() == 'true' ? true : false
-    _spacing = $('#text-attribute-spacing').val() or 0
+    _overline =  $('#text-attribute-style button:eq(3)').val() == 'true' ? true : false
+    _spacing =   $('#text-attribute-spacing').val() or 0
 
     _x = $('#text-attribute-x').val() or 0
     _y = $('#text-attribute-y').val() or 0
     _rotate = $('#text-attribute-rotate').val() or 0
 
     @model.set text: _text, x: _x, y: _y, rotate: _rotate, bold: _bold, italic: _italic, underline: _underline, overline: _overline, spacing: _spacing, font_size: _font_size, fill: _fill, fill_opacity: _fill_opacity, stroke: _stroke, stroke_width: _stroke_width, stroke_opacity: _stroke_opacity
+
+  update_form: =>
+    $('#text-attribute-x').val(@model.get('x'))
+    $('#text-attribute-y').val(@model.get('y'))
+
+
+

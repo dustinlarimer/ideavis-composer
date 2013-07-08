@@ -71,6 +71,11 @@ module.exports = class NodeView extends View
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
           .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
+          .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
+          .attr('stroke-linejoin', (d)-> 
+            _linecap = d.get('stroke_linecap')
+            if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
+          )
     
     path
       .transition()
@@ -82,6 +87,11 @@ module.exports = class NodeView extends View
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
           .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
+          .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
+          .attr('stroke-linejoin', (d)-> 
+            _linecap = d.get('stroke_linecap')
+            if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
+          )
     
     path
       .selectAll('path.artifact')
@@ -237,8 +247,8 @@ module.exports = class NodeView extends View
     d.py = d.get('y')
 
   drag_text_move: (d,i) ->
-    d.px = d3.event.x
-    d.py = d3.event.y
+    d.px = Math.round(d3.event.x)
+    d.py = Math.round(d3.event.y)
     d3.select(@).attr('transform', 'translate('+ d.px + ',' + d.py + ') rotate(' + d.get('rotate') + ')' )
 
   drag_text_end: (d,i) =>

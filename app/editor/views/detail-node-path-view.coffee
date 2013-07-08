@@ -10,9 +10,12 @@ module.exports = class DetailNodePathView extends View
     super
     @delegate 'change', 'input', @update_attributes
     @delegate 'click', '#path-attribute-shape button', @update_shape
+    @delegate 'click', '#path-attribute-stroke-linecap button', @update_linecap
 
-  #listen:
-  #  'change model': 'update_form'
+  render: ->
+    super
+    @$('#path-attribute-shape button[value="' + @model.get('shape') + '"]').addClass('active')
+    @$('#path-attribute-stroke-linecap button[value="' + @model.get('stroke_linecap') + '"]').addClass('active')
 
   update_attributes: =>
     console.log 'path:update_attributes'
@@ -32,5 +35,9 @@ module.exports = class DetailNodePathView extends View
     $('#path-attribute-y').val(@model.get('y'))
 
   update_shape: (e) =>
-    _shape = $(e.target).val()
+    _shape = $(e.currentTarget).val()
     @model.setPath(_shape)
+
+  update_linecap: (e) =>
+    _linecap = $(e.currentTarget).val()
+    @model.setLinecap(_linecap)

@@ -182,27 +182,69 @@ body
       .btn
         //width 33%
 
-  #path-attribute-shape
-    .btn
-	    width 17%
+    #path-attribute-shape
+      .btn
+        position relative
+        width 17%
+        span
+          background-position 50% 50%
+          background-repeat no-repeat
+          background-size 15px
+          float left
+          height 18px
+          text-indent -99999px
+          width 100%
+        #icon-shape-circle
+          background-image url('/images/detail-shape-circle.png')
+        #icon-shape-square
+          background-image url('/images/detail-shape-square.png')
+        #icon-shape-hexagon
+          background-image url('/images/detail-shape-hexagon.png')
+        #icon-shape-triangle
+          background-image url('/images/detail-shape-triangle.png')
+        #icon-shape-plus
+          background-image url('/images/detail-shape-plus.png')
+        #icon-shape-none
+          background-image url('/images/detail-shape-none.png')
+
+    #path-attribute-stroke-dasharray
+      input
+        border-left medium none
+        border-radius 0
+        float left
+        margin 0
+        width 16.6%
+        &:first-child
+          border-left 1px solid rgb(40, 40, 40)
+          border-radius 4px 0 0 4px
+        &:last-child
+          border-radius 0 4px 4px 0
+        &:nth-child(even)
+          background rgb(100,100,100)
+
+    #path-attribute-stroke-linecap 
+      .btn
+        padding 4px 0
+        position relative
+        width 30px
+        span
+          background-position 50% 50%
+          background-repeat no-repeat
+          background-size 15px
+          float left
+          height 18px
+          text-indent -99999px
+          width 100%
+        #icon-linecap-round
+          background-image url('/images/detail-linecap-round.png')
+        #icon-linecap-square
+          background-image url('/images/detail-linecap-square.png')
+        #icon-linecap-butt
+          background-image url('/images/detail-linecap-butt.png')
+
 	#text-attribute-style
 	  .btn
       width 25%
-
-  #path-attribute-stroke-dasharray
-    input
-      border-left medium none
-      border-radius 0
-      float left
-      margin 0
-      width 16.6%
-      &:first-child
-        border-left 1px solid rgb(40, 40, 40)
-        border-radius 4px 0 0 4px
-      &:last-child
-        border-radius 0 4px 4px 0
-      &:nth-child(even)
-        background rgb(100,100,100)
 
   canvas
     border 1px solid #333
