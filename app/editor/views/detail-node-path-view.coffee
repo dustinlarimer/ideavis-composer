@@ -9,6 +9,7 @@ module.exports = class DetailNodePathView extends View
   initialize: ->
     super
     @delegate 'change', 'input', @update_attributes
+    #@delegate 'change', '#path-attribute-stroke-dasharray', @update_attributes
     @delegate 'click', '#path-attribute-shape button', @update_shape
     @delegate 'click', '#path-attribute-stroke-linecap button', @update_linecap
 
@@ -16,6 +17,9 @@ module.exports = class DetailNodePathView extends View
     super
     @$('#path-attribute-shape button[value="' + @model.get('shape') + '"]').addClass('active')
     @$('#path-attribute-stroke-linecap button[value="' + @model.get('stroke_linecap') + '"]').addClass('active')
+    _.each(@model.get('stroke_dasharray'), (d,i)=>
+      @$('#path-attribute-stroke-dasharray input:eq(' + i + ')').val(d) unless d is 0
+    )
 
   update_attributes: =>
     console.log 'path:update_attributes'
@@ -25,10 +29,18 @@ module.exports = class DetailNodePathView extends View
     _scale = $('#path-attribute-scale').val() or 1
     _fill = $('#path-attribute-fill').val() or 'none'
     _fill_opacity = $('#path-attribute-fill-opacity').val()
+
     _stroke = $('#path-attribute-stroke').val() or 'none'
     _stroke_width = $('#path-attribute-stroke-width').val() or 0
     _stroke_opacity = $('#path-attribute-stroke-opacity').val()
-    @model.set x: _x, y: _y, rotate: _rotate, scale: _scale, fill: _fill, fill_opacity: _fill_opacity, stroke: _stroke, stroke_width: _stroke_width, stroke_opacity: _stroke_opacity
+
+    _stroke_dash = []
+    _.each($('#path-attribute-stroke-dasharray input'), (d,i)->
+      _stroke_dash.push parseInt($(d).val()) or 0
+      #console.log _stroke_dash
+    )
+
+    @model.set x: _x, y: _y, rotate: _rotate, scale: _scale, fill: _fill, fill_opacity: _fill_opacity, stroke: _stroke, stroke_width: _stroke_width, stroke_opacity: _stroke_opacity, stroke_dasharray: _stroke_dash
 
   update_form: =>
     $('#path-attribute-x').val(@model.get('x'))

@@ -76,6 +76,7 @@ module.exports = class NodeView extends View
             _linecap = d.get('stroke_linecap')
             if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
           )
+          .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray').join())
     
     path
       .transition()
@@ -96,6 +97,7 @@ module.exports = class NodeView extends View
     path
       .selectAll('path.artifact')
         .attr('d', (d)-> d.get('path'))
+        .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray').join())
     
     path
       .exit()
