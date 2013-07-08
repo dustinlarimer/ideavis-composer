@@ -3,19 +3,26 @@ Model = require 'models/base/model'
 module.exports = class Text extends Model
   defaults:
     type: 'text'
-    text: 'Text'
+    text: 'Label'
+    
+    font_size: 14
     fill: '#000000'
     fill_opacity: 100
-    stroke: null
+    #font_family: 'Helvetica Neue'
+    
     stroke_width: 0
+    stroke: null
     stroke_opacity: 100
-    rotate: 0
-    font_family: 'Helvetica Neue'
-    font_size:  14
-    font_weight: 'normal'
+    
+    bold: false
+    italic: false
+    underline: false
+    overline: false
+    spacing: 0
+    
     x: 0
     y: 0
-    visible: true
+    rotate: 0
 
   initialize: (data) ->
     super

@@ -8,11 +8,11 @@ Text = require 'models/text'
 
 module.exports = class Node extends Model
   defaults:
-    opacity: 100
-    rotate: 0
-    scale: 1
     x: 0 
     y: 0
+    rotate: 0
+    opacity: 100
+    #scale: 1
     weight: 1
     nested: [ (new Path).toJSON(), (new Text).toJSON() ]
 

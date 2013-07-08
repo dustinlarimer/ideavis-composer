@@ -37,7 +37,7 @@
 	</div>
 	<div class="span4">
 		<label><canvas class="stroke-preview" style="border-color: {{stroke}}"></canvas> Stroke</label>
-		<input class="span12" id="text-attribute-stroke" type="text" value="#ff0000">
+		<input class="span12" id="text-attribute-stroke" type="text" value="{{stroke}}">
 	</div>
 	<div class="span4">
 		<label>Alpha</label>
@@ -52,16 +52,16 @@
 	<div class="span8">
 		<label>Style</label>
 		<div class="btn-group" id="text-attribute-style" data-toggle="buttons-checkbox">
-			<button type="button" class="btn btn-inverse" value="bold"><b>B</b></button>
-			<button type="button" class="btn btn-inverse" value="italic"><i>I</i></button>
-			<button type="button" class="btn btn-inverse" value="underline"><u>U</u></button>
-			<button type="button" class="btn btn-inverse" value="overline">O&#773;</button>
+			<button type="button" class="btn btn-inverse{{#if bold}} active{{/if}}" value="{{#if bold}}true{{else}}false{{/if}}"><b>B</b></button>
+			<button type="button" class="btn btn-inverse{{#if italic}} active{{/if}}" value="{{#if italic}}true{{else}}false{{/if}}"><i>I</i></button>
+			<button type="button" class="btn btn-inverse{{#if underline}} active{{/if}}" value="{{#if underline}}true{{else}}false{{/if}}"><u>U</u></button>
+			<button type="button" class="btn btn-inverse{{#if overline}} active{{/if}}" value="{{#if overline}}true{{else}}false{{/if}}">O&#773;</button>
 		</div>
 	</div>
 	<div class="span4">
 		<label>Spacing</label>
 		<div class="input-append">
-  		<input class="span9" id="text-attribute-spacing" type="text" value="0">
+  		<input class="span9" id="text-attribute-spacing" type="text" value="{{spacing}}">
   		<span class="add-on">px</span>
 		</div>
 	</div>

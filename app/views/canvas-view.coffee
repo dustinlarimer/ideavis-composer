@@ -274,7 +274,7 @@ module.exports = class CanvasView extends View
   refresh: ->
     canvas_elements = $('#canvas_elements')[0].getBoundingClientRect()
     bounds.x = canvas_elements.width + 400 # width of DetailView
-    bounds.y = canvas_elements.height + 50
+    bounds.y = canvas_elements.height + canvas_elements.top + 50
     bounds.height = Math.max((window.innerHeight-50), bounds.y)
     bounds.width = Math.max(window.innerWidth-50, bounds.x)
     #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)

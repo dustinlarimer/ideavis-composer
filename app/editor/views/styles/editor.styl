@@ -235,22 +235,19 @@ g.linkGroup {
 	cursor: pointer;
 }
 
-path.bounds,
-rect.bounds {
-  stroke: #000000;
-  stroke-width: 1;
-  opacity: 0;
-}
+rect.bounds, path.origin
+  fill none
+  stroke #000000
+  stroke-width 1
+  opacity 0
+  transition opacity .5s
 
-g.nodeGroup:hover .bounds {
-  opacity: .15
-}
+g.nodeGroup:hover .bounds
+  opacity .15
 
-.nodeGroup.active .bounds, .nodeGroup.active:hover .bounds,
 .nodeGroup.active rect.bounds, .nodeGroup.active:hover rect.bounds,
-.nodeGroup.active path.origin, .nodeGroup.active:hover path.origin {
-  opacity: .35
-}
+.nodeGroup.active path.origin, .nodeGroup.active:hover path.origin
+  opacity .25
 
 g.linkGroup
   &.active

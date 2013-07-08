@@ -13,6 +13,9 @@ module.exports = class NodeView extends View
     
     @listenTo @model.paths, 'change', @build_paths
     @listenTo @model.texts, 'change', @build_texts
+    
+    @listenTo @model.paths, 'change', @build_bounding_boxes
+    @listenTo @model.texts, 'change', @build_bounding_boxes
 
   render: ->
     super
@@ -104,41 +107,52 @@ module.exports = class NodeView extends View
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
         .append('svg:text')
           .attr('class', 'artifact')
-          .text((d)-> d.get('text'))
-          .attr('text-rendering', 'optimizeLegibility')
           .attr('dx', 0)
           .attr('dy', (d)-> d.get('font_size')/3)
-          .attr('letter-spacing', '0px')
-          #.attr('text-decoration', 'underline overline')
-          .attr('font-family', (d)-> d.get('font_family'))
-          .attr('font-size', (d)-> d.get('font_size'))
-          .attr('font-weight', (d)-> d.get('font_weight'))
           .attr('fill', (d)-> d.get('fill'))
           .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
           .attr('stroke', (d)-> d.get('stroke'))
-          .attr('stroke-width', (d)-> d.get('stroke_width'))
           .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
           .attr('text-anchor', 'middle')
+          .attr('text-rendering', 'optimizeLegibility')
+          #.attr('font-family', (d)-> d.get('font_family'))
+          .attr('font-size', (d)-> d.get('font_size'))
+          .attr('font-style', (d)-> if d.get('italic') then return 'italic' else return 'normal')
+          .attr('font-weight', (d)-> if d.get('bold') then return 'bold' else return 'normal')
+          .attr('text-decoration', (d)->
+            _deco = []
+            if d.get('underline') then _deco.push('underline')
+            if d.get('overline') then _deco.push('overline')
+            return _deco.join(' ')
+          )
+          .attr('letter-spacing', (d)-> d.get('spacing'))
+          .attr('stroke-width', (d)-> d.get('stroke_width'))
+          .text((d)-> d.get('text'))
+
     
     text
       .transition()
         .ease(Math.sqrt)
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
         .selectAll('text.artifact')
+          .text((d)-> d.get('text'))
           .attr('dy', (d)-> d.get('font_size')/3)
+          .attr('font-size', (d)-> d.get('font_size'))
           .attr('fill', (d)-> d.get('fill'))
           .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
-          .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
+          .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
-
-    text
-      .selectAll('text.artifact')
-        .text((d)-> d.get('text'))
-        .attr('font-family', (d)-> d.get('font_family'))
-        .attr('font-size', (d)-> d.get('font_size'))
-        .attr('font-weight', (d)-> d.get('font_weight'))
-    
+          .attr('font-weight', (d)-> if d.get('bold') then return 'bold' else return 'normal')
+          .attr('font-style', (d)-> if d.get('italic') then return 'italic' else return 'normal')
+          .attr('text-decoration', (d)->
+            _deco = []
+            if d.get('underline') then _deco.push('underline')
+            if d.get('overline') then _deco.push('overline')
+            return _deco.join(' ')
+          )
+          .attr('letter-spacing', (d)-> d.get('spacing'))
+   
     text
       .exit()
       .remove()
@@ -146,29 +160,30 @@ module.exports = class NodeView extends View
   # ----------------------------------
   # BUILD Bounding Boxes
   # ----------------------------------
-  build_bounding_boxes: =>
+  build_bounding_boxes: ->
     # Remove all existing bounding boxes
-    d3.select(@el).selectAll('rect.bounds').remove()
+    d3.select(@el).select('rect.parent_bounds').remove()
     
-    @build_artifact_bounding_boxes()
-    _parent = d3.select(@el)[0][0].getBBox()
-    
-    d3.select(@el)
-      .selectAll('rect.parent_bounds')
-      .data([{}])
-      .enter()
-      .insert('rect', 'g.nodePath')
-        .attr('class', 'bounds parent_bounds')
-        .attr('shape-rendering', 'crispEdges')
-        .attr('fill', 'transparent')
-        .attr('opacity', 0)
-        .attr('height', (d)-> return _parent.height + 20.5)
-        .attr('width', (d)-> return _parent.width + 20.5)
-        .attr('x', (d)-> return _parent.x - 10.25)
-        .attr('y', (d)-> return _parent.y - 10.25)
-        .style('stroke-dasharray', '4,4')
-        .transition()
-          .ease Math.sqrt
+    setTimeout =>
+      @build_artifact_bounding_boxes()
+      _parent = d3.select(@el)[0][0].getBBox()
+      
+      d3.select(@el)
+        .selectAll('rect.parent_bounds')
+        .data([{}])
+        .enter()
+        .insert('rect', 'g.nodePath')
+          .attr('class', 'bounds parent_bounds')
+          .attr('shape-rendering', 'crispEdges')
+          .attr('opacity', 0)
+          .attr('height', (d)-> return _parent.height + 20.5)
+          .attr('width', (d)-> return _parent.width + 20.5)
+          .attr('x', (d)-> return _parent.x - 10.25)
+          .attr('y', (d)-> return _parent.y - 10.25)
+          .style('stroke-dasharray', '4,4')
+          .transition()
+            .ease Math.sqrt
+    , 250
 
 
   # ----------------------------------
@@ -177,22 +192,24 @@ module.exports = class NodeView extends View
 
   build_artifact_bounding_boxes: ->
     # TEXT
+    d3.select(@el).selectAll('g.nodeText rect.bounds').remove()
     d3.select(@el)
       .selectAll('g.nodeText')
+      #.selectAll('rect.text_bounds')
+      #.data([{}])
+      #.enter()
       .insert('rect', 'text.artifact')
         .attr('class', 'bounds')
         .attr('shape-rendering', 'crispEdges')
-        .attr('fill', 'transparent')
-        .style('stroke-dasharray', '4,4')
         .each((d,i)->
           this.ref = $(this).next('text')[0].getBoundingClientRect()
           d.width = this.ref.width
         )
-        #.attr('fill', 'pink')
-        .attr('height', (d)-> return d.get('font_size') - d.get('font_size')/4 + 10.5)
+        .attr('height', (d)=> return d.get('font_size') - d.get('font_size')/4 + 10.5)
         .attr('width', (d)-> return d.width + 10)
         .attr('x', (d)-> return -1 * (d.width/2) - 5.25)
         .attr('y', (d)-> return -1 * d.get('font_size')/2 - d.get('font_size')/4 - 5 + d.get('font_size')/3)
+        .style('stroke-dasharray', '4,4')
 
 
   # ----------------------------------
@@ -208,10 +225,6 @@ module.exports = class NodeView extends View
         .attr('class', 'origin')
         .attr('shape-rendering', 'crispEdges')
         .attr('d', 'M 0,-12 L 0,12 M -12,0 L 12,0')
-        .attr('fill', 'transparent')
-        .attr('stroke', '#000000')
-        .attr('stroke-width', 1)
-        .attr('opacity', 0)
         .style('stroke-dasharray', '4,1')
 
 
