@@ -4,6 +4,7 @@
 <hr/>
 <div class="detail-panel-bucket" id="link-attributes">
 
+<div id="baseline-attributes">
 <h4>Baseline</h4>
 
 <div class="row-fluid">
@@ -53,9 +54,7 @@
 	<div class="span8">
 		<label>Curve</label>
 		<div class="btn-group" id="baseline-attribute-interpolation" data-toggle="buttons-radio">
-			<button type="button" class="btn btn-inverse" value="basis">
-				<span id="icon-interpolation-basis">Basis</span>
-			</button>
+			<button type="button" class="btn btn-inverse" value="basis"><span id="icon-interpolation-basis">Basis</span></button>
 			<button type="button" class="btn btn-inverse" value="linear"><span id="icon-interpolation-linear">Linear</span></button>
 			<button type="button" class="btn btn-inverse" value="step-before"><span id="icon-interpolation-step-before">Step-before</span></button>
 			<button type="button" class="btn btn-inverse" value="step-after"><span id="icon-interpolation-step-after">Step-after</span></button>
@@ -63,16 +62,18 @@
 	</div>
 	<div class="span4">
 		<label><canvas class="fill-preview" style="background-color: {{fill}}"></canvas> Fill</label>
-		<input class="span12" id="path-attribute-fill" type="text" value="{{fill}}">
+		<input class="span12" id="baseline-attribute-fill" type="text" value="{{fill}}">
 	</div>
 </div>
 <hr style="margin-bottom: 10px;"/>
+
+
 
 <h4>Label</h4>
 
 <div class="row-fluid">
 	<div class="span12">
-		<input id="text-attribute-text" class="span12" type="text" value="{{label_text}}">
+		<input id="label-attribute-text" class="span12" type="text" value="{{label_text}}">
 	</div>
 </div>
 
@@ -80,18 +81,18 @@
 	<div class="span4">
 		<label>Font Size</label>
 		<div class="input-append">
-  		<input class="span9" id="text-attribute-font-size" type="text" value="{{label_font_size}}">
+  		<input class="span9" id="label-attribute-font-size" type="text" value="{{label_font_size}}">
   		<span class="add-on">px</span>
 		</div>
 	</div>
 	<div class="span4">
 		<label><canvas class="fill-preview" style="background-color: {{label_fill}}"></canvas> Fill</label>
-		<input class="span12" id="text-attribute-fill" type="text" value="{{fill}}">
+		<input class="span12" id="label-attribute-fill" type="text" value="{{label_fill}}">
 	</div>
 	<div class="span4">
 		<label>Alpha</label>
 		<div class="input-append">
-			<input class="span9" id="text-attribute-fill-opacity" type="text" value="{{label_fill_opacity}}">
+			<input class="span9" id="label-attribute-fill-opacity" type="text" value="{{label_fill_opacity}}">
 			<span class="add-on">%</span>
 		</div>
 	</div>
@@ -101,29 +102,30 @@
 	<div class="span4">
 		<label>Indent</label>
 		<div class="input-append">
-			<input class="span9" id="text-attribute-x" type="text" value="{{label_offset_x}}">
+			<input class="span9" id="label-attribute-x" type="text" value="{{label_offset_x}}">
 			<span class="add-on">px</span>
 		</div>
 	</div>
 	<div class="span4">
 		<label>Vertical</label>
 		<div class="input-append">
-			<input class="span9" id="text-attribute-y" type="text" value="{{label_offset_y}}">
+			<input class="span9" id="label-attribute-y" type="text" value="{{label_offset_y}}">
 			<span class="add-on">px</span>
 		</div>
 	</div>
 	<div class="span4">
 		<label>Spacing</label>
 		<div class="input-append">
-  		<input class="span9" id="text-attribute-spacing" type="text" value="{{label_spacing}}">
+  		<input class="span9" id="label-attribute-spacing" type="text" value="{{label_spacing}}">
   		<span class="add-on">px</span>
 		</div>
 	</div>
 </div>
 
+</div>
 <hr/>
 
-<div class="row-fluid">
+<div class="row-fluid" style="display: none">
 	<div class="span12">
 		<ul class="nav nav-tabs">
   		<li class="active">

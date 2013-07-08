@@ -42,7 +42,7 @@ module.exports = class CanvasView extends View
     
     mediator.node
       .transition()
-      .ease(Math.sqrt)
+      .ease('linear')
       .attr('opacity', (d)-> d.opacity)
       .attr('transform', (d)->
         return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')'
@@ -52,15 +52,16 @@ module.exports = class CanvasView extends View
     mediator.link
       .selectAll('path.baseline, path.tickline')
       .transition()
-      .ease(Math.sqrt)
+      .ease('linear')
+      .duration(100)
       .attr('d', (d)->
-        _target = _.findWhere(force.nodes(), {id: d.target.id})
-        _source = _.findWhere(force.nodes(), {id: d.source.id})
-        _interpolation = d.model.get('interpolation')
+        _target = _.findWhere(force.nodes(), {id: d.get('target')})
+        _source = _.findWhere(force.nodes(), {id: d.get('source')})
+        _interpolation = d.get('interpolation')
         if _target? and _source?
-          _def = mediator.defs.select('path#link_' + d.model.id + '_path').transition().ease(Math.sqrt)
-          _endpoints = d.model.get('endpoints')
-          _midpoints = d.model.get('midpoints')
+          _def = mediator.defs.select('path#link_' + d.id + '_path').transition().ease('linear').duration(100)
+          _endpoints = d.get('endpoints')
+          _midpoints = d.get('midpoints')
           data = []
           data.push { x: _source.x + _endpoints[0][0], y: _source.y + _endpoints[0][1] }
           _.each(_midpoints, (m,i)->
@@ -68,9 +69,9 @@ module.exports = class CanvasView extends View
           )
           data.push { x: _target.x + _endpoints[1][0], y: _target.y + _endpoints[1][1] }
           line = d3.svg.line()
-                   .x((d)-> return d.x)
-                   .y((d)-> return d.y)
-                   .interpolate(_interpolation)(data)
+            .x((d)-> return d.x)
+            .y((d)-> return d.y)
+            .interpolate(_interpolation)(data)
           if _interpolation is 'basis' and _midpoints.length > 0
             _curves = line.split('C')
             _last = _curves.pop()

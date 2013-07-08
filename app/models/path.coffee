@@ -29,9 +29,6 @@ module.exports = class Path extends Model
   setPath: (shape) ->
     @set path: @build_path(shape), shape: shape
 
-  setLinecap: (linecap) ->
-    @set stroke_linecap: linecap
-
   build_path: (shape) =>
     #console.log d3.svg.symbol().type('cross')()
     path = ''

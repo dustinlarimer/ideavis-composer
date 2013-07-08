@@ -12,13 +12,9 @@ module.exports = class LinkView extends View
     @source = data.source
     @target = data.target
     
-    @baseline = d3.select(@el)
-      .append('svg:path')
-        .attr('class', 'baseline')
-    
-    @label = d3.select(@el)
-      .append('svg:text')
-    
+    @label = d3.select(@el).selectAll('text')
+    @baseline = d3.select(@el).selectAll('path.baseline')
+    @tickline = d3.select(@el).selectAll('path.tickline')    
     @textline = mediator.defs
       .append('svg:path')
         .attr('id', 'link_' + @model.id + '_path')
@@ -31,6 +27,7 @@ module.exports = class LinkView extends View
     #@subscribeEvent 'deactivate_detail', @deactivate
     @subscribeEvent 'clear_active', @clear
 
+    @listenTo @model, 'change', @build_baseline
     @listenTo @model.marker_start, 'change', @build_markers
     @listenTo @model.marker_end, 'change', @build_markers
 
@@ -41,6 +38,7 @@ module.exports = class LinkView extends View
 
   remove: ->
     @baseline?.remove()
+    @tickline?.remove()
     @textline?.remove()
     @label?.remove()
     @marker_start?.remove()
@@ -54,17 +52,22 @@ module.exports = class LinkView extends View
     key.setScope 'link'
     
     d3.select(@el).classed('active', true)
+    @baseline.attr('visibility', 'hidden')
+    @tickline
+      .attr('visibility', 'visible')
+      .call(d3.behavior.drag()
+        .on('dragend', @create_midpoint))
     @build_points()
 
   deactivate: ->
     key.unbind 'backspace', 'link'
     
-    d3.select(@el).select('path.tickline')
+    @baseline.attr('visibility', 'visible')
+    @tickline
+      .attr('visibility', 'hidden')
       .call(d3.behavior.drag()
         .on('dragend', null))
-      .remove()
     
-    @baseline.attr('visibility', 'visible')
     @endpoints?.call(d3.behavior.drag()
       .on('dragstart', null)
       .on('drag', null)
@@ -100,29 +103,94 @@ module.exports = class LinkView extends View
   # ----------------------------------
   build_baseline: =>
     @build_markers()
+    
+    @baseline = @baseline.data([@model])
     @baseline
+      .enter()
+      .append('svg:path')
+      .attr('class', 'baseline')
+        .attr('visibility', 'visible')
       .attr('shape-rendering', 'geometricPrecision')
-      .attr('stroke', (d)=> @model.get('stroke'))
-      .attr('stroke-dasharray', (d)=> @model.get('stroke_dasharray'))
-      .attr('stroke-linecap', (d)=> @model.get('stroke_linecap'))
-      .attr('stroke-linejoin', (d)=> @model.get('stroke_linecap'))
-      .attr('stroke-opacity', (d)=> @model.get('stroke_opacity')/100)
-      .attr('stroke-width', (d)=> @model.get('stroke_width'))
-      .attr('fill', (d)=> @model.get('fill'))
-      .attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
-      .attr('marker-end',   (d)-> 'url(#' + 'link_' + d.id + '_marker_end)')
+      .attr('stroke', (d)-> d.get('stroke'))
+      .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray'))
+      .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
+      .attr('stroke-linejoin', (d)-> d.get('stroke_linecap'))
+      .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
+      .attr('stroke-width', (d)-> d.get('stroke_width'))
+      .attr('fill', (d)-> d.get('fill'))
+      #.attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
+      #.attr('marker-end',   (d)-> 'url(#' + 'link_' + d.id + '_marker_end)')
+
+    @baseline
+      .attr('stroke', (d)-> d.get('stroke'))
+      .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray'))
+      .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
+      .attr('stroke-linejoin', (d)-> 
+        _linecap = d.get('stroke_linecap')
+        if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
+      )
+      .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
+      .attr('stroke-width', (d)-> d.get('stroke_width'))
+      .attr('fill', (d)-> d.get('fill'))
+
+    #d3.select(@el).select('path.tickline').remove()
+    #tickline = d3.select(@el).selectAll('path.tickline').data([@model])
+
+    @tickline = @tickline.data([@model])
+    @tickline
+      .enter()
+      .append('svg:path')
+        .attr('class', 'tickline')
+        .attr('visibility', 'hidden')
+        .attr('shape-rendering', 'geometricPrecision')
+        .attr('stroke', (d)=> return @baseline.attr('stroke'))
+        .attr('stroke-dasharray', (d)=> return @baseline.attr('stroke-dasharray'))
+        .attr('stroke-linecap', (d)=> return @baseline.attr('stroke-linecap'))
+        .attr('stroke-linejoin', (d)=> return @baseline.attr('stroke-linejoin'))
+        .attr('stroke-opacity', (d)=> return @baseline.attr('stroke-opacity'))
+        .attr('stroke-width', (d)=> return @baseline.attr('stroke-width'))
+        .attr('fill', (d)=> return @baseline.attr('fill'))
+        #.attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
+        #.attr('marker-end',   (d)-> 'url(#' + 'link_' + d.id + '_marker_end)')
+
+    @tickline
+      .attr('stroke', (d)=> return @baseline.attr('stroke'))
+      .attr('stroke-dasharray', (d)=> return @baseline.attr('stroke-dasharray'))
+      .attr('stroke-linecap', (d)=> return @baseline.attr('stroke-linecap'))
+      .attr('stroke-linejoin', (d)=> return @baseline.attr('stroke-linejoin'))
+      .attr('stroke-opacity', (d)=> return @baseline.attr('stroke-opacity'))
+      .attr('stroke-width', (d)=> return @baseline.attr('stroke-width'))
+      .attr('fill', (d)=> return @baseline.attr('fill'))
+
+    @label = @label.data([@model])
+    @label
+      .enter()
+      .append('svg:text')
+        .attr('fill', (d)=> d.get('label_fill'))
+        .attr('fill-opacity', (d)=> d.get('label_fill_opacity')/100)
+        .attr('font-size', (d)=> d.get('label_font_size'))
+        .append('svg:textPath')
+          .attr('class', 'textpath')
+          .attr('xlink:href', (d)=> '#link_' + d.id + '_path')
+          .attr('letter-spacing', (d)=> d.get('label_spacing'))
+          .attr('startOffset', (d)=> d.get('label_offset_x'))
+          .append('svg:tspan')
+            .attr('class', 'tspan')
+            .attr('dy', (d)=> -1 * d.get('label_offset_y'))
+            .text((d)=> d.get('label_text'))
 
     @label
-      .attr('fill', (d)=> @model.get('label_fill'))
-      .attr('font-size', (d)=> @model.get('label_font_size'))
-      .append('svg:textPath')
-        .attr('xlink:href', (d)=> '#link_' + @model.id + '_path')
-        .attr('spacing', 'auto')
-        .attr('startOffset', (d)=> @model.get('label_offset_x'))
-        .append('svg:tspan')
-          .attr('dy', (d)=> -1 * @model.get('label_offset_y'))
-          .text((d)=> @model.get('label_text'))
-
+      .attr('fill', (d)=> d.get('label_fill'))
+      .attr('fill-opacity', (d)=> d.get('label_fill_opacity')/100)
+      .attr('font-size', (d)=> d.get('label_font_size'))
+      .transition()
+        .ease('linear')
+        .selectAll('.textpath')
+          .attr('letter-spacing', (d)=> d.get('label_spacing'))
+          .attr('startOffset', (d)=> d.get('label_offset_x'))
+          .selectAll('.tspan')
+            .attr('dy', (d)=> -1 * d.get('label_offset_y'))
+            .text((d)=> d.get('label_text'))
 
   # ----------------------------------
   # BUILD Markers
@@ -285,27 +353,7 @@ module.exports = class LinkView extends View
         .on('dragstart', null)
         .on('drag', null)
         .on('dragend', null))
-      .transition()
-        .ease(Math.sqrt)
       .remove()
-
-    @baseline.attr('visibility', 'hidden')
-    d3.select(@el).select('path.tickline').remove()
-    tickline = d3.select(@el)
-      .append('svg:path')
-        .attr('class', 'tickline')
-        .attr('stroke', => return @baseline.attr('stroke'))
-        .attr('stroke-dasharray', => return @baseline.attr('stroke-dasharray'))
-        .attr('stroke-linecap', => return @baseline.attr('stroke-linecap')) 
-        .attr('stroke-linejoin', => return @baseline.attr('stroke-linejoin'))
-        .attr('stroke-opacity', => return @baseline.attr('stroke-opacity'))
-        .attr('stroke-width', => return @baseline.attr('stroke-width'))
-        .attr('fill', => return @baseline.attr('fill'))
-        .attr('marker-start', => return @baseline.attr('marker-start'))
-        .attr('marker-end', => return @baseline.attr('marker-end'))
-        .attr('d', => return @baseline.attr('d'))
-        .call(d3.behavior.drag()
-          .on('dragend', @create_midpoint))
 
 
   # ----------------------------------
@@ -339,7 +387,7 @@ module.exports = class LinkView extends View
   # ----------------------------------
 
   create_midpoint: (d,i) =>
-    _midpoints = d.model.get('midpoints')
+    _midpoints = d.get('midpoints')
     _new = [[d3.event.sourceEvent.offsetX,d3.event.sourceEvent.offsetY]]
     @model.save midpoints: _.union(_midpoints, _new)
     @build_points()

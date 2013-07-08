@@ -14,7 +14,7 @@ module.exports = class DetailNodeView extends View
 
   initialize: (data={}) ->
     super
-    @delegate 'change', '#node-attributes input', @update_attr
+    @delegate 'change', '#node-attributes input', @update_attributes
 
   listen:
     'change model': 'update_view'
@@ -24,8 +24,8 @@ module.exports = class DetailNodeView extends View
     @subview 'detail-node-paths', new DetailNodePathsView collection: @model.paths, region: 'paths'
     @subview 'detail-node-texts', new DetailNodeTextsView collection: @model.texts, region: 'texts'
 
-  update_attr: =>
-    console.log 'updating attr'
+  update_attributes: =>
+    console.log 'updating attributes'
     _x = parseInt($('#node-attribute-x').val())
     _y = parseInt($('#node-attribute-y').val())
     _rotate = parseInt($('#node-attribute-rotate').val())

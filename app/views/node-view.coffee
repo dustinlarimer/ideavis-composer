@@ -80,7 +80,7 @@ module.exports = class NodeView extends View
     
     path
       .transition()
-        .ease(Math.sqrt)
+        .ease('linear')
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
         .selectAll('path.artifact')
           .attr('fill', (d)-> d.get('fill'))
@@ -144,7 +144,7 @@ module.exports = class NodeView extends View
     
     text
       .transition()
-        .ease(Math.sqrt)
+        .ease('linear')
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
         .selectAll('text.artifact')
           .text((d)-> d.get('text'))
