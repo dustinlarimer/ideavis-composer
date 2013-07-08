@@ -11,12 +11,15 @@ module.exports = class Nodes extends Collection
     @url = '/compositions/' + mediator.canvas.id + '/nodes/'
     @fetch()
     @on 'add', @node_created
-    #@on 'remove', @node_removed
+
+  fetch: (options = {}) ->
+    @beginSync()
+    success = options.success
+    options.success = (model, response) =>
+      success? model, response
+      @finishSync()
+    super options
 
   node_created: (node) =>
     console.log '[pub] node_created'
     @publishEvent 'node_created', node
-
-  node_removed: (node) =>
-    console.log '[pub] node_removed'
-    @publishEvent 'node_removed', node.id

@@ -11,12 +11,15 @@ module.exports = class Links extends Collection
     @url = '/compositions/' + mediator.canvas.id + '/links/'
     @fetch()
     @on 'add', @link_created
-    #@on 'remove', @link_removed
+
+  fetch: (options = {}) ->
+    @beginSync()
+    success = options.success
+    options.success = (model, response) =>
+      success? model, response
+      @finishSync()
+    super options
 
   link_created: (link) =>
     console.log '[pub] link_created'
     @publishEvent 'link_created', link
-
-  link_removed: (link) =>
-    console.log '[pub] link_removed'
-    @publishEvent 'link_removed', link.id

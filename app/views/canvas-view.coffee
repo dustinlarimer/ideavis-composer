@@ -13,11 +13,13 @@ module.exports = class CanvasView extends View
     super
     console.log 'Initializing CanvasView'
     $(window).on 'resize', @refresh
-    
+
     @model.synced =>
-      unless @rendered
-        @render()
-        @rendered = yes
+      mediator.nodes.synced =>
+        mediator.links.synced =>
+          unless @rendered
+            @render()
+            @rendered = yes
 
 
   # ----------------------------------
@@ -93,14 +95,19 @@ module.exports = class CanvasView extends View
   init_artifacts: ->
     _.each(mediator.nodes.models, (node,i) => 
       force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), scale: node.get('scale'), model: node }
-    )
+    ) #if mediator.nodes?
+    @subscribeEvent 'node_created', @add_node
+    @subscribeEvent 'node_updated', @update_node
+    @subscribeEvent 'node_removed', @remove_node
     @build_nodes()
-
+    
     _.each(mediator.links.models, (link,i) => 
       _source = _.where(force.nodes(), {id: link.get('source')})[0]
       _target = _.where(force.nodes(), {id: link.get('target')})[0]
       force.links().push { id: link.id, source: _source, target: _target, model: link }
-    )
+    ) #if mediator.links?
+    @subscribeEvent 'link_created', @add_link
+    @subscribeEvent 'link_removed', @remove_link
     @build_links()
 
 
@@ -255,14 +262,6 @@ module.exports = class CanvasView extends View
       #.start()
     
     @subscribeEvent 'refresh_canvas', @refresh
-    
-    @subscribeEvent 'node_created', @add_node
-    @subscribeEvent 'node_updated', @update_node
-    @subscribeEvent 'node_removed', @remove_node
-
-    @subscribeEvent 'link_created', @add_link
-    @subscribeEvent 'link_removed', @remove_link
-    
     @init_artifacts()
 
 
