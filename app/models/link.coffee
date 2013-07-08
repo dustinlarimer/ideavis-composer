@@ -13,13 +13,19 @@ module.exports = class Link extends Model
     stroke: 'lightblue'
     stroke_dasharray: []
     stroke_linecap: 'round'
-    stroke_opacity: 1
+    stroke_opacity: 100
     stroke_width: 5
-    label_fill: '#999'
+    fill: 'none'
+    
+    label_text: 'Label'
+    
     label_font_size: 12
+    label_fill: '#999'
+    label_fill_opacity: 100
+    
     label_offset_x: 75
     label_offset_y: 5
-    label_text: 'Label'
+    label_spacing: 0
 
   interpolation_types: ['linear', 'step-before', 'step-after', 'basis', 'cardinal']
 

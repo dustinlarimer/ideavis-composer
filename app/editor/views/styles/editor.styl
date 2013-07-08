@@ -113,7 +113,8 @@ body
       background-image url('/images/toolbar-text.png')
 
   #detail
-    background rgba(0,0,0,.75)
+    background #333
+    //rgba(0,0,0,.75)
     border-radius 4px
     color #fff
     font-size 12px
@@ -207,7 +208,29 @@ body
         #icon-shape-none
           background-image url('/images/detail-shape-none.png')
 
-    #path-attribute-stroke-dasharray
+    #baseline-attribute-interpolation
+      .btn
+        position relative
+        width 25%
+        span
+          background-position 50% 50%
+          background-repeat no-repeat
+          background-size 15px
+          float left
+          height 18px
+          text-indent -99999px
+          width 100%
+        #icon-interpolation-basis
+          background-image url('/images/detail-interpolation-basis.png')
+        #icon-interpolation-linear
+          background-image url('/images/detail-interpolation-linear.png')
+        #icon-interpolation-step-before
+          background-image url('/images/detail-interpolation-step-before.png')
+        #icon-interpolation-step-after
+          background-image url('/images/detail-interpolation-step-after.png')
+
+
+    .attribute-stroke-dasharray
       input
         border-left medium none
         border-radius 0
@@ -222,7 +245,7 @@ body
         &:nth-child(even)
           background rgb(100,100,100)
 
-    #path-attribute-stroke-linecap 
+    .attribute-stroke-linecap 
       .btn
         padding 4px 0
         position relative
@@ -242,12 +265,37 @@ body
         #icon-linecap-butt
           background-image url('/images/detail-linecap-butt.png')
 
+    .nav-tabs
+      border-bottom 1px solid #282828
+      margin 5px 0 0
+      li
+        a
+          background-color rgba(0,0,0,.2)
+          border 1px solid transparent
+          color #a7a7a7
+          margin-right 6px
+          padding-top 4px
+          padding-bottom 4px
+          width 89px
+          i
+            margin 0 2px 0 0
+        &.active a
+          background-color #333
+          border 1px solid #282828
+          border-bottom-color transparent
+        &:last-child a
+          margin-right 0
+    
+    .tab-content
+      overflow visible
+      padding-top 10px
+
 	#text-attribute-style
 	  .btn
       width 25%
 
   canvas
-    border 1px solid #333
+    border 1px solid #222
     border-radius 50%
     height 10px
     width 10px
@@ -264,7 +312,9 @@ body
 }
 #detail .detail-panel-bucket table { margin: 0; }
 
-#node-texts { margin: 0 0 5px; }
+#node-texts,
+#link-attributes
+	margin 0 0 5px
 
 
 
