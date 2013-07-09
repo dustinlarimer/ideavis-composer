@@ -6,7 +6,13 @@ var server = http.createServer().listen(port, function() {
 });*/
 
 //exports.server = 
-
+/*
 var statik = require('statik');
 var server = statik.createServer();
-server.listen(process.env.PORT || 1337);
+server.listen(process.env.PORT || 1337);*/
+
+var statik = require('statik');
+statik({
+    port: 3333,
+    root: '/public'
+});
