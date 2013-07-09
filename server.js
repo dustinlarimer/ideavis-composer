@@ -1,8 +1,10 @@
 var http = require('http')
 var port = process.env.PORT || 3000
-var server = exports.server = http.createServer().listen(port, function() {
-  console.log('<+++ Client app serving ' + port + ' +++>')
+var server = http.createServer().listen(port, function() {
+  console.log('Client app serving ' + port)
 });
+
+//exports.server = 
 
 //var statik = require('statik');
 //var server = statik.createServer();
