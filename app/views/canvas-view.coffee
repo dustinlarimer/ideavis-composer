@@ -272,20 +272,15 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   refresh: ->
+    detail_offset = ($('#detail').width()*1.3) or 0
     canvas_elements = $('#canvas_elements')[0].getBoundingClientRect()
-    bounds.x = canvas_elements.width + 400 # width of DetailView
-    bounds.y = canvas_elements.height + canvas_elements.top + 50
+    bounds.x = canvas_elements.width + detail_offset # width of DetailView
+    bounds.y = Math.max(canvas_elements.bottom-50, canvas_elements.height) + 50
     bounds.height = Math.max((window.innerHeight-50), bounds.y)
-    bounds.width = Math.max(window.innerWidth-50, bounds.x)
+    bounds.width = Math.max(window.innerWidth, bounds.x)
     #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)
     
-    $('#canvas')
-      .css('height', bounds.height+50)
-      .css('width', bounds.width+50)
-    $('#stage')
-      .css('height', bounds.height + 50)
-      .css('width', bounds.width)
-    $('#stage svg, #stage svg #canvas_background')
+    $('svg, #canvas_background')
       .attr('height', bounds.height)
       .attr('width', bounds.width)
     

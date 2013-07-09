@@ -188,6 +188,7 @@ module.exports = class NodeView extends View
           .attr('class', 'bounds parent_bounds')
           .attr('shape-rendering', 'crispEdges')
           .attr('opacity', 0)
+          .attr('fill', 'none')
           .attr('height', (d)-> return _parent.height + 20.5)
           .attr('width', (d)-> return _parent.width + 20.5)
           .attr('x', (d)-> return _parent.x - 10.25)
@@ -213,6 +214,7 @@ module.exports = class NodeView extends View
       .insert('rect', 'text.artifact')
         .attr('class', 'bounds')
         .attr('shape-rendering', 'crispEdges')
+        .attr('fill', 'none')
         .each((d,i)->
           this.ref = $(this).next('text')[0].getBoundingClientRect()
           d.width = this.ref.width
@@ -236,6 +238,7 @@ module.exports = class NodeView extends View
       .insert('path', 'g.nodeText')
         .attr('class', 'origin')
         .attr('shape-rendering', 'crispEdges')
+        .attr('fill', 'none')
         .attr('d', 'M 0,-12 L 0,12 M -12,0 L 12,0')
         .style('stroke-dasharray', '4,1')
 

@@ -16,6 +16,13 @@ module.exports = class DetailNodeTextView extends View
   listen:
     'change model': 'update_form'
 
+  render: ->
+    super
+    if @model.get('text') is ''
+      @$('div.label-controls:gt(0)').hide()
+    else
+      @$('div.label-controls:gt(0)').show()
+
   modify_style_attribute: (e) =>
     _button = $(e.currentTarget)
     _button.val(_button.val() == 'false' ? 'true' : 'false')
@@ -23,6 +30,10 @@ module.exports = class DetailNodeTextView extends View
 
   update_attributes: =>
     _text = $('#text-attribute-text').val()
+    if _text is ''
+      @$('div.label-controls:gt(0)').hide()
+    else
+      @$('div.label-controls:gt(0)').show()
     
     _font_size = $('#text-attribute-font-size').val() or 14
     _fill = $('#text-attribute-fill').val() or 'none'

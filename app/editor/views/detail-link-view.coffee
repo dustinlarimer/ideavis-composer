@@ -19,6 +19,10 @@ module.exports = class DetailLinkView extends View
     _.each(@model.get('stroke_dasharray'), (d,i)=>
       @$('#baseline-attribute-stroke-dasharray input:eq(' + i + ')').val(d) unless d is 0
     )
+    if @model.get('label_text') is ''
+      @$('div.label-controls:gt(0)').hide()
+    else
+      @$('div.label-controls:gt(0)').show()
 
   update_attributes: =>
     _stroke_width = parseInt($('#baseline-attribute-stroke-width').val())
@@ -32,6 +36,11 @@ module.exports = class DetailLinkView extends View
     _fill = $('#baseline-attribute-fill').val()
 
     _label_text = $('#label-attribute-text').val()
+    if _label_text is ''
+      @$('div.label-controls:gt(0)').hide()
+    else
+      @$('div.label-controls:gt(0)').show()
+
     _label_font_size = parseInt($('#label-attribute-font-size').val())
     _label_fill = $('#label-attribute-fill').val()
     _label_fill_opacity = parseInt($('#label-attribute-fill-opacity').val())

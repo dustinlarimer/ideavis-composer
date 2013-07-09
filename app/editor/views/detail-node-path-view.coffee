@@ -15,14 +15,20 @@ module.exports = class DetailNodePathView extends View
 
   render: ->
     super
+    
     @$('#path-attribute-shape button[value="' + @model.get('shape') + '"]').addClass('active')
-    @$('#path-attribute-stroke-linecap button[value="' + @model.get('stroke_linecap') + '"]').addClass('active')
+    if @model.get('shape') is 'none'
+      @$('div.shape-controls:gt(0)').hide()
+    else
+      @$('div.shape-controls:gt(0)').show()
+    
     _.each(@model.get('stroke_dasharray'), (d,i)=>
       @$('#path-attribute-stroke-dasharray input:eq(' + i + ')').val(d) unless d is 0
     )
+    @$('#path-attribute-stroke-linecap button[value="' + @model.get('stroke_linecap') + '"]').addClass('active')
 
   update_attributes: =>
-    console.log 'path:update_attributes'
+    #console.log 'path:update_attributes'
     _x = $('#path-attribute-x').val() or 0
     _y = $('#path-attribute-y').val() or 0
     _rotate = $('#path-attribute-rotate').val() or 0
@@ -48,6 +54,10 @@ module.exports = class DetailNodePathView extends View
 
   update_shape: (e) =>
     _shape = $(e.currentTarget).val()
+    if _shape is 'none'
+      @$('div.shape-controls:gt(0)').hide()
+    else
+      @$('div.shape-controls:gt(0)').show()
     @model.setPath(_shape)
 
   update_linecap: (e) =>
