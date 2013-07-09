@@ -6,8 +6,6 @@ module.exports = class LinkView extends View
   
   initialize: (data={}) ->
     super
-    _.extend this, new Backbone.Shortcuts
-    @delegateShortcuts()
 
     @source = data.source
     @target = data.target

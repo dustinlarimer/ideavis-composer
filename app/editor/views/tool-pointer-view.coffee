@@ -14,21 +14,21 @@ module.exports = class ToolPointerView extends View
     $('#toolbar button.active').removeClass('active')
     $('#toolbar button#tool-pointer').addClass('active')
     mediator.outer.attr('cursor', 'default')
-    @activate()
     
-    _.extend this, new Backbone.Shortcuts
-    @delegateShortcuts()
+    @activate()
     
     @delegate 'click', '#canvas_background', @deselect_all
     
     @subscribeEvent 'node_created', @reset
     @subscribeEvent 'node_removed', @prune_links
 
+
   remove: ->
     # Unbind delgated events ------
     @$el.off 'click', '#canvas_background'
     
     # Unbind D3 Events ------------
+    @copied_node = undefined
     @deactivate()
     
     # Unbind @el ------------------
@@ -39,7 +39,11 @@ module.exports = class ToolPointerView extends View
 
 
   activate: =>
-    console.log 'activating'
+    key 'backspace', 'pointer', @keypress_delete
+    key '⌘+c', 'pointer', @keypress_copy
+    key '⌘+v', 'pointer', @keypress_paste
+    key.setScope 'pointer'
+    
     d3.selectAll('g.nodeGroup')
       .call(d3.behavior.drag()
         .on('dragstart', @node_drag_start)
@@ -52,8 +56,12 @@ module.exports = class ToolPointerView extends View
         .on('drag', @link_drag_move)
         .on('dragend', @link_drag_stop))
 
+
   deactivate: =>
-    console.log 'deactivating'
+    key.unbind 'backspace', 'pointer'
+    key.unbind '⌘+c', 'pointer'
+    key.unbind '⌘+v', 'pointer'
+
     d3.selectAll('g.nodeGroup')
       .call(d3.behavior.drag()
         .on('dragstart', null)
@@ -71,18 +79,12 @@ module.exports = class ToolPointerView extends View
     @deactivate()
     @activate()
 
+
   # ----------------------------------
   # KEYBOARD SHORTCUTS
   # ----------------------------------
 
-  shortcuts:
-    'backspace' : 'keypress_delete'
-    'delete'    : 'keypress_delete'
-    'del'       : 'keypress_delete'
-    'command+c' : 'keypress_copy'
-    'command+v' : 'keypress_paste'
-
-  keypress_delete: (e) ->
+  keypress_delete: (e) =>
     e.preventDefault()
     if mediator.selected_node?
       @destroy_node_group(mediator.selected_node)
@@ -90,13 +92,11 @@ module.exports = class ToolPointerView extends View
 
   keypress_copy: (e) =>
     if mediator.selected_node?
-      console.log 'Node copied, ready to paste!'
       @copied_node = mediator.selected_node
 
-  keypress_paste: (e) ->
+  keypress_paste: (e) =>
     e.preventDefault()
     if @copied_node?
-      console.log 'Node pasted!'
       clone = @copied_node.model.toJSON()
       clone._id = undefined
       clone.__v = undefined
