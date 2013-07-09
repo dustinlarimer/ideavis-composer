@@ -9,11 +9,13 @@
     "url": ""
   },
 	"engines": {
-    "node"										: "0.10.5"
+    "node"										: "0.10.5",
+    "npm"                     : "1.2.21"
   },
   "scripts": {
     "start": "brunch watch --server",
-    "test": "brunch test"
+    "test": "brunch test",
+    "postinstall": "brunch build --optimize"
   },
   "dependencies": {
     "javascript-brunch"				: ">= 1.0 < 1.7",
@@ -22,7 +24,9 @@
     "stylus-brunch"						: ">= 1.0 < 1.7",
     "handlebars-brunch"				: ">= 1.0 < 1.7",
     "uglify-js-brunch"				: ">= 1.0 < 1.7",
-    "clean-css-brunch"				: ">= 1.0 < 1.7"
+    "clean-css-brunch"				: ">= 1.0 < 1.7",
+    "statik"                  : ">= 1.1.0", 
+    "brunch"                  : "1.x"
   },
   "devDependencies": {}
 }
