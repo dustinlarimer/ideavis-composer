@@ -387,9 +387,41 @@ module.exports = class LinkView extends View
   # ----------------------------------
 
   create_midpoint: (d,i) =>
-    _midpoints = d.get('midpoints')
     _new = [[d3.event.sourceEvent.offsetX,d3.event.sourceEvent.offsetY]]
-    @model.save midpoints: _.union(_midpoints, _new)
+    
+    _endpoints = d.get('endpoints')
+    _endpoint_source = [ (@source.x+_endpoints[0][0]), (@source.y+_endpoints[0][1]) ]
+    _endpoint_target = [ (@target.x+_endpoints[1][0]), (@target.y+_endpoints[1][1]) ]
+    _midpoints = d.get('midpoints')
+    
+    _check = []
+    _check.push _endpoint_source
+    _.each(_midpoints, (d,i)-> _check.push d)
+    _check.push _endpoint_target
+    
+    place = null
+    before = []
+    after = []
+    _.each(_check, (d,i)=>
+      if (_check[i][0] < _new[0][0] and _new[0][0] < _check[i+1]?[0]) or (_check[i][0] > _new[0][0] and _new[0][0] > _check[i+1]?[0])
+        if (_check[i][1] < _new[0][1] and _new[0][1] < _check[i+1]?[1]) or (_check[i][1] > _new[0][1] and _new[0][1] > _check[i+1]?[1])
+          if (_check.length-1) is (i+1)
+            place = 'append'
+          else if i is 0
+            place = 'prepend'
+          before = _check[i]
+          after  = _check[i+1]
+    )
+
+    if place is 'append'
+      @model.save midpoints: _.union(_midpoints, _new)
+    else if place is 'prepend'
+      @model.save midpoints: _.union(_new, _midpoints)
+    else
+      index = _midpoints.indexOf(after)
+      _modified = _midpoints.splice(index, 0, _new[0])
+    
+    #@model.save midpoints: _.union(_midpoints, _new)
     @build_points()
     mediator.publish 'refresh_canvas'
 
