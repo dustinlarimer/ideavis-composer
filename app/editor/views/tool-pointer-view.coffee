@@ -1,17 +1,45 @@
 mediator = require 'mediator'
 View = require 'views/base/view'
 
+Node = require 'models/node'
+
 module.exports = class ToolPointerView extends View
 
   initialize: ->
     super
     console.log '[-- Pointer tool activated --]'
     @mode = 'pointer'
+    @copied_node = undefined
     
     $('#toolbar button.active').removeClass('active')
     $('#toolbar button#tool-pointer').addClass('active')
     mediator.outer.attr('cursor', 'default')
+    @activate()
     
+    _.extend this, new Backbone.Shortcuts
+    @delegateShortcuts()
+    
+    @delegate 'click', '#canvas_background', @deselect_all
+    
+    @subscribeEvent 'node_created', @reset
+    @subscribeEvent 'node_removed', @prune_links
+
+  remove: ->
+    # Unbind delgated events ------
+    @$el.off 'click', '#canvas_background'
+    
+    # Unbind D3 Events ------------
+    @deactivate()
+    
+    # Unbind @el ------------------
+    @setElement('')
+    
+    console.log '[xx Pointer tool out! xx]'
+    super
+
+
+  activate: =>
+    console.log 'activating'
     d3.selectAll('g.nodeGroup')
       .call(d3.behavior.drag()
         .on('dragstart', @node_drag_start)
@@ -23,19 +51,9 @@ module.exports = class ToolPointerView extends View
         .on('dragstart', @link_drag_start)
         .on('drag', @link_drag_move)
         .on('dragend', @link_drag_stop))
-    
-    _.extend this, new Backbone.Shortcuts
-    @delegateShortcuts()
-    
-    @delegate 'click', '#canvas_background', @deselect_all
-    
-    @subscribeEvent 'node_removed', @prune_links
 
-  remove: ->
-    # Unbind delgated events ------
-    @$el.off 'click', '#canvas_background'
-    
-    # Unbind D3 Events ------------
+  deactivate: =>
+    console.log 'deactivating'
     d3.selectAll('g.nodeGroup')
       .call(d3.behavior.drag()
         .on('dragstart', null)
@@ -48,13 +66,10 @@ module.exports = class ToolPointerView extends View
         .on('dragstart', null)
         .on('drag', null)
         .on('dragend', null))
-    
-    # Unbind @el ------------------
-    @setElement('')
-    
-    console.log '[xx Pointer tool out! xx]'
-    super
 
+  reset: =>
+    @deactivate()
+    @activate()
 
   # ----------------------------------
   # KEYBOARD SHORTCUTS
@@ -64,12 +79,30 @@ module.exports = class ToolPointerView extends View
     'backspace' : 'keypress_delete'
     'delete'    : 'keypress_delete'
     'del'       : 'keypress_delete'
+    'command+c' : 'keypress_copy'
+    'command+v' : 'keypress_paste'
 
   keypress_delete: (e) ->
     e.preventDefault()
     if mediator.selected_node?
       @destroy_node_group(mediator.selected_node)
       mediator.selected_node = null
+
+  keypress_copy: (e) =>
+    if mediator.selected_node?
+      console.log 'Node copied, ready to paste!'
+      @copied_node = mediator.selected_node
+
+  keypress_paste: (e) ->
+    e.preventDefault()
+    if @copied_node?
+      console.log 'Node pasted!'
+      clone = @copied_node.model.toJSON()
+      clone._id = undefined
+      clone.__v = undefined
+      clone.x = clone.x + 25
+      clone.y = clone.y + 25
+      mediator.nodes.create clone, {wait: true}
 
 
   # ----------------------------------
