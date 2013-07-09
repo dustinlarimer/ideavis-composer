@@ -13,9 +13,9 @@
     "npm"                     : "1.2.21"
   },
   "scripts": {
-    "start": "brunch watch --server",
-    "test": "brunch test",
-    "postinstall": "brunch build --optimize"
+    "start"       : "brunch watch --server",
+    "test"        : "brunch test",
+    "postinstall" : "brunch build --optimize"
   },
   "dependencies": {
     "javascript-brunch"				: ">= 1.0 < 1.7",
