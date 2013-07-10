@@ -11,7 +11,7 @@ config =
       base_url: 'http://larimer-canvas-demo.herokuapp.com'
 
 switch window.location.hostname
-  when 'http://larimer-canvas-demo.herokuapp.com', 'http://larimer-canvas-client.herokuapp.com'
+  when 'larimer-canvas-client.herokuapp.com', 'larimer-canvas-demo.herokuapp.com'
     env = "production"
   else env = "development"
 
