@@ -25,6 +25,7 @@
     "handlebars-brunch"				: ">= 1.0 < 1.7",
     "uglify-js-brunch"				: ">= 1.0 < 1.7",
     "clean-css-brunch"				: ">= 1.0 < 1.7",
+    "express"                 : "latest",
     "statik"                  : ">= 1.4.2",
     "brunch"                  : "1.x"
   },
