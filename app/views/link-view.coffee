@@ -385,8 +385,7 @@ module.exports = class LinkView extends View
   # ----------------------------------
 
   create_midpoint: (d,i) =>
-    #_new = [[d3.event.sourceEvent.offsetX,d3.event.sourceEvent.offsetY]]
-    _new = [[ d3.event.sourceEvent.layerX, (d3.event.sourceEvent.layerY-50) ]]
+    _new = [[ d3.event.sourceEvent.pageX-50, (d3.event.sourceEvent.pageY-50) ]]
     _endpoints = d.get('endpoints')
     _endpoint_source = [ (@source.x+_endpoints[0][0]), (@source.y+_endpoints[0][1]) ]
     _endpoint_target = [ (@target.x+_endpoints[1][0]), (@target.y+_endpoints[1][1]) ]
