@@ -5,13 +5,13 @@ config =
     api:
       base_url: 'http://localhost:3000'
   production:
-    core_url: ''
-    image_url: ''
+    core_url: 'http://larimer-canvas-demo.herokuapp.com'
+    image_url: 'http://larimer-canvas-client.herokuapp.com/images/'
     api:
-      base_url: ''
+      base_url: 'http://larimer-canvas-demo.herokuapp.com'
 
 switch window.location.hostname
-  when 'sub.domain.com', 'sub2.domain.com'
+  when 'http://larimer-canvas-demo.herokuapp.com', 'http://larimer-canvas-client.herokuapp.com'
     env = "production"
   else env = "development"
 
