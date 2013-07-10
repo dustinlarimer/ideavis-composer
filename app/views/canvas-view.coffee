@@ -62,6 +62,7 @@ module.exports = class CanvasView extends View
           _def = mediator.defs.select('path#link_' + d.id + '_path').transition().ease('linear').duration(100)
           _endpoints = d.get('endpoints')
           _midpoints = d.get('midpoints')
+          #console.log _midpoints
           data = []
           data.push { x: _source.x + _endpoints[0][0], y: _source.y + _endpoints[0][1] }
           _.each(_midpoints, (m,i)->
