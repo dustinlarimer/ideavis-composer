@@ -56,6 +56,8 @@ module.exports = class LinkView extends View
     @build_points()
 
   deactivate: ->
+    @selected_endpoint = null
+    @selected_midpoint = null
     @baseline.attr('visibility', 'visible')
     @tickline
       .attr('visibility', 'hidden')

@@ -34,7 +34,9 @@ module.exports = class ToolPointerView extends View
 
 
   activate: =>
-    key 'backspace, delete, del', 'pointer', @keypress_delete
+    key 'backspace', 'pointer', @keypress_delete
+    key 'delete', 'pointer', @keypress_delete
+    key 'del', 'pointer', @keypress_delete
     key 'command+c', 'pointer', @keypress_copy
     key 'control+c', 'pointer', @keypress_copy
     key 'command+v', 'pointer', @keypress_paste
@@ -55,7 +57,9 @@ module.exports = class ToolPointerView extends View
 
 
   deactivate: =>
-    key.unbind 'backspace, delete, del', 'pointer'
+    key.unbind 'backspace', 'pointer'
+    key.unbind 'delete', 'pointer'
+    key.unbind 'del', 'pointer'
     key.unbind 'command+c', 'pointer'
     key.unbind 'control+c', 'pointer'
     key.unbind 'command+v', 'pointer'
@@ -89,6 +93,7 @@ module.exports = class ToolPointerView extends View
       @destroy_node_group(mediator.selected_node)
       mediator.selected_node = null
     if mediator.selected_link?
+      #console.log mediator.selected_link.view.selected_midpoint
       if mediator.selected_link.view.selected_midpoint?
         mediator.selected_link.view.destroy_midpoint()
       else
