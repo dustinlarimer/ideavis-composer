@@ -49,44 +49,48 @@ module.exports = class CanvasView extends View
       ) if mediator.node?
     #scale(' + d.scale + ') 
 
-    mediator.link
-      .selectAll('path.baseline, path.tickline')
-      .transition()
-      .ease('linear')
-      .duration(100)
-      .attr('d', (d)->
-        _target = _.findWhere(force.nodes(), {id: d.get('target')})
-        _source = _.findWhere(force.nodes(), {id: d.get('source')})
-        _interpolation = d.get('interpolation')
-        if _target? and _source?
-          _def = mediator.defs.select('path#link_' + d.id + '_path').transition().ease('linear').duration(100)
-          _endpoints = d.get('endpoints')
-          _midpoints = d.get('midpoints')
-          #console.log _midpoints
-          data = []
-          data.push { x: _source.x + _endpoints[0][0], y: _source.y + _endpoints[0][1] }
-          _.each(_midpoints, (m,i)->
-            data.push { x: _midpoints[i][0], y: _midpoints[i][1] }
-          )
-          data.push { x: _target.x + _endpoints[1][0], y: _target.y + _endpoints[1][1] }
-          line = d3.svg.line()
-            .x((d)-> return d.x)
-            .y((d)-> return d.y)
-            .interpolate(_interpolation)(data)
-          if _interpolation is 'basis' and _midpoints.length > 0
-            _curves = line.split('C')
-            _last = _curves.pop()
-            _line = _curves.join('C')
-            data = _last.split(',')
-            _line += 'L' + data.slice(data.length - 2).join(',')
-            _def.attr('d', _line)
-            return _line
+    if mediator.link?
+      mediator.link
+        .selectAll('path.baseline, path.tickline')
+        .transition()
+        .ease('linear')
+        .duration(100)
+        .attr('d', (d)->
+          _target = _.findWhere(force.nodes(), {id: d.get('target')})
+          _source = _.findWhere(force.nodes(), {id: d.get('source')})
+          _interpolation = d.get('interpolation')
+          if _target? and _source?
+            _def = mediator.defs.select('path#link_' + d.id + '_path').transition().ease('linear').duration(100)
+            _endpoints = d.get('endpoints')
+            _midpoints = d.get('midpoints')
+            #console.log _midpoints
+            data = []
+            data.push { x: _source.x + _endpoints[0][0], y: _source.y + _endpoints[0][1] }
+            _.each(_midpoints, (m,i)->
+              data.push { x: _midpoints[i][0], y: _midpoints[i][1] }
+            )
+            data.push { x: _target.x + _endpoints[1][0], y: _target.y + _endpoints[1][1] }
+            line = d3.svg.line()
+              .x((d)-> return d.x)
+              .y((d)-> return d.y)
+              .interpolate(_interpolation)(data)
+            if _interpolation is 'basis' and _midpoints.length > 0
+              _curves = line.split('C')
+              _last = _curves.pop()
+              _line = _curves.join('C')
+              data = _last.split(',')
+              _line += 'L' + data.slice(data.length - 2).join(',')
+              _def.attr('d', _line)
+              return _line
+            else
+              _def.attr('d', line)
+              return line
           else
-            _def.attr('d', line)
-            return line
-        else
-          return 'M 0,0'
-      ) if mediator.link?
+            return 'M 0,0'
+        )
+      mediator.link
+        .selectAll('.textpath')
+          .attr('xlink:href', (d)-> '#link_' + d.id + '_path')
 
 
 
