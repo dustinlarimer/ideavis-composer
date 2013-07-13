@@ -18,18 +18,20 @@ module.exports = class EditorView extends CanvasView
   initialize: ->
     super
     console.log 'Initializing EditorView'
-    _.extend this, new Backbone.Shortcuts
-    @delegateShortcuts()
     
     @delegate 'click', '#tool-pointer', @activate_pointer
     @delegate 'click', '#tool-node',    @activate_node
     @delegate 'click', '#tool-link',    @activate_link
     @delegate 'click', '#tool-text',    @activate_text
+    
+    key 'v', @activate_pointer
+    key 'n', @activate_node
+    key 'l', @activate_link
+    key 't', @activate_text
 
   render: ->
     super
     console.log 'Rendering EditorView [...]'
-    
     @subview 'header_view', new HeaderView model: mediator.canvas
     @subview 'detail_view', new DetailView
     @subview 'tool_view', @toolbar_view = null
@@ -37,40 +39,30 @@ module.exports = class EditorView extends CanvasView
 
 
   # ----------------------------------
-  # KEYBOARD SHORTCUTS
-  # ----------------------------------
-
-  shortcuts:
-    'shift+/' : 'help'
-    'v'       : 'activate_pointer'
-    'n'       : 'activate_node'
-    'l'       : 'activate_link'
-    't'       : 'activate_text'
-
-  help: ->
-    console.log 'Keyboard shortcuts:\n' + JSON.stringify(@shortcuts, null, 4)
-
-  # ----------------------------------
   # TOOLBAR METHODS
   # ----------------------------------
 
-  activate_pointer: (e) ->
+  activate_pointer: =>
     @removeSubview 'tool_view'
     @toolbar_view = new ToolPointerView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
+    return false
 
-  activate_node: (e) ->
+  activate_node: =>
     @removeSubview 'tool_view'
     @toolbar_view = new ToolNodeView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
+    return false
 
-  activate_link: (e) ->
+  activate_link: =>
     @removeSubview 'tool_view'
     @toolbar_view = new ToolLinkView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
+    return false
 
-  activate_text: (e) ->
+  activate_text: =>
     @removeSubview 'tool_view'
     @toolbar_view = new ToolTextView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
+    return false
 

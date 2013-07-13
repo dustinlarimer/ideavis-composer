@@ -49,6 +49,7 @@ module.exports = class NodeView extends View
   clear: ->
     d3.select(@el).classed 'active', false
 
+
   # ----------------------------------
   # BUILD @Paths
   # ----------------------------------

@@ -21,6 +21,7 @@ module.exports = class LinkView extends View
     @marker_start = mediator.defs.selectAll('marker' + '#link_' + @model.id + '_marker_start')
     @marker_end = mediator.defs.selectAll('marker' + '#link_' + @model.id + '_marker_end')
     @selected_endpoint = null
+    @selected_midpoint = null
     
     #@subscribeEvent 'deactivate_detail', @deactivate
     @subscribeEvent 'clear_active', @clear
@@ -46,8 +47,8 @@ module.exports = class LinkView extends View
     super
 
   activate: ->
-    key 'backspace', 'link', @keypress_delete
-    key.setScope 'link'
+    #key 'backspace, delete, del', 'link', @keypress_delete
+    #key.setScope 'link'
     
     d3.select(@el).classed('active', true)
     @baseline.attr('visibility', 'hidden')
@@ -58,7 +59,7 @@ module.exports = class LinkView extends View
     @build_points()
 
   deactivate: ->
-    key.unbind 'backspace', 'link'
+    #key.unbind 'backspace, delete, del', 'link'
     
     @baseline.attr('visibility', 'visible')
     @tickline
@@ -91,6 +92,7 @@ module.exports = class LinkView extends View
       if @selected_midpoint?
         @destroy_midpoint()
       else
+        mediator.selected_link = null
         @model.destroy()
         @dispose()
     return false

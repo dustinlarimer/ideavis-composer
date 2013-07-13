@@ -24,24 +24,21 @@ module.exports = class ToolPointerView extends View
 
 
   remove: ->
-    # Unbind delgated events ------
     @$el.off 'click', '#canvas_background'
-    
-    # Unbind D3 Events ------------
-    @copied_node = undefined
     @deactivate()
+    @copied_node = undefined
+    @deselect_all()
     
-    # Unbind @el ------------------
     @setElement('')
-    
-    console.log '[xx Pointer tool out! xx]'
     super
 
 
   activate: =>
-    key 'backspace', 'pointer', @keypress_delete
-    key '⌘+c', 'pointer', @keypress_copy
-    key '⌘+v', 'pointer', @keypress_paste
+    key 'backspace, delete, del', 'pointer', @keypress_delete
+    key 'command+c', 'pointer', @keypress_copy
+    key 'control+c', 'pointer', @keypress_copy
+    key 'command+v', 'pointer', @keypress_paste
+    key 'control+v', 'pointer', @keypress_paste
     key.setScope 'pointer'
     
     d3.selectAll('g.nodeGroup')
@@ -58,16 +55,18 @@ module.exports = class ToolPointerView extends View
 
 
   deactivate: =>
-    key.unbind 'backspace', 'pointer'
-    key.unbind '⌘+c', 'pointer'
-    key.unbind '⌘+v', 'pointer'
+    key.unbind 'backspace, delete, del', 'pointer'
+    key.unbind 'command+c', 'pointer'
+    key.unbind 'control+c', 'pointer'
+    key.unbind 'command+v', 'pointer'
+    key.unbind 'control+v', 'pointer'
+    key.setScope ''
 
     d3.selectAll('g.nodeGroup')
       .call(d3.behavior.drag()
         .on('dragstart', null)
         .on('drag', null)
         .on('dragend', null))
-      .on('dblclick', null)
     
     d3.selectAll('g.linkGroup')
       .call(d3.behavior.drag()
@@ -84,18 +83,28 @@ module.exports = class ToolPointerView extends View
   # KEYBOARD SHORTCUTS
   # ----------------------------------
 
-  keypress_delete: (e) =>
-    e.preventDefault()
+  keypress_delete: =>
+    console.log 'keypress_delete'
     if mediator.selected_node?
       @destroy_node_group(mediator.selected_node)
       mediator.selected_node = null
+    if mediator.selected_link?
+      if mediator.selected_link.view.selected_midpoint?
+        mediator.selected_link.view.destroy_midpoint()
+      else
+        @destroy_link_group(mediator.selected_link)
+        mediator.selected_link = null
+      
+    return false
 
-  keypress_copy: (e) =>
+  keypress_copy: =>
+    console.log 'keypress_copy'
     if mediator.selected_node?
       @copied_node = mediator.selected_node
+    return false
 
-  keypress_paste: (e) =>
-    e.preventDefault()
+  keypress_paste: =>
+    console.log 'keypress_paste'
     if @copied_node?
       clone = @copied_node.model.toJSON()
       clone._id = undefined
@@ -103,6 +112,7 @@ module.exports = class ToolPointerView extends View
       clone.x = clone.x + 25
       clone.y = clone.y + 25
       mediator.nodes.create clone, {wait: true}
+    return false
 
 
   # ----------------------------------
@@ -126,7 +136,7 @@ module.exports = class ToolPointerView extends View
     d.rotate = d.model.get('rotate')
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')')
   
-  node_drag_stop: (d, i) ->
+  node_drag_stop: (d, i) =>
     if mediator.selected_node is null
       d.model.save x: d.x, y: d.y
     else
@@ -143,18 +153,15 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   link_drag_start: (d,i) ->
-    console.log 'pointer:link_drag_start'
     mediator.publish 'refresh_canvas'
     mediator.publish 'clear_active'
     mediator.selected_link = d
     mediator.selected_node = null
 
   link_drag_move: (d,i) ->
-    console.log 'pointer:link_drag_move'
     mediator.selected_link = null
 
   link_drag_stop: (d,i) ->
-    console.log 'pointer:link_drag_stop'
     if mediator.selected_link?
       d.view.activate()
       mediator.publish 'activate_detail', d.model
