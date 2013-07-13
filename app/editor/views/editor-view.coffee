@@ -24,6 +24,8 @@ module.exports = class EditorView extends CanvasView
     @delegate 'click', '#tool-link',    @activate_link
     @delegate 'click', '#tool-text',    @activate_text
     
+    @delegate 'click', '#tool-download', @download_svg
+    
     key 'v', @activate_pointer
     key 'n', @activate_node
     key 'l', @activate_link
@@ -36,6 +38,7 @@ module.exports = class EditorView extends CanvasView
     @subview 'detail_view', new DetailView
     @subview 'tool_view', @toolbar_view = null
     @activate_pointer()
+    @$('button').tooltip({placement: 'right'})
 
 
   # ----------------------------------
@@ -66,3 +69,10 @@ module.exports = class EditorView extends CanvasView
     @subview 'tool_view', @toolbar_view
     return false
 
+
+  download_svg: =>
+    console.log 'Downloading'
+    html = mediator.outer.node().parentNode.innerHTML
+    data = "data:image/svg+xml;base64,"+ btoa(html)
+    console.log data
+    window.open(data)

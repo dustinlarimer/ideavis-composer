@@ -246,6 +246,8 @@ module.exports = class CanvasView extends View
     
     mediator.outer = d3.select('#stage')
       .append('svg:svg')
+      .attr('xmlns', 'http://www.w3.org/2000/svg')
+      .attr('xmlns:xmlns:xlink', 'http://www.w3.org/1999/xlink')
       .attr('pointer-events', 'all');
     
     mediator.defs = mediator.outer.append('svg:defs')

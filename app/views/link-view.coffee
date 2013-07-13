@@ -150,6 +150,7 @@ module.exports = class LinkView extends View
       .append('svg:text')
         .attr('fill', (d)=> d.get('label_fill'))
         .attr('fill-opacity', (d)=> d.get('label_fill_opacity')/100)
+        .attr('font-family', 'Helvetica, sans-serif')
         .attr('font-size', (d)=> d.get('label_font_size'))
         .append('svg:textPath')
           .attr('class', 'textpath')

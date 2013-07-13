@@ -128,6 +128,7 @@ module.exports = class NodeView extends View
           .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
           .attr('text-anchor', 'middle')
           .attr('text-rendering', 'optimizeLegibility')
+          .attr('font-family', 'Helvetica, sans-serif')
           #.attr('font-family', (d)-> d.get('font_family'))
           .attr('font-size', (d)-> d.get('font_size'))
           .attr('font-style', (d)-> if d.get('italic') then return 'italic' else return 'normal')
