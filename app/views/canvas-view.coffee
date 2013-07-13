@@ -40,30 +40,29 @@ module.exports = class CanvasView extends View
 
   force.on 'tick', ->
     
-    mediator.node
-      .transition()
-      .ease('linear')
-      .attr('opacity', (d)-> d.opacity)
-      .attr('transform', (d)->
-        return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')'
-      ) if mediator.node?
-    #scale(' + d.scale + ') 
+    if mediator.node?
+      mediator.node
+        .transition()
+        .ease('linear')
+        .attr('opacity', (d)-> d.opacity)
+        .attr('transform', (d)->
+          return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')'
+        )
 
     if mediator.link?
       mediator.link
         .selectAll('path.baseline, path.tickline')
-        .transition()
-        .ease('linear')
-        .duration(100)
+        #.transition()
+        #.ease('linear')
+        #.duration(100)
         .attr('d', (d)->
           _target = _.findWhere(force.nodes(), {id: d.get('target')})
           _source = _.findWhere(force.nodes(), {id: d.get('source')})
           _interpolation = d.get('interpolation')
           if _target? and _source?
-            _def = mediator.defs.select('path#link_' + d.id + '_path').transition().ease('linear').duration(100)
+            _def = mediator.defs.select('path#link_' + d.id + '_path') #.transition().ease('linear').duration(100)
             _endpoints = d.get('endpoints')
             _midpoints = d.get('midpoints')
-            #console.log _midpoints
             data = []
             data.push { x: _source.x + _endpoints[0][0], y: _source.y + _endpoints[0][1] }
             _.each(_midpoints, (m,i)->

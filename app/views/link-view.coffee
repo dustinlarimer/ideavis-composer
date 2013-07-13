@@ -47,9 +47,6 @@ module.exports = class LinkView extends View
     super
 
   activate: ->
-    #key 'backspace, delete, del', 'link', @keypress_delete
-    #key.setScope 'link'
-    
     d3.select(@el).classed('active', true)
     @baseline.attr('visibility', 'hidden')
     @tickline
@@ -59,8 +56,6 @@ module.exports = class LinkView extends View
     @build_points()
 
   deactivate: ->
-    #key.unbind 'backspace, delete, del', 'link'
-    
     @baseline.attr('visibility', 'visible')
     @tickline
       .attr('visibility', 'hidden')
@@ -81,21 +76,6 @@ module.exports = class LinkView extends View
   clear: ->
     d3.select(@el).classed 'active', false
     @deactivate()
-
-
-  # ----------------------------------
-  # KEYBOARD SHORTCUTS
-  # ----------------------------------
-  keypress_delete: =>
-    console.log 'keypress_delete: =>'
-    if mediator.selected_link and mediator.selected_link.model is @model
-      if @selected_midpoint?
-        @destroy_midpoint()
-      else
-        mediator.selected_link = null
-        @model.destroy()
-        @dispose()
-    return false
 
 
   # ----------------------------------
