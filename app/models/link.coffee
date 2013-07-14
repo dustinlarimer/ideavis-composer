@@ -8,7 +8,7 @@ module.exports = class Link extends Model
     target: null
     endpoints: [[0,0],[0,0]]
     midpoints: []
-    markers: [ (new Marker type:'circle').toJSON(), (new Marker type:'circle').toJSON() ]
+    markers: [ (new Marker type:'reverse-start').toJSON(), (new Marker type:'reverse-end').toJSON() ]
     interpolation: 'basis'
     stroke: 'lightblue'
     stroke_dasharray: []
@@ -27,12 +27,11 @@ module.exports = class Link extends Model
     label_offset_y: 5
     label_spacing: 0
 
-  interpolation_types: ['linear', 'step-before', 'step-after', 'basis', 'cardinal']
+  #interpolation_types: ['basis', 'linear', 'step-before', 'step-after']
 
   initialize: (data={}) ->
     super
     _.extend({}, data)
-    #@interpolation = @interpolation_types[4] unless data.interpolation
     @marker_start = new Marker @get('markers')[0]
     @marker_end = new Marker @get('markers')[1]
     @listenTo @marker_start, 'change', @update_markers

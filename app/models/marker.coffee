@@ -15,7 +15,6 @@ module.exports = class Marker extends Model
     stroke_opacity: 1
 
 
-
   initialize: (data={}) ->
     super
     _.extend({}, data)

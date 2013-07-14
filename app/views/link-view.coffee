@@ -100,8 +100,8 @@ module.exports = class LinkView extends View
       .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
       .attr('stroke-width', (d)-> d.get('stroke_width'))
       .attr('fill', (d)-> d.get('fill'))
-      #.attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
-      #.attr('marker-end',   (d)-> 'url(#' + 'link_' + d.id + '_marker_end)')
+      .attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
+      .attr('marker-end',   (d)-> 'url(#' + 'link_' + d.id + '_marker_end)')
 
     @baseline
       .attr('stroke', (d)-> d.get('stroke'))
@@ -132,8 +132,8 @@ module.exports = class LinkView extends View
         .attr('stroke-opacity', (d)=> return @baseline.attr('stroke-opacity'))
         .attr('stroke-width', (d)=> return @baseline.attr('stroke-width'))
         .attr('fill', (d)=> return @baseline.attr('fill'))
-        #.attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
-        #.attr('marker-end',   (d)-> 'url(#' + 'link_' + d.id + '_marker_end)')
+        .attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
+        .attr('marker-end',   (d)-> 'url(#' + 'link_' + d.id + '_marker_end)')
 
     @tickline
       .attr('stroke', (d)=> return @baseline.attr('stroke'))
@@ -188,7 +188,7 @@ module.exports = class LinkView extends View
       .append('svg:marker')
         .attr('id', 'link_' + @model.id + '_marker_start')
         .attr('class', 'marker-start')
-        .attr('markerUnits', 'strokeWidth')
+        .attr('markerUnits', 'userSpaceOnUse')
         .attr('orient', 'auto')
         .attr('refY', 0)
 
@@ -206,11 +206,11 @@ module.exports = class LinkView extends View
             else
               return d.get('fill')
           )
-          .attr('shape-rendering', 'geometricPrecision')
+          #.attr('shape-rendering', 'geometricPrecision') #crispEdges
           .attr('fill-opacity', (d)-> return d.get('fill_opacity'))
           .attr('stroke', (d)-> return d.get('stroke'))
           .attr('stroke-opacity', (d)-> return d.get('stroke_opacity'))
-          .attr('stroke-width', (d)-> return d.get('stroke'))
+          .attr('stroke-width', (d)-> return d.get('stroke_width'))
 
 
     @marker_end = @marker_end.data([@model.marker_end])
@@ -219,7 +219,7 @@ module.exports = class LinkView extends View
       .append('svg:marker')
         .attr('id', 'link_' + @model.id + '_marker_end')
         .attr('class', 'marker-end')
-        .attr('markerUnits', 'strokeWidth')
+        .attr('markerUnits', 'userSpaceOnUse')
         .attr('orient', 'auto')
         .attr('refY', 0)
     
@@ -240,7 +240,7 @@ module.exports = class LinkView extends View
           .attr('fill-opacity', (d)-> return d.get('fill_opacity'))
           .attr('stroke', (d)-> return d.get('stroke'))
           .attr('stroke-opacity', (d)-> return d.get('stroke_opacity'))
-          .attr('stroke-width', (d)-> return d.get('stroke'))
+          .attr('stroke-width', (d)-> return d.get('stroke_width'))
 
     @marker_start.exit().remove()
     @marker_end.exit().remove()
@@ -459,44 +459,56 @@ module.exports = class LinkView extends View
         d.path = 'M 0,0'
         d.viewbox = '0 0 0 0'
         break
-      
+
       when 'circle'
-        _min = -1 * stroke_width
-        _max = stroke_width
-        d.markerHeight = _scale
-        d.markerWidth = _scale
-        d.path = 'M 0,0  m ' + _min + ',0  a ' + _max + ',' + _max + ' 0 1,0 ' + _w + ',0  a ' + _max + ',' + _max + ' 0 1,0 ' +  _w*-1 + ',0'
-        d.viewbox = '' + _min + ' ' + _min + ' ' + _w + ' ' + _w
+        _r = d.get('width') / 2
+        d.markerHeight = d.get('width')
+        d.markerWidth = d.get('width')
+        d.path = '' + 
+          'M 0,0 ' +
+          'm ' + (_r*-1) + ',0 ' +
+          'a ' + _r + ',' + _r + ' 0 1,0 ' + (_r*2)  + ',0 ' +
+          'a ' + _r + ',' + _r + ' 0 1,0 ' + (_r*-2) + ',0 ' +
+          ''
+        d.viewbox = '' + (_r*-1) + ' ' + (_r*-1) + ' ' + (_r*2) + ' ' + (_r*2)
         break
       
       when 'square'
-        _min = -1 * stroke_width
-        _max = stroke_width
-        d.markerHeight = _scale
-        d.markerWidth = _scale
-        d.path = 'M ' + _min + ',' + _min + ' L' + _max + ',' + _min + ' L' + _max + ',' + _max + ' L' + _min + ',' + _max + ' Z'
-        d.viewbox = '' + _min + ' ' + _min + ' ' + _w + ' ' + _w
+        _width = d.get('width')
+        _min = -1 * _width / 2
+        _max = _width / 2
+        d.markerHeight = _width
+        d.markerWidth = _width
+        d.path = '' +
+          'M ' + _min + ',' + _min + ' ' +
+          'L ' + _max + ',' + _min + ' ' +
+          'L ' + _max + ',' + _max + ' ' +
+          'L ' + _min + ',' + _max + ' Z'+
+          ''
+        d.viewbox = '' + _min + ' ' + _min + ' ' + d.markerWidth + ' ' + d.markerHeight
         break
       
       when 'reverse-start'
+        _width = d.get('width')
         _min_x = 0
-        _max_x = _w
-        _min_y = -1 * stroke_width/2
-        _max_y = stroke_width/2
-        d.markerHeight = 1 * _scale
-        d.markerWidth = 2 * _scale
+        _max_x = 2 * _width
+        _min_y = -1 * _width / 2
+        _max_y = _width / 2
+        d.markerHeight = _width
+        d.markerWidth = 2 * _width
         d.path = 'M 0,0 m 0,' + _min_y + ' L ' + _max_x + ',0 L 0,' + _max_y + ' z'
-        d.viewbox = '' + _min_x + ' ' + _min_y + ' ' + _w + ' ' + stroke_width
+        d.viewbox = '' + _min_x + ' ' + _min_y + ' ' + d.markerWidth + ' ' + d.markerHeight
         break
       
       when 'reverse-end'
-        _min_x = -2 * stroke_width
-        _min_y = -1 * stroke_width/2
-        _max_y = stroke_width/2
-        d.markerHeight = 1 * _scale
-        d.markerWidth = 2 * _scale
+        _width = d.get('width')
+        _min_x = -2 * _width
+        _min_y = -1 * _width / 2
+        _max_y = _width / 2
+        d.markerHeight = 1 * _width
+        d.markerWidth = 2 * _width
         d.path = 'M 0,0 m 0,' + _min_y + ' L ' + _min_x + ',0 L 0,' + _max_y + ' z'
-        d.viewbox = '' + _min_x + ' ' + _min_y + ' ' + _w + ' ' + stroke_width
+        d.viewbox = '' + _min_x + ' ' + _min_y + ' ' + d.markerWidth + ' ' + d.markerHeight
         break
 
     #@marker_end
