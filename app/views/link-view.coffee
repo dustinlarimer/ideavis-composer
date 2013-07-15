@@ -449,8 +449,8 @@ module.exports = class LinkView extends View
     stroke_width = @model.get('stroke_width')
     type = d.get('type')
     width = d.get('width')
-    _w = 2 * stroke_width
-    _scale = width / stroke_width
+    #_width = d.get('width')
+    #_scale = width / stroke_width
     
     switch type
       when 'none'
@@ -462,8 +462,8 @@ module.exports = class LinkView extends View
 
       when 'circle'
         _r = d.get('width') / 2
-        d.markerHeight = d.get('width')
-        d.markerWidth = d.get('width')
+        d.markerHeight = width
+        d.markerWidth = width
         d.path = '' + 
           'M 0,0 ' +
           'm ' + (_r*-1) + ',0 ' +
@@ -472,13 +472,12 @@ module.exports = class LinkView extends View
           ''
         d.viewbox = '' + (_r*-1) + ' ' + (_r*-1) + ' ' + (_r*2) + ' ' + (_r*2)
         break
-      
+   
       when 'square'
-        _width = d.get('width')
-        _min = -1 * _width / 2
-        _max = _width / 2
-        d.markerHeight = _width
-        d.markerWidth = _width
+        _min = -1 * width / 2
+        _max = width / 2
+        d.markerHeight = width
+        d.markerWidth = width
         d.path = '' +
           'M ' + _min + ',' + _min + ' ' +
           'L ' + _max + ',' + _min + ' ' +
@@ -487,35 +486,120 @@ module.exports = class LinkView extends View
           ''
         d.viewbox = '' + _min + ' ' + _min + ' ' + d.markerWidth + ' ' + d.markerHeight
         break
-      
+
+      when 'stem'
+        _min_x = -1 * width / 8
+        _min_y = -1 * width / 2
+        _max_x = width / 8
+        _max_y = width / 2
+        d.markerHeight = width
+        d.markerWidth = 4 * _max_x
+        d.path = '' +
+          'M ' + _min_x + ',' + _min_y + ' ' +
+          'L ' + _max_x + ',' + _min_y + ' ' +
+          'L ' + _max_x + ',' + _max_y + ' ' +
+          'L ' + _min_x + ',' + _max_y + ' Z'+
+          ''
+        d.viewbox = '' + _min_x + ' ' + _min_y + ' ' + d.markerWidth + ' ' + d.markerHeight
+        break
+
+      when 'equal-arrow-start'
+        _length = (1/2) * Math.sqrt(3) * width
+        _min_x = -1 * _length
+        _min_y = -1 * width / 2
+        _max_y = width / 2
+        d.markerHeight = width
+        d.markerWidth = _length
+        d.path = '' +
+          'M 0,' + _min_y + ' ' +
+          'L ' + _min_x + ',0 ' +
+          'L 0,' + _max_y + ' Z'
+        d.viewbox = '' + _min_x + ' ' + _min_y + ' ' + d.markerWidth + ' ' + d.markerHeight
+        break
+      when 'equal-arrow-end'
+        _length = (1/2) * Math.sqrt(3) * width
+        _max_x = _length
+        _min_y = -1 * width / 2
+        _max_y = width / 2
+        d.markerHeight = width
+        d.markerWidth = _length
+        d.path = '' +
+          'M 0,' + _min_y + ' ' +
+          'L ' + _max_x + ',0 ' +
+          'L 0,' + _max_y + ' Z'
+        d.viewbox = '0 ' + _min_y + ' ' + d.markerWidth + ' ' + d.markerHeight
+        break
+
+      when 'right-arrow-start'
+        _min_x = -1 * width / 2
+        _min_y = -1 * width / 2
+        _max_y = width / 2
+        d.markerHeight = width
+        d.markerWidth = width / 2
+        d.path = '' +
+          'M 0,' + _min_y + ' ' +
+          'L ' + _min_x + ',0 ' +
+          'L 0,' + _max_y + ' Z'
+        d.viewbox = '' + _min_x + ' ' + _min_y + ' ' + d.markerWidth + ' ' + d.markerHeight
+        break
+      when 'right-arrow-end'
+        _max_x = width / 2
+        _min_y = -1 * width / 2
+        _max_y = width / 2
+        d.markerHeight = width
+        d.markerWidth = width / 2
+        d.path = '' +
+          'M 0,' + _min_y + ' ' +
+          'L ' + _max_x + ',0 ' +
+          'L 0,' + _max_y + ' Z'
+        d.viewbox = '0 ' + _min_y + ' ' + d.markerWidth + ' ' + d.markerHeight
+        break
+
+      when 'sharp-arrow-start'
+        _length = .6 * width
+        _min_x = -1 * _length
+        _min_y = -1 * width / 2
+        _max_y = width / 2
+        d.markerHeight = width
+        d.markerWidth = width + width/5
+        d.path = '' +
+          'M 0,0 ' +
+          'L ' + (width/5) + ',' + _min_y + ' ' +
+          'L ' + _min_x + ',0 ' +
+          'L ' + (width/5) + ',' + _max_y + ' Z'
+        d.viewbox = '' + _min_x + ' ' + _min_y + ' ' + d.markerWidth + ' ' + d.markerHeight
+        break
+      when 'sharp-arrow-end'
+        _length = .6 * width
+        _max_x = _length
+        _min_y = -1 * width / 2
+        _max_y = width / 2
+        d.markerHeight = width
+        d.markerWidth = width + width/5
+        d.path = '' +
+          'M 0,0 ' +
+          'L ' + (-1*width/5) + ',' + _min_y + ' ' +
+          'L ' + _max_x + ',0 ' +
+          'L ' + (-1*width/5) + ',' + _max_y + ' Z'
+        d.viewbox = '' + (-1*width/5) + ' ' + _min_y + ' ' + d.markerWidth + ' ' + d.markerHeight
+        break
+
       when 'reverse-start'
-        _width = d.get('width')
         _min_x = 0
-        _max_x = 2 * _width
-        _min_y = -1 * _width / 2
-        _max_y = _width / 2
-        d.markerHeight = _width
-        d.markerWidth = 2 * _width
+        _max_x = 2 * width
+        _min_y = -1 * width / 2
+        _max_y = width / 2
+        d.markerHeight = width
+        d.markerWidth = 2 * width
         d.path = 'M 0,0 m 0,' + _min_y + ' L ' + _max_x + ',0 L 0,' + _max_y + ' z'
         d.viewbox = '' + _min_x + ' ' + _min_y + ' ' + d.markerWidth + ' ' + d.markerHeight
         break
-      
       when 'reverse-end'
-        _width = d.get('width')
-        _min_x = -2 * _width
-        _min_y = -1 * _width / 2
-        _max_y = _width / 2
-        d.markerHeight = 1 * _width
-        d.markerWidth = 2 * _width
+        _min_x = -2 * width
+        _min_y = -1 * width / 2
+        _max_y = width / 2
+        d.markerHeight = 1 * width
+        d.markerWidth = 2 * width
         d.path = 'M 0,0 m 0,' + _min_y + ' L ' + _min_x + ',0 L 0,' + _max_y + ' z'
         d.viewbox = '' + _min_x + ' ' + _min_y + ' ' + d.markerWidth + ' ' + d.markerHeight
         break
-
-    #@marker_end
-    #    .attr('viewBox', '0 -5 10 10')
-    #    .attr('markerHeight', 3)
-    #    .attr('markerWidth', 4)
-    #    .append('svg:path')
-    #      .attr('d', 'M 0,0 m 0,-5 L 10,0 L 0,5 z')
-    #      .attr('fill', '#333333')
-

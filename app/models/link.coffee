@@ -8,7 +8,7 @@ module.exports = class Link extends Model
     target: null
     endpoints: [[0,0],[0,0]]
     midpoints: []
-    markers: [ (new Marker type:'reverse-start').toJSON(), (new Marker type:'reverse-end').toJSON() ]
+    markers: [ (new Marker type:'sharp-arrow-start').toJSON(), (new Marker type:'sharp-arrow-end').toJSON() ]
     interpolation: 'basis'
     stroke: 'lightblue'
     stroke_dasharray: []
