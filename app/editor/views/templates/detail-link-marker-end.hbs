@@ -1,0 +1,64 @@
+<div class="row-fluid">
+	<div class="span8">
+		<label>Marker</label>
+		<select class="span12" id="marker-end-attribute-type">
+			<option value="none">None</option>
+			<option value="circle">Circle</option>
+			<option value="square">Square</option>
+			<option value="stem">Stem</option>
+			<option value="equal-arrow-end">Equilateral Arrow</option>
+			<option value="right-arrow-end">Right-angle Arrow</option>
+			<option value="sharp-arrow-end">Sharp Arrow</option>
+			<option value="reverse-end">Reverse Arrow</option>
+		</select>
+	</div>
+	<div class="span4">
+		<label>Inset</label>
+		<div class="input-append">
+			<input class="span9" id="marker-end-attribute-offset-x" type="text" value="{{offset_x}}">
+			<span class="add-on">px</span>
+		</div>
+	</div>
+</div>
+
+<div class="row-fluid">
+	<div class="span4">
+		<label>Width</label>
+		<div class="input-append">
+			<input class="span9" id="marker-end-attribute-width" type="text" value="{{width}}">
+			<span class="add-on">px</span>
+		</div>
+	</div>
+	<div class="span4">
+		<label><canvas class="fill-preview" style="background-color: {{fill}}"></canvas> Fill</label>
+		<input class="span12" id="marker-end-attribute-fill" type="text" value="{{fill}}">
+	</div>
+	<div class="span4">
+		<label>Alpha</label>
+		<div class="input-append">
+			<input class="span9" id="marker-end-attribute-fill-opacity" type="text" value="{{fill_opacity}}">
+			<span class="add-on">%</span>
+		</div>
+	</div>
+</div>
+
+<div class="row-fluid">
+	<div class="span4">
+		<label>Border</label>
+		<div class="input-append">
+			<input class="span9" id="marker-end-attribute-stroke-width" type="text" value="{{stroke_width}}">
+			<span class="add-on">px</span>
+		</div>
+	</div>
+	<div class="span4">
+		<label><canvas class="stroke-preview" style="border-color: {{stroke}}"></canvas> Stroke</label>
+		<input class="span12" id="marker-end-attribute-stroke" type="text" value="{{stroke}}">
+	</div>
+	<div class="span4">
+		<label>Alpha</label>
+		<div class="input-append">
+			<input class="span9" id="marker-end-attribute-stroke-opacity" type="text" value="{{stroke_opacity}}">
+			<span class="add-on">%</span>
+		</div>
+	</div>
+</div>

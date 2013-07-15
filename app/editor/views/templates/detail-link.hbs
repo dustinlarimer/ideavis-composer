@@ -124,86 +124,20 @@
 
 </div>
 
-<!--<hr/>-->
-<div class="row-fluid" style="display: none;">
+<hr/>
+<div class="row-fluid">
 	<div class="span12">
 		<ul class="nav nav-tabs">
   		<li class="active">
-		    <a href="#baseline-start-marker" data-toggle="tab"><i class="icon-circle-arrow-left icon-white"></i> Start</a>
+		    <a href="#marker-start" data-toggle="tab"><i class="icon-circle-arrow-left icon-white"></i> Start</a>
 		  </li>
-		  <li><a href="#baseline-end-marker" data-toggle="tab"><i class="icon-circle-arrow-right icon-white"></i> End</a></li>
-			<li><a href="#baseline-background" data-toggle="tab">Background</a></li>
-		  <!--<li><a href="#baseline-midpoints" data-toggle="tab">Midpoints</a></li>-->
+		  <li><a href="#marker-end" data-toggle="tab"><i class="icon-circle-arrow-right icon-white"></i> End</a></li>
+			<!--<li><a href="#baseline-background" data-toggle="tab">Background</a></li>
+		  <li><a href="#baseline-midpoints" data-toggle="tab">Midpoints</a></li>-->
 		</ul>
 		<div class="tab-content">
-			<div class="tab-pane active" id="baseline-start-marker">
-				
-				<div class="row-fluid">
-					<div class="span8">
-						<label>Marker</label>
-						<div class="btn-group">
-							<a class="span12 btn dropdown-toggle" data-toggle="dropdown" href="#">
-								Arrow
-								<span class="caret"></span>
-							</a>
-							<ul class="dropdown-menu">
-								<li><a href="#">Arrow</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="span4">
-						<label>Inset</label>
-						<div class="input-append">
-							<input class="span9" id="marker-start-attribute-offset-x" type="text" value="{{offset_x}}">
-							<span class="add-on">px</span>
-						</div>
-					</div>
-				</div>
-				
-				<div class="row-fluid">
-					<div class="span4">
-						<label>Width</label>
-						<div class="input-append">
-							<input class="span9" id="marker-start-attribute-width" type="text" value="{{width}}">
-							<span class="add-on">px</span>
-						</div>
-					</div>
-					<div class="span4">
-						<label><canvas class="fill-preview" style="background-color: {{fill}}"></canvas> Fill</label>
-						<input class="span12" id="path-attribute-fill" type="text" value="{{fill}}">
-					</div>
-					<div class="span4">
-						<label>Alpha</label>
-						<div class="input-append">
-							<input class="span9" id="marker-start-attribute-fill-opacity" type="text" value="{{fill_opacity}}">
-							<span class="add-on">%</span>
-						</div>
-					</div>
-				</div>
-				
-				<div class="row-fluid">
-					<div class="span4">
-						<label>Border</label>
-						<div class="input-append">
-							<input class="span9" id="marker-start-attribute-stroke-width" type="text" value="{{stroke_width}}">
-							<span class="add-on">px</span>
-						</div>
-					</div>
-					<div class="span4">
-						<label><canvas class="stroke-preview" style="border-color: {{stroke}}"></canvas> Stroke</label>
-						<input class="span12" id="marker-start-attribute-stroke" type="text" value="{{stroke}}">
-					</div>
-					<div class="span4">
-						<label>Alpha</label>
-						<div class="input-append">
-							<input class="span9" id="marker-start-attribute-stroke-opacity" type="text" value="{{stroke_opacity}}">
-							<span class="add-on">%</span>
-						</div>
-					</div>
-				</div>
-				
-			</div>
-			<div class="tab-pane" id="baseline-end-marker"></div>
+			<div class="tab-pane active" id="marker-start"></div>
+			<div class="tab-pane" id="marker-end"></div>
 			<div class="tab-pane" id="baseline-background">
 				<div class="row-fluid">
 					<div class="span4">

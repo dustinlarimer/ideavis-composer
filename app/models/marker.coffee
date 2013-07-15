@@ -8,11 +8,11 @@ module.exports = class Marker extends Model
     
     width: 20
     fill: 'none'
-    fill_opacity: 1
+    fill_opacity: 100
     
     stroke_width: 0
     stroke: 'none'
-    stroke_opacity: 1
+    stroke_opacity: 100
 
 
   initialize: (data={}) ->

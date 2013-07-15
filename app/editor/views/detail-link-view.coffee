@@ -2,9 +2,15 @@ mediator = require 'mediator'
 template = require 'editor/views/templates/detail-link'
 View = require 'views/base/view'
 
+DetailLinkMarkerStartView = require 'editor/views/detail-link-marker-start-view'
+DetailLinkMarkerEndView = require 'editor/views/detail-link-marker-end-view'
+
 module.exports = class DetailLinkView extends View
   autoRender: true
   template: template
+  regions:
+    '#marker-start': 'marker_start'
+    '#marker-end': 'marker_end'
 
   initialize: (data={}) ->
     super
@@ -14,6 +20,9 @@ module.exports = class DetailLinkView extends View
 
   render: ->
     super
+    @subview 'marker-start-view', new DetailLinkMarkerStartView model: @model.marker_start, region: 'marker_start'
+    @subview 'marker-end-view', new DetailLinkMarkerEndView model: @model.marker_end, region: 'marker_end'
+    
     @$('#baseline-attribute-interpolation button[value="' + @model.get('interpolation') + '"]').addClass('active')
     @$('#baseline-attribute-stroke-linecap button[value="' + @model.get('stroke_linecap') + '"]').addClass('active')
     _.each(@model.get('stroke_dasharray'), (d,i)=>

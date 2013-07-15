@@ -191,14 +191,15 @@ module.exports = class LinkView extends View
         .attr('markerUnits', 'userSpaceOnUse')
         .attr('orient', 'auto')
         .attr('refY', 0)
+        .append('svg:path')
 
     @marker_start
         .each((d,i)=> @generate_marker_path(d))
-        .attr('refX', (d)=> return -1 * d.get('offset_x') / @model.get('stroke_width'))
+        .attr('refX', (d)=> return -1 * d.get('offset_x'))
         .attr('viewBox', (d)-> d.viewbox)
         .attr('markerHeight', (d)-> d.markerHeight)
         .attr('markerWidth', (d)-> d.markerWidth)
-        .append('svg:path')
+        .selectAll('path')
           .attr('d', (d)-> d.path)
           .attr('fill', (d)=> 
             if d.get('fill') is 'none'
@@ -206,11 +207,11 @@ module.exports = class LinkView extends View
             else
               return d.get('fill')
           )
-          #.attr('shape-rendering', 'geometricPrecision') #crispEdges
-          .attr('fill-opacity', (d)-> return d.get('fill_opacity'))
+          .attr('fill-opacity', (d)-> return d.get('fill_opacity')/100)
           .attr('stroke', (d)-> return d.get('stroke'))
-          .attr('stroke-opacity', (d)-> return d.get('stroke_opacity'))
+          .attr('stroke-opacity', (d)-> return d.get('stroke_opacity')/100)
           .attr('stroke-width', (d)-> return d.get('stroke_width'))
+          #.attr('shape-rendering', 'geometricPrecision') #crispEdges
 
 
     @marker_end = @marker_end.data([@model.marker_end])
@@ -222,14 +223,15 @@ module.exports = class LinkView extends View
         .attr('markerUnits', 'userSpaceOnUse')
         .attr('orient', 'auto')
         .attr('refY', 0)
+        .append('svg:path')
     
     @marker_end
         .each((d,i)=> @generate_marker_path(d))
-        .attr('refX', (d)=> return d.get('offset_x') / @model.get('stroke_width'))
+        .attr('refX', (d)=> return d.get('offset_x'))
         .attr('viewBox', (d)-> d.viewbox)
         .attr('markerHeight', (d)-> d.markerHeight)
         .attr('markerWidth', (d)-> d.markerWidth)
-        .append('svg:path')
+        .selectAll('path')
           .attr('d', (d)-> d.path)
           .attr('fill', (d)=> 
             if d.get('fill') is 'none'
@@ -237,9 +239,9 @@ module.exports = class LinkView extends View
             else
               return d.get('fill')
           )
-          .attr('fill-opacity', (d)-> return d.get('fill_opacity'))
+          .attr('fill-opacity', (d)-> return d.get('fill_opacity')/100)
           .attr('stroke', (d)-> return d.get('stroke'))
-          .attr('stroke-opacity', (d)-> return d.get('stroke_opacity'))
+          .attr('stroke-opacity', (d)-> return d.get('stroke_opacity')/100)
           .attr('stroke-width', (d)-> return d.get('stroke_width'))
 
     @marker_start.exit().remove()
