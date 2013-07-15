@@ -51,6 +51,7 @@ module.exports = class CanvasView extends View
 
     if mediator.link?
       mediator.link
+        .attr('opacity', (d)-> d.opacity)
         .selectAll('path.baseline, path.tickline')
         #.transition()
         #.ease('linear')
@@ -100,9 +101,10 @@ module.exports = class CanvasView extends View
     _.each(mediator.links.models, (link,i) => 
       _source = _.where(force.nodes(), {id: link.get('source')})[0]
       _target = _.where(force.nodes(), {id: link.get('target')})[0]
-      force.links().push { id: link.id, source: _source, target: _target, model: link }
+      force.links().push { id: link.id, source: _source, target: _target, opacity: link.get('stroke_opacity')/100, model: link }
     ) #if mediator.links?
     @subscribeEvent 'link_created', @add_link
+    @subscribeEvent 'link_updated', @update_link
     @subscribeEvent 'link_removed', @remove_link
     @build_links()
 
@@ -114,30 +116,21 @@ module.exports = class CanvasView extends View
 
   drag_node_start: (d, i) ->
     mediator.publish 'refresh_canvas'
-    mediator.selected_node = d
-    mediator.publish 'clear_active_nodes'
-    # force.start()
 
   drag_node_move: (d, i) ->
-    console.log 'drag_node_move'
-    mediator.selected_node = null
-    #d.scale = d.model.get('scale') or 1
+    #console.log 'drag_node_move'
     d.rotate = d.model.get('rotate')
     d.x = d3.event.x
     d.y = d3.event.y
     d.px = d.x
     d.py = d.y
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
-    # scale(' + d.scale + ') 
-    # force.tick()
   
   drag_node_end: (d, i) ->
     mediator.publish 'refresh_canvas'
-    #force.start()
 
   add_node: (node) ->
     force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
-    # scale: node.get('scale'), 
     @build_nodes()
 
   update_node: (node) ->
@@ -180,7 +173,6 @@ module.exports = class CanvasView extends View
       )
       .each((d,i)-> d.view = new NodeView({model: d.model, el: @}))
       .call(node_drag_events)
-    # scale(' + d.model.get('scale') + ') 
     
     mediator.node
       .exit()
@@ -197,8 +189,15 @@ module.exports = class CanvasView extends View
   add_link: (link) ->
     _source = _.where(force.nodes(), {id: link.get('source')})[0]
     _target = _.where(force.nodes(), {id: link.get('target')})[0]
-    force.links().push { id: link.id, source: _source, target: _target, model: link }
+    force.links().push { id: link.id, source: _source, target: _target, opacity: link.get('stroke_opacity')/100, model: link }
     @build_links()
+
+  update_link: (link) ->
+    _.each(force.links(), (d,i)->
+      if d.id is link.id
+        d.opacity = link.get('stroke_opacity')/100
+    )
+    @refresh()
 
   remove_link: (link_id) ->
     _link = _.findWhere(force.links(), {id: link_id})
@@ -217,6 +216,7 @@ module.exports = class CanvasView extends View
       .insert('svg:g', 'g.nodeGroup')
       .attr('class', 'linkGroup')
       .attr('pointer-events', 'visibleStroke')
+      .attr('opacity', (d)-> d.model.get('stroke_opacity')/100)
       .each((d,i)-> d.view = new LinkView({model: d.model, el: @, source: d.source, target: d.target}))
     
     mediator.link
@@ -254,11 +254,8 @@ module.exports = class CanvasView extends View
     force
       .charge(0)
       .gravity(0)
-      #.friction(1)
-      #.linkDistance(150)
       .linkStrength(0)
       .size([bounds.width, bounds.height])
-      #.start()
     
     @subscribeEvent 'refresh_canvas', @refresh
     @init_artifacts()
