@@ -42,8 +42,8 @@ module.exports = class CanvasView extends View
     
     if mediator.node?
       mediator.node
-        .transition()
-        .ease('linear')
+        #.transition()
+        #.ease('linear')
         .attr('opacity', (d)-> d.opacity)
         .attr('transform', (d)->
           return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')'
@@ -73,15 +73,6 @@ module.exports = class CanvasView extends View
               .x((d)-> return d.x)
               .y((d)-> return d.y)
               .interpolate(_interpolation)(data)
-            #if _interpolation is 'basis' and _midpoints.length > 0
-            #  _curves = line.split('C')
-            #  _last = _curves.pop()
-            #  _line = _curves.join('C')
-            #  data = _last.split(',')
-            #  _line += 'L' + data.slice(data.length - 2).join(',')
-            #  _def.attr('d', _line)
-            #  return _line
-            #else
             _def.attr('d', line)
             return line
           else

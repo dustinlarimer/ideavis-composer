@@ -52,7 +52,7 @@ module.exports = class LinkView extends View
     @tickline
       .attr('visibility', 'visible')
       .call(d3.behavior.drag()
-        .on('dragstart', @create_midpoint)) #dragend
+        .on('dragstart', @create_midpoint))
     @build_points()
 
   deactivate: ->
