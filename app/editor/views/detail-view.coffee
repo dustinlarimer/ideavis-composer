@@ -28,6 +28,7 @@ module.exports = class DetailView extends View
       @subview 'detail-tray', new DetailNodeView model: model, region: 'tray'
     else if model instanceof Link
       @subview 'detail-tray', new DetailLinkView model: model, region: 'tray'
+    d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 1)
 
   deactivate_detail: ->
     @removeSubview 'detail-tray'

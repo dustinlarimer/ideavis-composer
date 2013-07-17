@@ -25,8 +25,11 @@ module.exports = class Application extends Chaplin.Application
     mediator.links = new Links
     
     mediator.outer = undefined
+    mediator.stage = undefined
     mediator.vis = undefined
     mediator.defs = undefined
+    mediator.controls = undefined
+    mediator.zoom = true
     
     mediator.node = undefined
     mediator.selected_node = undefined

@@ -5,6 +5,7 @@
    ========================================================================== */
 
 body
+  overflow hidden
   padding 0
 
 #canvas
@@ -126,17 +127,20 @@ body
       background-image url('/images/toolbar-text.png')
 
   #detail
-    background #333
-    //rgba(0,0,0,.75)
-    border-radius 4px
-    color #fff
-    font-size 12px
+    height 100%
+    overflow-x hidden
+    overflow-y auto
+    padding 0 11px 0 0
     position fixed
-    right 10px
-    top 62px
-    width 280px
-    //width 300px
-    //width 240px
+    right 0px
+    width 311px
+    z-index 1
+    
+    #detail-tray
+      background rgba(215,215,215,.96)
+      border-right 1px solid #ccc
+      border-left 1px solid #ccc
+      padding 62px 10px 5px
     
     h2
       font-size 14px
@@ -149,9 +153,11 @@ body
       margin 10px 0 5px
 
     hr
-      border-top medium none
-      border-bottom 1px solid rgba(0,0,0,.5)
-      box-shadow 0 1px 1px rgba(255,255,255,.2)
+      border-top 1px solid rgba(0,0,0,.2)
+      border-bottom 1px solid #fff
+      //border-top medium none
+      //border-bottom 1px solid rgba(0,0,0,.5)
+      //box-shadow 0 1px 1px rgba(255,255,255,.2)
       margin 5px 0
 
     form
@@ -319,18 +325,28 @@ body
       border-width 2px
 
 
-#detail .detail-panel-header {
-	padding: 0 10px;
-}
-#detail .detail-panel-bucket {
-  padding: 0 10px;
-}
 #detail .detail-panel-bucket table { margin: 0; }
 
-#node-texts,
-#link-attributes
-	margin 0 0 5px
 
+.axis path,
+.axis line
+  fill none
+  stroke #d7d7d7
+  shape-rendering crispEdges
+
+.axis .minor
+  stroke #e9e9e9
+
+.axis .major text
+  fill #999
+  font-size 9px
+  opacity 0
+
+.x .major text
+  text-anchor middle !important
+
+.y .major text
+  text-anchor start !important
 
 
 /*

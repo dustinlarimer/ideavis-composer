@@ -13,7 +13,7 @@ module.exports = class CanvasView extends View
     super
     console.log 'Initializing CanvasView'
     $(window).on 'resize', @refresh
-
+    
     @model.synced =>
       mediator.nodes.synced =>
         mediator.links.synced =>
@@ -36,8 +36,33 @@ module.exports = class CanvasView extends View
     x: [0, viewport.width()]
     y: [0, viewport.height()-40]
 
-  force = d3.layout.force()
+  x = d3.scale.linear()
+    .domain([0, bounds.width])
+    .range([0, bounds.width])
 
+  y = d3.scale.linear()
+    .domain([0, bounds.height])
+    .range([0, bounds.height])
+
+  xAxis = d3.svg.axis()
+    .scale(x)
+    .orient('top')
+    .tickPadding(-20)
+    .ticks(20)
+    .tickSize(-10,-5,0)
+    .tickSubdivide(5)
+
+  yAxis = d3.svg.axis()
+    .scale(y)
+    .orient('left')
+    .tickPadding(-12)
+    .ticks(5)
+    .tickSize(-10,-5,0)
+    .tickSubdivide(5)
+    #-bounds.width
+
+
+  force = d3.layout.force()
   force.on 'tick', ->
     
     if mediator.node?
@@ -234,23 +259,38 @@ module.exports = class CanvasView extends View
   render: ->
     super
     console.log 'Rendering CanvasView [...]'
-    
     mediator.outer = d3.select('#stage')
       .append('svg:svg')
       .attr('xmlns', 'http://www.w3.org/2000/svg')
       .attr('xmlns:xmlns:xlink', 'http://www.w3.org/1999/xlink')
       #.attr('xml:xml:space', 'preserve')
-      .attr('pointer-events', 'all');
+      .attr('pointer-events', 'all')
     
     mediator.defs = mediator.outer.append('svg:defs')
     
-    mediator.outer.append('svg:rect')
+    mediator.stage = mediator.outer.append('svg:g')
+      .attr('id', 'canvas_wrapper')
+      .call(zoom)
+    
+    mediator.stage.append('svg:rect')
       .attr('id', 'canvas_background')
-      .attr('fill', '#fff');
+      .attr('fill', '#fff')
+    mediator.stage.append('svg:g')
+      .attr('class', 'x axis')
+      .call(xAxis)
+    mediator.stage.append('svg:g')
+      .attr('class', 'y axis')
+      .call(yAxis)
     
-    mediator.vis = mediator.outer.append('svg:g')
-      .attr('id', 'canvas_elements');
-    
+    mediator.vis = mediator.stage.append('svg:g')
+      .attr('id', 'canvas_elements')
+    mediator.vis.append('svg:rect')
+      .attr('id', 'canvas_elements_background')
+      .attr('fill', 'none')
+
+    mediator.controls = mediator.stage.append('svg:g')
+      .attr('id', 'canvas_controls')
+
     force
       .charge(0)
       .gravity(0)
@@ -267,19 +307,52 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   refresh: ->
+    #setTimeout =>
+    #  d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 0)
+    #, 3000
     detail_offset = ($('#detail').width()*1.3) or 0
     canvas_elements = $('#canvas_elements')[0].getBoundingClientRect()
     bounds.x = canvas_elements.width + detail_offset # width of DetailView
     bounds.y = Math.max(canvas_elements.bottom-50, canvas_elements.height) + 50
-    bounds.height = Math.max((window.innerHeight-50), bounds.y)
-    bounds.width = Math.max(window.innerWidth-50, bounds.x)
+    bounds.height = window.innerHeight-50
+    bounds.width = window.innerWidth-50
+    #bounds.height = Math.max((window.innerHeight-50), bounds.y)
+    #bounds.width = Math.max(window.innerWidth-50, bounds.x)
     #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)
     
-    $('svg, #canvas_background')
+    $('svg, #canvas_background, #canvas_elements_background')
       .attr('height', bounds.height)
       .attr('width', bounds.width)
     
     force
       .size([bounds.width, bounds.height])
       .start()
+
+
+  # ----------------------------------
+  # ZOOM CANVAS
+  # ----------------------------------
+
+  zoom = d3.behavior.zoom()
+    .x(x)
+    .y(y)
+    .scaleExtent([1, 10])
+    .on('zoom', ->
+      if mediator.zoom
+        d3.select('#canvas_elements')
+          .attr('transform', 'translate(' + d3.event.translate + ') scale(' + d3.event.scale + ')')
+        d3.select('#canvas_controls')
+          .attr('transform', 'translate(' + d3.event.translate + ') scale(' + d3.event.scale + ')')
+        mediator.stage?.select('.x.axis').call(xAxis)
+        mediator.stage?.select('.y.axis').call(yAxis)
+        d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 1)
+        setTimeout =>
+          d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 0)
+        , 4000
+    )
+
+  #zoomed: =>
+  #  mediator.vis?.select('.x.axis').call(xAxis)
+  #  mediator.vis?.select('.y.axis').call(yAxis)
+  #  console.log 'zooming!'
 

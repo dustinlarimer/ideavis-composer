@@ -254,8 +254,8 @@ module.exports = class LinkView extends View
   build_points: =>
     console.log 'building points'
     
-    mediator.outer.selectAll('g#link_controls').remove()
-    @controls = mediator.outer
+    mediator.controls.selectAll('g#link_controls').remove()
+    @controls = mediator.controls
       .append('svg:g')
         .attr('id', 'link_controls')
 
@@ -346,6 +346,7 @@ module.exports = class LinkView extends View
   # ----------------------------------
 
   drag_endpoint_start: (d,i) =>
+    mediator.zoom = false
     @selected_endpoint = d
 
   drag_endpoint_move: (d,i) =>
@@ -357,6 +358,7 @@ module.exports = class LinkView extends View
       .attr('cy', (d)-> return d.y)
 
   drag_endpoint_end: (d,i) =>
+    mediator.zoom = true
     if @selected_endpoint is null
       if i is 0
         @model.save endpoints: [ [(d.x-@source.x),(d.y-@source.y)], @model.get('endpoints')[1] ]
@@ -421,6 +423,7 @@ module.exports = class LinkView extends View
     mediator.publish 'refresh_canvas'
 
   drag_midpoint_start: (d,i) =>
+    mediator.zoom = false
     @midpoints.classed('active', false)
     d3.select(@midpoints[0][i]).classed('active', true)
     @selected_midpoint = d
@@ -434,6 +437,7 @@ module.exports = class LinkView extends View
       .attr('cy', (d)-> return d.y)
 
   drag_midpoint_end: (d,i) =>
+    mediator.zoom = true
     _midpoints = @model.get('midpoints')
     _midpoints[i][0] = d.x
     _midpoints[i][1] = d.y

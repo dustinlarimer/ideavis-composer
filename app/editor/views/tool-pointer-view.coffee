@@ -17,7 +17,7 @@ module.exports = class ToolPointerView extends View
     
     @activate()
     
-    @delegate 'click', '#canvas_background', @deselect_all
+    @delegate 'click', '#canvas_elements_background', @deselect_all
     
     @subscribeEvent 'node_created', @reset
     @subscribeEvent 'node_removed', @prune_links
@@ -125,6 +125,7 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   node_drag_start: (d, i) ->
+    mediator.zoom = false
     mediator.publish 'refresh_canvas'
     mediator.publish 'clear_active'
     mediator.selected_node = d
@@ -142,6 +143,7 @@ module.exports = class ToolPointerView extends View
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')')
   
   node_drag_stop: (d, i) =>
+    mediator.zoom = true
     if mediator.selected_node is null
       d.model.save x: d.x, y: d.y
     else
@@ -158,6 +160,7 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   link_drag_start: (d,i) ->
+    mediator.zoom = false
     mediator.publish 'refresh_canvas'
     mediator.publish 'clear_active'
     mediator.selected_link = d
@@ -167,6 +170,7 @@ module.exports = class ToolPointerView extends View
     mediator.selected_link = null
 
   link_drag_stop: (d,i) ->
+    mediator.zoom = true
     if mediator.selected_link?
       d.view.activate()
       mediator.publish 'activate_detail', d.model
@@ -186,7 +190,8 @@ module.exports = class ToolPointerView extends View
   # MISC METHODS
   # ----------------------------------
 
-  deselect_all: ->
+  deselect_all: (e) ->
+    #console.log $(e.target)[0]
     mediator.selected_node = null
     mediator.selected_link = null
 
