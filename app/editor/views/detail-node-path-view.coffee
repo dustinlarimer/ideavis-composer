@@ -62,6 +62,6 @@ module.exports = class DetailNodePathView extends View
 
   update_linecap: (e) =>
     _linecap = $(e.currentTarget).val()
-    @model.save stroke_linecap: _linecap
+    @model.set stroke_linecap: _linecap
 
 
