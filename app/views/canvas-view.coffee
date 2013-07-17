@@ -31,10 +31,11 @@ module.exports = class CanvasView extends View
     width: -> return window.innerWidth
 
   bounds=
-    height: viewport.height()-40
+    height: viewport.height()-50
     width: viewport.width()
     x: [0, viewport.width()]
-    y: [0, viewport.height()-40]
+    y: [0, viewport.height()-50]
+
 
   x = d3.scale.linear()
     .domain([0, bounds.width])
@@ -56,10 +57,9 @@ module.exports = class CanvasView extends View
     .scale(y)
     .orient('left')
     .tickPadding(-12)
-    .ticks(5)
+    .ticks(10)
     .tickSize(-10,-5,0)
     .tickSubdivide(5)
-    #-bounds.width
 
 
   force = d3.layout.force()
@@ -306,10 +306,7 @@ module.exports = class CanvasView extends View
   # REFRESH CANVAS
   # ----------------------------------
 
-  refresh: ->
-    #setTimeout =>
-    #  d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 0)
-    #, 3000
+  refresh: =>
     detail_offset = ($('#detail').width()*1.3) or 0
     canvas_elements = $('#canvas_elements')[0].getBoundingClientRect()
     bounds.x = canvas_elements.width + detail_offset # width of DetailView
@@ -327,6 +324,9 @@ module.exports = class CanvasView extends View
     force
       .size([bounds.width, bounds.height])
       .start()
+
+    #mediator.stage.select('g.x').call(xAxis)
+    #mediator.stage.select('g.y').call(yAxis)
 
 
   # ----------------------------------
@@ -350,9 +350,4 @@ module.exports = class CanvasView extends View
           d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 0)
         , 4000
     )
-
-  #zoomed: =>
-  #  mediator.vis?.select('.x.axis').call(xAxis)
-  #  mediator.vis?.select('.y.axis').call(yAxis)
-  #  console.log 'zooming!'
 
