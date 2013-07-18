@@ -11,6 +11,17 @@ module.exports = class DetailPaletteView extends View
     console.log 'Palette is loaded'
 
     @delegate 'click', '.palette-grid canvas', @activate
+    @delegate 'click', '.palette-grid a', @new
+
+  new: (e) =>
+    @activate(e)
+    @$('.palette-overlay-panel').css('background', '#fff')
+    @$('.palette-overlay input').val('').focus().keypress((e)=>
+      setTimeout => 
+        _color = @$('.palette-overlay input').val()
+        @$('.palette-overlay-panel').css('background', _color) 
+      , 50
+    )
 
   activate: (e) =>
     key 'command+c', 'palette', @deactivate
@@ -35,7 +46,7 @@ module.exports = class DetailPaletteView extends View
     key.setScope ''
 
     setTimeout =>
-      # 13 = enter
+      # 13 = enter = save
       # 27 = esc
       # 67 = copy
       if e.keyCode is 67
@@ -43,6 +54,12 @@ module.exports = class DetailPaletteView extends View
         @$('.palette-overlay').fadeOut(1000, =>
           @$('input, .palette-overlay-panel', this).remove()
           @$('.palette-overlay.active').removeClass('active').css('display', 'block')
+        )
+      else if e.keyCode is 13
+        @$('.palette-overlay').fadeOut(750, =>
+          @$('input, .palette-overlay-panel', this).remove()
+          @$('.palette-overlay.active').removeClass('active').css('display', 'block')
+          console.log '[-- UPDATE PALETTE WITH NEW/MODIFIED COLOR! --]'
         )
       else
         @$('.palette-overlay').fadeOut(250, =>
