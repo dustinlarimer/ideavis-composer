@@ -277,9 +277,11 @@ module.exports = class CanvasView extends View
       .attr('fill', '#fff')
     mediator.stage.append('svg:g')
       .attr('class', 'x axis')
+      .attr('visibility', 'hidden')
       .call(xAxis)
     mediator.stage.append('svg:g')
       .attr('class', 'y axis')
+      .attr('visibility', 'hidden')
       .call(yAxis)
     mediator.stage.append('svg:rect')
       .attr('id', 'canvas_elements_background')
@@ -307,12 +309,18 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   refresh: =>
-    detail_offset = ($('#detail').width()*1.3) or 0
+    editor_offset = ($('#detail').width()*1.3) or 0
     canvas_elements = $('#canvas_elements')[0].getBoundingClientRect()
-    bounds.x = canvas_elements.width + detail_offset # width of DetailView
+
+    bounds.x = canvas_elements.width + editor_offset
     bounds.y = Math.max(canvas_elements.bottom-50, canvas_elements.height) + 50
-    bounds.height = window.innerHeight-50
-    bounds.width = window.innerWidth-50
+    if editor_offset > 0
+      bounds.height = window.innerHeight-50
+      bounds.width = window.innerWidth-50
+    else
+      bounds.height = window.innerHeight-150
+      bounds.width = window.innerWidth
+    
     #bounds.height = Math.max((window.innerHeight-50), bounds.y)
     #bounds.width = Math.max(window.innerWidth-50, bounds.x)
     #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)
@@ -324,7 +332,7 @@ module.exports = class CanvasView extends View
     force
       .size([bounds.width, bounds.height])
       .start()
-
+    
     #mediator.stage.select('g.x').call(xAxis)
     #mediator.stage.select('g.y').call(yAxis)
 

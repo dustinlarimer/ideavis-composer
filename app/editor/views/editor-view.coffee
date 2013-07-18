@@ -37,6 +37,7 @@ module.exports = class EditorView extends CanvasView
   render: ->
     super
     console.log 'Rendering EditorView [...]'
+    mediator.stage.selectAll('g.axis').attr('visibility', 'visible')
     @subview 'header_view', new HeaderView model: mediator.canvas
     @subview 'detail_view', new DetailView
     @subview 'tool_view', @toolbar_view = null
