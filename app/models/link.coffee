@@ -32,10 +32,7 @@ module.exports = class Link extends Model
   initialize: (data={}) ->
     super
     _.extend({}, data)
-    @marker_start = new Marker @get('markers')[0]
-    @marker_end = new Marker @get('markers')[1]
-    @listenTo @marker_start, 'change', @update_markers
-    @listenTo @marker_end, 'change', @update_markers
+    @build_markers()
 
   save: ->
     console.log '[SAVE]'
@@ -52,3 +49,8 @@ module.exports = class Link extends Model
     _markers = [ @marker_start.toJSON(), @marker_end.toJSON() ]
     @save markers: _markers
 
+  build_markers: =>
+    @marker_start = new Marker @get('markers')[0]
+    @marker_end = new Marker @get('markers')[1]
+    @listenTo @marker_start, 'change', @update_markers
+    @listenTo @marker_end, 'change', @update_markers

@@ -106,7 +106,8 @@ body
     #tool-node,
     #tool-link,
     #tool-line,
-    #tool-text
+    #tool-text,
+    #tool-eyedropper
       background-position 50% 50%
       background-repeat no-repeat
       background-size 100%
@@ -125,6 +126,9 @@ body
 
     #tool-text
       background-image url('/images/toolbar-text.png')
+
+    #tool-eyedropper
+      background-image url('/images/toolbar-eyedropper.png')
 
   #detail
     height 100%
@@ -357,15 +361,19 @@ body
 .y .major text
   text-anchor start !important
 
+path.domain
+  stroke none
+
 
 /*
  *	Demo styles
- */
+
 
 g.nodeGroup,
 g.linkGroup {
 	cursor: pointer;
-}
+} 
+*/
 
 rect.bounds, path.origin
   fill none

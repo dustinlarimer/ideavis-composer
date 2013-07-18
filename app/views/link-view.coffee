@@ -20,6 +20,7 @@ module.exports = class LinkView extends View
     
     @marker_start = mediator.defs.selectAll('marker' + '#link_' + @model.id + '_marker_start')
     @marker_end = mediator.defs.selectAll('marker' + '#link_' + @model.id + '_marker_end')
+    
     @selected_endpoint = null
     @selected_midpoint = null
     
@@ -27,8 +28,8 @@ module.exports = class LinkView extends View
     @subscribeEvent 'clear_active', @clear
 
     @listenTo @model, 'change', @build_baseline
-    @listenTo @model.marker_start, 'change', @build_markers
-    @listenTo @model.marker_end, 'change', @build_markers
+    #@listenTo @model.marker_start, 'change', @build_markers
+    #@listenTo @model.marker_end, 'change', @build_markers
 
   render: ->
     super

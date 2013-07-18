@@ -24,11 +24,10 @@ module.exports = class ToolPointerView extends View
 
 
   remove: ->
-    @$el.off 'click', '#canvas_background'
+    @$el.off 'click', '#canvas_elements_background'
     @deactivate()
     @copied_node = undefined
-    @deselect_all()
-    
+    #@deselect_all()
     @setElement('')
     super
 

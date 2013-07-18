@@ -3,10 +3,11 @@ template = require 'editor/views/templates/editor'
 
 CanvasView = require 'views/canvas-view'
 
-ToolPointerView = require 'editor/views/tool-pointer-view'
-ToolNodeView    = require 'editor/views/tool-node-view'
-ToolLinkView    = require 'editor/views/tool-link-view'
-ToolTextView    = require 'editor/views/tool-text-view'
+ToolPointerView    = require 'editor/views/tool-pointer-view'
+ToolNodeView       = require 'editor/views/tool-node-view'
+ToolLinkView       = require 'editor/views/tool-link-view'
+ToolTextView       = require 'editor/views/tool-text-view'
+ToolEyedropperView = require 'editor/views/tool-eyedropper-view'
 
 HeaderView = require 'editor/views/header-view'
 DetailView = require 'editor/views/detail-view'
@@ -19,10 +20,11 @@ module.exports = class EditorView extends CanvasView
     super
     console.log 'Initializing EditorView'
     
-    @delegate 'click', '#tool-pointer', @activate_pointer
-    @delegate 'click', '#tool-node',    @activate_node
-    @delegate 'click', '#tool-link',    @activate_link
-    @delegate 'click', '#tool-text',    @activate_text
+    @delegate 'click', '#tool-pointer',    @activate_pointer
+    @delegate 'click', '#tool-node',       @activate_node
+    @delegate 'click', '#tool-link',       @activate_link
+    @delegate 'click', '#tool-text',       @activate_text
+    @delegate 'click', '#tool-eyedropper', @activate_eyedropper
     
     @delegate 'click', '#tool-download', @download_svg
     
@@ -30,6 +32,7 @@ module.exports = class EditorView extends CanvasView
     key 'n', @activate_node
     key 'l', @activate_link
     key 't', @activate_text
+    key 'i', @activate_eyedropper
 
   render: ->
     super
@@ -53,21 +56,35 @@ module.exports = class EditorView extends CanvasView
 
   activate_node: =>
     @removeSubview 'tool_view'
+    mediator.selected_node = null
+    mediator.selected_link = null
     @toolbar_view = new ToolNodeView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
 
   activate_link: =>
     @removeSubview 'tool_view'
+    mediator.selected_node = null
+    mediator.selected_link = null
     @toolbar_view = new ToolLinkView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
 
   activate_text: =>
     @removeSubview 'tool_view'
+    mediator.selected_node = null
+    mediator.selected_link = null
     @toolbar_view = new ToolTextView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
+
+  activate_eyedropper: =>
+    @removeSubview 'tool_view'
+    @toolbar_view = new ToolEyedropperView el: $('svg', @el)
+    @subview 'tool_view', @toolbar_view
+    return false
+
+
 
   download_svg: =>
     console.log 'Downloading'

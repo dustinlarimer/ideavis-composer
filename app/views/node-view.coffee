@@ -6,16 +6,15 @@ module.exports = class NodeView extends View
   
   initialize: (data={}) ->
     super
-    #@paths = @model.paths.models
-    @texts = @model.texts.models
+    
     @subscribeEvent 'deactivate_detail', @deactivate
     @subscribeEvent 'clear_active', @clear
     
-    @listenTo @model.paths, 'change', @build_paths
-    @listenTo @model.texts, 'change', @build_texts
-    
-    @listenTo @model.paths, 'change', @build_bounding_boxes
-    @listenTo @model.texts, 'change', @build_bounding_boxes
+    @listenTo @model, 'change', @render
+    #@listenTo @model.paths, 'change', @build_paths
+    #@listenTo @model.texts, 'change', @build_texts
+    #@listenTo @model.paths, 'change', @build_bounding_boxes
+    #@listenTo @model.texts, 'change', @build_bounding_boxes
 
   render: ->
     super
@@ -31,12 +30,12 @@ module.exports = class NodeView extends View
   activate: ->
     d3.select(@el)
       .classed('active', true)
-      .selectAll('g.nodeText')
-      .attr('cursor', 'move')
-      .call(d3.behavior.drag()
-        .on('dragstart', @drag_text_start)
-        .on('drag', @drag_text_move)
-        .on('dragend', @drag_text_end))
+      #.selectAll('g.nodeText')
+      #.attr('cursor', 'move')
+      #.call(d3.behavior.drag()
+      #  .on('dragstart', @drag_text_start)
+      #  .on('drag', @drag_text_move)
+      #  .on('dragend', @drag_text_end))
     @build_origin()
 
   deactivate: ->
@@ -54,6 +53,7 @@ module.exports = class NodeView extends View
   # BUILD @Paths
   # ----------------------------------
   build_paths: =>
+    d3.select(@el).selectAll('g.nodePath').remove()
     path = d3.select(@el)
       .selectAll('g.nodePath')
       .data(@model.paths.models)
@@ -108,7 +108,8 @@ module.exports = class NodeView extends View
   # ----------------------------------
   # BUILD @Texts
   # ----------------------------------
-  build_texts: ->    
+  build_texts: ->
+    d3.select(@el).selectAll('g.nodeText').remove()
     text = d3.select(@el)
       .selectAll('g.nodeText')
       .data(@model.texts.models)
@@ -233,6 +234,7 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   build_origin: ->
+    d3.select(@el).select('path.origin').remove()
     d3.select(@el)
       .selectAll('path.origin')
       .data([{}])

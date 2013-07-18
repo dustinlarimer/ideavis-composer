@@ -19,11 +19,7 @@ module.exports = class Node extends Model
   initialize: (data={}) ->
     super
     _.extend({}, data)
-    @paths = new Paths _.where(@get('nested'), {type: 'path'})
-    @texts = new Texts _.where(@get('nested'), {type: 'text'})
-    
-    @listenTo @paths, 'change', @update_nested
-    @listenTo @texts, 'change', @update_nested
+    @build_nested()
 
   destroy: ->
     super
@@ -34,7 +30,13 @@ module.exports = class Node extends Model
     super
     console.log '[NODE SAVED]'
     @publishEvent 'node_updated', @
-
+  
+  build_nested: ->
+    @paths = new Paths _.where(@get('nested'), {type: 'path'})
+    @texts = new Texts _.where(@get('nested'), {type: 'text'})
+    @listenTo @paths, 'change', @update_nested
+    @listenTo @texts, 'change', @update_nested
+  
   update_nested: ->
     _nested = []
     _.each(@paths.toJSON(), (p)-> _nested.push p)
