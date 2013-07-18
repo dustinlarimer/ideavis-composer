@@ -84,5 +84,8 @@ module.exports = class EditorView extends CanvasView
     @print_window.print()
     @print_window.close()
 
+    mediator.stage.select('g.x').transition().ease('linear').style('opacity', 1)
+    mediator.stage.select('g.y').transition().ease('linear').style('opacity', 1)
+
 
 
