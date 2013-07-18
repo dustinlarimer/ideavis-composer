@@ -13,8 +13,9 @@ module.exports = class ToolPointerView extends View
     
     $('#toolbar button.active').removeClass('active')
     $('#toolbar button#tool-pointer').addClass('active')
-    mediator.outer.attr('cursor', 'default')
     
+    @nodes = d3.selectAll('g.nodeGroup')
+    @links = d3.selectAll('g.linkGroup')
     @activate()
     
     @delegate 'click', '#canvas_elements_background', @deselect_all
@@ -45,13 +46,15 @@ module.exports = class ToolPointerView extends View
       tagName = (e.target || e.srcElement).tagName
       return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA')
     
-    d3.selectAll('g.nodeGroup')
+    @nodes
+      .attr('cursor', 'pointer')
       .call(d3.behavior.drag()
         .on('dragstart', @node_drag_start)
         .on('drag', @node_drag_move)
         .on('dragend', @node_drag_stop))
     
-    d3.selectAll('g.linkGroup')
+    @links
+      .attr('cursor', 'pointer')
       .call(d3.behavior.drag()
         .on('dragstart', @link_drag_start)
         .on('drag', @link_drag_move)
@@ -68,13 +71,15 @@ module.exports = class ToolPointerView extends View
     key.unbind 'control+v', 'pointer'
     key.setScope ''
 
-    d3.selectAll('g.nodeGroup')
+    @nodes
+      .attr('cursor', 'default')
       .call(d3.behavior.drag()
         .on('dragstart', null)
         .on('drag', null)
         .on('dragend', null))
     
-    d3.selectAll('g.linkGroup')
+    @links
+      .attr('cursor', 'default')
       .call(d3.behavior.drag()
         .on('dragstart', null)
         .on('drag', null)

@@ -62,7 +62,7 @@ module.exports = class ToolEyedropperView extends View
   node_drag_start: (d, i) =>
     mediator.zoom = false
     @nodes.attr('cursor', 'default')
-    @links.attr('cursor', 'default')
+    @links.attr('cursor', 'pointer')
     
     if mediator.selected_node and mediator.selected_node.id isnt d.id
       _model = _.pick(d.model.toJSON(), 'opacity', 'rotate', 'nested')
@@ -73,6 +73,7 @@ module.exports = class ToolEyedropperView extends View
     else
       mediator.selected_link = null
       mediator.selected_node = d
+      mediator.publish 'clear_active'
       d.view.activate()
     
     mediator.publish 'activate_detail', mediator.selected_node.model
@@ -89,8 +90,9 @@ module.exports = class ToolEyedropperView extends View
 
   link_drag_start: (d,i) =>
     mediator.zoom = false
-    @nodes.attr('cursor', 'default')
+    @nodes.attr('cursor', 'pointer')
     @links.attr('cursor', 'default')
+    #mediator.selected_node = null
 
     if mediator.selected_link and mediator.selected_link.id isnt d.id
       _model = _.omit(d.model.toJSON(), '__v', '_id', 'composition_id', 'endpoints', 'midpoints', 'markers', 'source', 'target', 'label_text')
@@ -99,6 +101,7 @@ module.exports = class ToolEyedropperView extends View
     else
       mediator.selected_node = null
       mediator.selected_link = d
+      mediator.publish 'clear_active'
       d.view.activate()
 
     mediator.publish 'activate_detail', mediator.selected_link.model

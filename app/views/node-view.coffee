@@ -28,7 +28,6 @@ module.exports = class NodeView extends View
     super
 
   activate: ->
-    mediator.zoom = false
     d3.select(@el)
       .classed('active', true)
       #.selectAll('g.nodeText')
