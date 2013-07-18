@@ -340,6 +340,7 @@ module.exports = class CanvasView extends View
     .on('zoom', ->
       if mediator.zoom
         mediator.offset = [d3.event.translate, d3.event.scale]
+        #console.log mediator.offset[0]
         d3.select('#canvas_elements')
           .attr('transform', 'translate(' + d3.event.translate + ') scale(' + d3.event.scale + ')')
         d3.select('#canvas_controls')

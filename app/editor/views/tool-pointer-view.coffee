@@ -134,6 +134,7 @@ module.exports = class ToolPointerView extends View
     mediator.selected_link = null
 
   node_drag_move: (d, i) ->
+    mediator.zoom = false
     mediator.selected_node = null
     d.fixed = true
     d.x = d3.event.x

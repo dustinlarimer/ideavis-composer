@@ -48,6 +48,7 @@ module.exports = class LinkView extends View
     super
 
   activate: ->
+    #mediator.zoom = false
     d3.select(@el).classed('active', true)
     @baseline.attr('visibility', 'hidden')
     @tickline
@@ -75,6 +76,7 @@ module.exports = class LinkView extends View
       .on('dragend', null)).remove()
     @controls?.remove()
     @filter?.remove()
+    #mediator.zoom = true
 
   clear: ->
     d3.select(@el).classed 'active', false
@@ -375,9 +377,23 @@ module.exports = class LinkView extends View
   # ----------------------------------
 
   create_midpoint: (d,i) =>
-    mediator.zoom = false
-    _x = ((-1 * mediator.offset[0][0]) / mediator.offset[1]) + ((d3.event.sourceEvent.clientX - 50) / mediator.offset[1])
-    _y = ((-1 * mediator.offset[0][1]) / mediator.offset[1]) + ((d3.event.sourceEvent.clientY - 50) / mediator.offset[1])
+    #console.log mediator.offset
+    #console.log d3.event.sourceEvent.pageX-50
+    #console.log d3.event.sourceEvent.pageY-50
+    
+    if mediator.offset.length > 0
+      if mediator.offset[1] > 1
+        _x = ((-1 * mediator.offset[0][0]) / mediator.offset[1]) + ((d3.event.sourceEvent.clientX - 50) / mediator.offset[1])
+        _y = ((-1 * mediator.offset[0][1]) / mediator.offset[1]) + ((d3.event.sourceEvent.clientY - 50) / mediator.offset[1])
+      else
+        _x = (-1 * mediator.offset[0][0]) + (d3.event.sourceEvent.clientX - 50)
+        _y = (-1 * mediator.offset[0][1]) + (d3.event.sourceEvent.clientY - 50)
+    else
+      _x = d3.event.sourceEvent.clientX - 50
+      _y = d3.event.sourceEvent.clientY - 50
+    
+    #console.log _x
+    #console.log _y
     
     _new = [[ _x, _y ]]
     _endpoints = d.get('endpoints')
@@ -436,6 +452,7 @@ module.exports = class LinkView extends View
     @selected_midpoint.index = i
 
   drag_midpoint_move: (d,i) =>
+    mediator.zoom = false
     d.x = d3.event.x
     d.y = d3.event.y
     d3.select(@midpoints[0][i])
