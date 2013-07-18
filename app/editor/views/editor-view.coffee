@@ -30,7 +30,7 @@ module.exports = class EditorView extends CanvasView
     
     key 'v', @activate_pointer
     key 'n', @activate_node
-    key 'l', @activate_link
+    key 'j', @activate_link
     key 't', @activate_text
     key 'i', @activate_eyedropper
 
