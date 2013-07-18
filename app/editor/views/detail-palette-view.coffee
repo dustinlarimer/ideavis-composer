@@ -27,14 +27,32 @@ module.exports = class DetailPaletteView extends View
     @$('.palette-overlay-panel').css('background', val)
     @$('.palette-overlay input').focus()
 
-  deactivate: =>
+  deactivate: (e) =>
     key.unbind 'command+c', 'palette'
     key.unbind 'control+c', 'palette'
     key.unbind 'enter', 'palette'
     key.unbind 'esc', 'palette'
     key.setScope ''
-    
+
     setTimeout =>
-      @$('.palette-overlay input, .palette-overlay-panel').remove()
-      @$('.palette-overlay').removeClass('active')
+      # 13 = enter
+      # 27 = esc
+      # 67 = copy
+      if e.keyCode is 67
+        @$('.palette-overlay-panel').css('opacity', .96)
+        @$('.palette-overlay').fadeOut(1000, =>
+          @$('input, .palette-overlay-panel', this).remove()
+          @$('.palette-overlay.active').removeClass('active').css('display', 'block')
+        )
+      else
+        @$('.palette-overlay').fadeOut(250, =>
+          @$('input, .palette-overlay-panel', this).remove()
+          @$('.palette-overlay.active').removeClass('active').css('display', 'block')
+        )
     , 50
+
+
+
+
+
+
