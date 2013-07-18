@@ -30,6 +30,7 @@ module.exports = class Application extends Chaplin.Application
     mediator.defs = undefined
     mediator.controls = undefined
     mediator.zoom = true
+    mediator.offset = []
     
     mediator.node = undefined
     mediator.selected_node = undefined

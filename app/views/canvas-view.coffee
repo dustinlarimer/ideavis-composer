@@ -281,12 +281,12 @@ module.exports = class CanvasView extends View
     mediator.stage.append('svg:g')
       .attr('class', 'y axis')
       .call(yAxis)
+    mediator.stage.append('svg:rect')
+      .attr('id', 'canvas_elements_background')
+      .attr('fill', 'none')
     
     mediator.vis = mediator.stage.append('svg:g')
       .attr('id', 'canvas_elements')
-    mediator.vis.append('svg:rect')
-      .attr('id', 'canvas_elements_background')
-      .attr('fill', 'none')
 
     mediator.controls = mediator.stage.append('svg:g')
       .attr('id', 'canvas_controls')
@@ -339,6 +339,7 @@ module.exports = class CanvasView extends View
     .scaleExtent([1, 10])
     .on('zoom', ->
       if mediator.zoom
+        mediator.offset = [d3.event.translate, d3.event.scale]
         d3.select('#canvas_elements')
           .attr('transform', 'translate(' + d3.event.translate + ') scale(' + d3.event.scale + ')')
         d3.select('#canvas_controls')

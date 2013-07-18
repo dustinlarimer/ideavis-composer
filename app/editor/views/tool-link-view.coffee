@@ -19,7 +19,6 @@ module.exports = class ToolLinkView extends View
         .on('dragend', @set_target_node))
       .on('mouseover', @detect_target_node)
       .on('mouseout', @reject_target_node)
-        #.on('dragstart', @node_select))
 
   remove: ->
     # Unbind delgated events ------
@@ -43,7 +42,7 @@ module.exports = class ToolLinkView extends View
 
 
   set_source_node: (d,i) =>
-    #console.log 'select_source_node'
+    mediator.zoom = false
     @source_node = d
     _x = d.x
     _y = d.y
@@ -93,3 +92,4 @@ module.exports = class ToolLinkView extends View
     if @source_node? and @target_node?
       mediator.links.create {source: @source_node.id, target: @target_node.id}, {wait: true}
     @placeholder.remove()
+    mediator.zoom = true

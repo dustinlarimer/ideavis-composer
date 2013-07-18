@@ -375,7 +375,11 @@ module.exports = class LinkView extends View
   # ----------------------------------
 
   create_midpoint: (d,i) =>
-    _new = [[ d3.event.sourceEvent.pageX-50, (d3.event.sourceEvent.pageY-50) ]]
+    mediator.zoom = false
+    _x = ((-1 * mediator.offset[0][0]) / mediator.offset[1]) + ((d3.event.sourceEvent.clientX - 50) / mediator.offset[1])
+    _y = ((-1 * mediator.offset[0][1]) / mediator.offset[1]) + ((d3.event.sourceEvent.clientY - 50) / mediator.offset[1])
+    
+    _new = [[ _x, _y ]]
     _endpoints = d.get('endpoints')
     _endpoint_source = [ (@source.x+_endpoints[0][0]), (@source.y+_endpoints[0][1]) ]
     _endpoint_target = [ (@target.x+_endpoints[1][0]), (@target.y+_endpoints[1][1]) ]
@@ -414,6 +418,7 @@ module.exports = class LinkView extends View
     
     @build_points()
     mediator.publish 'refresh_canvas'
+    mediator.zoom = true
 
   destroy_midpoint: =>
     _midpoints = @model.get('midpoints')
