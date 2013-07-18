@@ -5,16 +5,18 @@ View = require 'views/base/view'
 Node = require 'models/node'
 Link = require 'models/link'
 
+DetailPaletteView = require 'editor/views/detail-palette-view'
 DetailCanvasView = require 'editor/views/detail-canvas-view'
 DetailNodeView = require 'editor/views/detail-node-view'
 DetailLinkView = require 'editor/views/detail-link-view'
 
 module.exports = class DetailView extends View
   autoRender: true
-  el: '#detail'
+  el: '#detail-wrapper'
   template: template
   regions: 
-    '#detail-tray': 'tray'
+    '#detail-palette' : 'palette'
+    '#detail-tray'    : 'tray'
   
   initialize: ->
     super
@@ -25,10 +27,10 @@ module.exports = class DetailView extends View
 
   render: ->
     super
+    @subview 'detail-palette', new DetailPaletteView region: 'palette'
     @activate_master()
 
   activate_master: =>
-    console.log 'here'
     @subview 'detail-tray', new DetailCanvasView region: 'tray'
 
   activate_selection: (model) =>

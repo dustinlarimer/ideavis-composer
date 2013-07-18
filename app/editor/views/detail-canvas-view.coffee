@@ -8,4 +8,3 @@ module.exports = class DetailCanvasView extends View
   
   initialize: (data={}) ->
     super
-    console.log 'heres'

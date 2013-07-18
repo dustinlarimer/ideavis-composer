@@ -41,6 +41,9 @@ module.exports = class ToolPointerView extends View
     key 'command+v', 'pointer', @keypress_paste
     key 'control+v', 'pointer', @keypress_paste
     key.setScope 'pointer'
+    key.filter = (e) ->
+      tagName = (e.target || e.srcElement).tagName
+      return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA')
     
     d3.selectAll('g.nodeGroup')
       .call(d3.behavior.drag()
@@ -146,6 +149,7 @@ module.exports = class ToolPointerView extends View
     if mediator.selected_node is null
       d.model.save x: d.x, y: d.y
     else
+      @reset() # Ensure keybindings for Copy, Paste, Delete
       d.view.activate()
       mediator.publish 'activate_detail', d.model
 

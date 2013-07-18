@@ -139,12 +139,94 @@ body
     right 0px
     width 311px
     z-index 1
-    
-    #detail-tray
+
+    #detail-wrapper
       background rgba(215,215,215,.96)
       border-right 1px solid #ccc
       border-left 1px solid #ccc
-      padding 62px 10px 5px
+      padding 50px 0 0
+
+    #detail-palette
+      padding 12px 10px 5px
+      position relative
+      hr
+        margin 0 0 5px
+      ul.palette-grid
+        clearfix()
+        list-style none
+        margin 0 0 5px
+        li
+          float left
+          height 20px
+          width 20px
+          canvas.palette-preview
+            box-shadow 0 1px 1px rgba(0,0,0,.1)
+            cursor pointer
+            height 20px
+            width 20px
+          a
+            border 1px solid #999
+            border-radius 2px
+            float left
+            height 17px
+            padding 0px
+            margin 2px 0 0 2px
+            text-align center
+            width 17px
+            i
+              margin 0
+              opacity .5
+              vertical-align top
+      .palette-overlay
+        display none
+        &.active
+          display block
+        input
+          font-size 32px
+          height 50%
+          left 25%
+          position absolute
+          top 25%
+          width 50%
+          z-index 2
+        .palette-overlay-panel
+          height 100%
+          opacity .75
+          left 0
+          position absolute
+          right 0
+          top 0
+
+
+    #detail-tray
+      //padding 0 10px
+
+      .accordion
+        margin 0
+
+      .accordion-heading
+        margin 0
+
+      .accordion-toggle
+        background #444
+        //box-shadow inset 0 1px 0 rgba(255,255,255,.7), 0 1px 1px rgba(0,0,0,.25)
+        box-shadow inset 0 1px 0 rgba(0,0,0,.4), 0 1px 1px rgba(0,0,0,.25)
+        color #fff
+        margin 0
+        padding 8px 10px
+        &.collapsed
+          //background #fff
+        &:hover, &:focus
+          text-decoration none
+      
+      .accordion-inner
+        border medium none
+        padding 10px
+
+
+    .detail-panel-bucket
+      padding 0 10px 5px
+
     
     h2
       font-size 14px
@@ -327,15 +409,12 @@ body
 	  .btn
       width 25%
 
-  canvas
+  canvas.fill-preview,
+  canvas.stroke-preview
     border 1px solid #fbfbfb
     border-radius 50%
     height 10px
     width 10px
-    //&.fill-preview
-    &.stroke-preview
-      //background #fff
-      //border-width 2px
 
 
 #detail .detail-panel-bucket table { margin: 0; }

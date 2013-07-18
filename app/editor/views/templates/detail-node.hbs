@@ -1,8 +1,6 @@
-<div class="detail-panel-header">
-	<h2>Node Detail</h2>
-</div>
 <hr/>
 <div class="detail-panel-bucket" id="node-attributes">
+	<h2>Selection Attributes</h2>
 	<form>
 		<div class="row-fluid">
 			<div class="span3">
@@ -36,9 +34,29 @@
 		</div>
 	</form>
 </div>
-<hr/>
 
-<div class="detail-panel-bucket" id="node-paths"></div>
-<hr/>
+<div class="accordion" id="detail-node-accordian">
+	
+  <div class="accordian-section">
+    <h2 class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#detail-node-accordian" href="#detail-shapes">
+        Shape
+      </a>
+    </h2>
+    <div id="detail-shapes" class="accordion-body collapse in">
+      <div class="accordion-inner" id="node-paths"></div>
+    </div>
+  </div>
 
-<div class="detail-panel-bucket" id="node-texts"></div>
+  <div class="accordian-section">
+    <h2 class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#detail-node-accordian" href="#detail-texts">
+        Label
+      </a>
+    </h2>
+    <div id="detail-texts" class="accordion-body collapse in">
+      <div class="accordion-inner" id="node-texts"></div>
+    </div>
+  </div>
+
+</div>
