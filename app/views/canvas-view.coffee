@@ -17,9 +17,10 @@ module.exports = class CanvasView extends View
     @model.synced =>
       mediator.nodes.synced =>
         mediator.links.synced =>
-          unless @rendered
-            @render()
-            @rendered = yes
+          mediator.lines.synced =>
+            unless @rendered
+              @render()
+              @rendered = yes
 
 
   # ----------------------------------

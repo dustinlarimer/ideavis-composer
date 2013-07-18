@@ -8,8 +8,6 @@ module.exports = class DetailPaletteView extends View
   
   initialize: (data={}) ->
     super
-    console.log 'Palette is loaded'
-
     @delegate 'click', '.palette-grid canvas', @activate
     @delegate 'click', '.palette-grid a', @new
 
