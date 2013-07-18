@@ -6,6 +6,7 @@ CanvasView = require 'views/canvas-view'
 ToolPointerView    = require 'editor/views/tool-pointer-view'
 ToolNodeView       = require 'editor/views/tool-node-view'
 ToolLinkView       = require 'editor/views/tool-link-view'
+ToolLineView       = require 'editor/views/tool-line-view'
 ToolTextView       = require 'editor/views/tool-text-view'
 ToolEyedropperView = require 'editor/views/tool-eyedropper-view'
 
@@ -23,6 +24,7 @@ module.exports = class EditorView extends CanvasView
     @delegate 'click', '#tool-pointer',    @activate_pointer
     @delegate 'click', '#tool-node',       @activate_node
     @delegate 'click', '#tool-link',       @activate_link
+    @delegate 'click', '#tool-line',       @activate_line
     @delegate 'click', '#tool-text',       @activate_text
     @delegate 'click', '#tool-eyedropper', @activate_eyedropper
     
@@ -31,6 +33,7 @@ module.exports = class EditorView extends CanvasView
     key 'v', @activate_pointer
     key 'n', @activate_node
     key 'j', @activate_link
+    key 'l', @activate_line
     key 't', @activate_text
     key 'i', @activate_eyedropper
 
@@ -68,6 +71,14 @@ module.exports = class EditorView extends CanvasView
     mediator.selected_node = null
     mediator.selected_link = null
     @toolbar_view = new ToolLinkView el: $('svg', @el)
+    @subview 'tool_view', @toolbar_view
+    return false
+
+  activate_line: =>
+    @removeSubview 'tool_view'
+    mediator.selected_node = null
+    mediator.selected_link = null
+    @toolbar_view = new ToolLineView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
 

@@ -141,9 +141,10 @@ module.exports = class CanvasView extends View
 
   drag_node_start: (d, i) ->
     mediator.publish 'refresh_canvas'
+    mediator.zoom = false
 
   drag_node_move: (d, i) ->
-    #console.log 'drag_node_move'
+    mediator.zoom = false
     d.rotate = d.model.get('rotate')
     d.x = d3.event.x
     d.y = d3.event.y
@@ -153,6 +154,7 @@ module.exports = class CanvasView extends View
   
   drag_node_end: (d, i) ->
     mediator.publish 'refresh_canvas'
+    mediator.zoom = true
 
   add_node: (node) ->
     force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
