@@ -69,10 +69,20 @@ module.exports = class EditorView extends CanvasView
     @subview 'tool_view', @toolbar_view
     return false
 
-
   download_svg: =>
     console.log 'Downloading'
+    mediator.stage.select('g.x').style('opacity', 0)
+    mediator.stage.select('g.y').style('opacity', 0)
+    
     html = mediator.outer.node().parentNode.innerHTML
     data = "data:image/svg+xml;base64,"+ btoa(html)
-    console.log data
-    window.open(data)
+    
+    @print_window = window.open() #data
+    @print_window.document.write(html)
+    @print_window.document.close()
+    @print_window.focus()
+    @print_window.print()
+    @print_window.close()
+
+
+
