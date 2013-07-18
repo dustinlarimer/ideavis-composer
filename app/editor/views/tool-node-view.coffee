@@ -5,9 +5,7 @@ module.exports = class ToolNodeView extends View
   
   initialize: ->
     super
-    console.log 'Initializing ToolNodeView'
-    @mode = 'node'
-    
+    console.log 'Initializing ToolNodeView'    
     $('#toolbar button.active').removeClass('active')
     $('#toolbar button#tool-node').addClass('active')
     mediator.outer.attr('cursor', 'crosshair')
@@ -22,6 +20,7 @@ module.exports = class ToolNodeView extends View
     @setElement('')
     
     console.log '[xx Node tool out! xx]'
+    mediator.outer.attr('cursor', 'default')
     super
 
   create_node: (e) ->

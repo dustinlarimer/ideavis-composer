@@ -347,7 +347,7 @@ module.exports = class CanvasView extends View
   zoom = d3.behavior.zoom()
     .x(x)
     .y(y)
-    .scaleExtent([1, 10])
+    .scaleExtent([1, 5])
     .on('zoom', ->
       if mediator.zoom
         mediator.offset = [d3.event.translate, d3.event.scale]
