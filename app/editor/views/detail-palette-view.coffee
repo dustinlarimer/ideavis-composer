@@ -14,10 +14,18 @@ module.exports = class DetailPaletteView extends View
   new: (e) =>
     @activate(e)
     @$('.palette-overlay-panel').css('background', '#fff')
+    
+    _parent = @$(e.target).parents('ul').first()
+    _last = $(_parent).find('li:last-child')[0]
+    @$(_last).before('<li><canvas class="palette-preview"></canvas></li>')
+    _length = @$(_parent).find('li').length
+    _new = @$(_parent).find('li:eq(' + (_length-2) + ') canvas').addClass('new')
+    
     @$('.palette-overlay input').val('').focus().keypress((e)=>
       setTimeout => 
         _color = @$('.palette-overlay input').val()
         @$('.palette-overlay-panel').css('background', _color) 
+        @$(_new).css('background-color', _color).attr('title', _color)
       , 50
     )
 
@@ -42,22 +50,29 @@ module.exports = class DetailPaletteView extends View
     key.unbind 'enter', 'palette'
     key.unbind 'esc', 'palette'
     key.setScope ''
-
+    
+    code = e.keyCode
+    
+    _val = @$('.palette-overlay input').val()
+    if _val is '' or _val.length < 7
+      @$('.palette-grid li canvas.new').parent().remove()
+      code = null
+    
     setTimeout =>
       # 13 = enter = save
       # 27 = esc
       # 67 = copy
-      if e.keyCode is 67
+      if code is 67
         @$('.palette-overlay-panel').css('opacity', .96)
         @$('.palette-overlay').fadeOut(1000, =>
           @$('input, .palette-overlay-panel', this).remove()
           @$('.palette-overlay.active').removeClass('active').css('display', 'block')
         )
-      else if e.keyCode is 13
+      else if code is 13
         @$('.palette-overlay').fadeOut(750, =>
           @$('input, .palette-overlay-panel', this).remove()
           @$('.palette-overlay.active').removeClass('active').css('display', 'block')
-          console.log '[-- UPDATE PALETTE WITH NEW/MODIFIED COLOR! --]'
+          #console.log '[-- UPDATE PALETTE WITH NEW/MODIFIED COLOR! --]'
         )
       else
         @$('.palette-overlay').fadeOut(250, =>
