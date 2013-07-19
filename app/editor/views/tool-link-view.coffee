@@ -4,15 +4,15 @@ View = require 'views/base/view'
 module.exports = class ToolLinkView extends View
   
   initialize: ->
-    super
-    console.log '[-- Link tool activated --]'
-    @mode = 'link'
-    
+    super    
     $('#toolbar button.active').removeClass('active')
     $('#toolbar button#tool-link').addClass('active')
-    mediator.outer.attr('cursor', 'crosshair')
+    
+    #mediator.outer.attr('cursor', 'crosshair')
+    @nodes = d3.selectAll('g.nodeGroup').attr('cursor', 'crosshair')
+    @links = d3.selectAll('g.linkGroup').attr('pointer-events', 'none')
 
-    d3.selectAll('g.nodeGroup')
+    @nodes
       .call(d3.behavior.drag()
         .on('dragstart', @set_source_node)
         .on('drag', @stretch_link)
@@ -25,19 +25,20 @@ module.exports = class ToolLinkView extends View
     # @$el.off 'event', '#selector'
     
     # Unbind D3 Events ------------
-    d3.selectAll('g.nodeGroup')
+    @nodes
+      .attr('cursor', 'default')
       .call(d3.behavior.drag()
         .on('dragstart', null)
         .on('drag', null)
         .on('dragend', null))
       .on('mouseover', null)
       .on('mouseout', null)
+    @links.attr('pointer-events', 'visibleStroke')
     @placeholder?.remove()
     
     # Unbind @el ------------------
     @setElement('')
     
-    console.log '[xx Link tool out! xx]'
     super
 
 
@@ -50,9 +51,9 @@ module.exports = class ToolLinkView extends View
       .data([{}])
     @placeholder
       .enter()
-      .insert('g', 'g')
+      .insert('g', 'g.nodeGroup')
         .attr('id', 'ghost_link')
-        .attr('opacity', .07)
+        .attr('opacity', .75)
     @placeholder
       .append('svg:line')
         .attr('id', 'ghost_line')
@@ -60,13 +61,13 @@ module.exports = class ToolLinkView extends View
         .attr('y1', _y)
         .attr('x2', _x)
         .attr('y2', _y)
-        .attr('stroke', '#000')
+        .attr('stroke', '#e5e5e5')
         .attr('stroke-width', 7)
     @placeholder
       .append('svg:circle')
         .attr('id', 'ghost_node')
         .attr('r', 10)
-        .attr('fill', '#000')
+        .attr('fill', '#e5e5e5')
 
   stretch_link: (d,i) =>
     #console.log 'stretch_link'

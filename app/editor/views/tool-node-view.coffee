@@ -10,11 +10,20 @@ module.exports = class ToolNodeView extends View
     $('#toolbar button#tool-node').addClass('active')
     mediator.outer.attr('cursor', 'crosshair')
     
-    @delegate 'click', '#canvas_background', @create_node
+    @delegate 'click', '#canvas_elements_background', @create_node
+    @subscribeEvent 'node_created', @activate
+    @activate()
+
+  activate: =>
+    @nodes = d3.selectAll('g.nodeGroup').attr('pointer-events', 'none')
+    @links = d3.selectAll('g.linkGroup').attr('pointer-events', 'none')
 
   remove: ->
     # Unbind delgated events ------
-    @$el.off 'click', '#canvas_background'
+    @$el.off 'click', '#canvas_elements_background'
+    
+    @nodes.attr('pointer-events', 'all')
+    @links.attr('pointer-events', 'visibleStroke')
     
     # Unbind @el ------------------
     @setElement('')

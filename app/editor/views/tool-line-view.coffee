@@ -9,6 +9,10 @@ module.exports = class ToolLineView extends View
     $('#toolbar button.active').removeClass('active')
     $('#toolbar button#tool-line').addClass('active')
     mediator.outer.attr('cursor', 'crosshair')
+    
+    @nodes = d3.selectAll('g.nodeGroup').attr('pointer-events', 'none')
+    @links = d3.selectAll('g.linkGroup').attr('pointer-events', 'none')
+    
     @start_point = null
     @end_point = null
     @ghost_line = null
@@ -23,6 +27,8 @@ module.exports = class ToolLineView extends View
     @$el.off 'mousemove', '#canvas_elements_background'
     @$el.off 'mouseup', '#canvas_elements_background'
 
+    @nodes.attr('pointer-events', 'all')
+    @links.attr('pointer-events', 'visibleStroke')
     @deactivate()
 
     # Unbind @el ------------------
@@ -32,27 +38,29 @@ module.exports = class ToolLineView extends View
     super
 
   deactivate: ->
-    @start_point = null
-    @end_point = null
-    @ghost_line?.remove()
+    @reset()
     mediator.zoom = true
 
-  start_line: (e) =>
-    console.log 'Starting a line'
-    mediator.zoom = false
+  reset: =>
     @ghost_line?.remove()
     @start_point = null
     @end_point = null
+
+  start_line: (e) =>
+    #console.log 'Starting a line'
+    mediator.zoom = false
+    @reset()
     
     _parent = $(e.target.nextElementSibling)[0].getBoundingClientRect()
     _x = null
     _y = null
+    _scale = mediator.offset[1] or 1
     
     if _parent.left > 50
-      console.log '> 0'
+      #console.log '> 0'
       _x = (e.clientX-50) - (_parent.left-50)
     else
-      console.log '< 0'
+      #console.log '< 0'
       _x = Math.abs(_parent.left-50) + (e.clientX-50)
     
     if _parent.top > 50
@@ -61,8 +69,8 @@ module.exports = class ToolLineView extends View
       _y = Math.abs(_parent.top-50) + (e.clientY-50)
     
     @start_point=
-      x: _x
-      y: _y
+      x: _x / _scale
+      y: _y / _scale
     
     @ghost_line = mediator.controls.selectAll('g#newLine')
       .data([@start_point])
@@ -85,10 +93,11 @@ module.exports = class ToolLineView extends View
   draw_line: (e) =>
     mediator.zoom = false
     if @start_point?
-      #console.log 'Drawing a line'
       _parent = $(e.target.nextElementSibling)[0].getBoundingClientRect()
       _x2 = null
       _y2 = null
+      _scale = mediator.offset[1] or 1
+      
       if _parent.left > 50
         _x2 = (e.clientX-50) - (_parent.left-50)
       else
@@ -99,10 +108,8 @@ module.exports = class ToolLineView extends View
       else
         _y2 = Math.abs(_parent.top-50) + (e.clientY-50)
 
-      #if key.shift
-
-      console.log @start_point.y
-      console.log _y2
+      _x2 = _x2 / _scale
+      _y2 = _y2 / _scale
 
       if Math.abs(@start_point.x - _x2) > Math.abs(@start_point.y - _y2)
         #or (Math.abs(_x2-@start_point.x) > Math.abs(_y2-@start_point.y))
