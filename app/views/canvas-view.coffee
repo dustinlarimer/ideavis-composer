@@ -359,8 +359,8 @@ module.exports = class CanvasView extends View
         mediator.stage?.select('.x.axis').call(xAxis)
         mediator.stage?.select('.y.axis').call(yAxis)
         d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 1)
-        setTimeout =>
-          d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 0)
-        , 4000
+        #setTimeout =>
+        #  d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 0)
+        #, 4000
     )
 
