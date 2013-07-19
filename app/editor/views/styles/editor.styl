@@ -360,7 +360,8 @@ body
         &:nth-child(even)
           background #f1f1f1
 
-    .attribute-stroke-linecap 
+    .attribute-stroke-linecap,
+    .attribute-align
       .btn
         padding 4px 0
         position relative
@@ -379,6 +380,13 @@ body
           background-image url('/images/detail-linecap-square.png')
         #icon-linecap-butt
           background-image url('/images/detail-linecap-butt.png')
+
+        #icon-align-start
+          background-image url('/images/detail-align-left.png')
+        #icon-align-middle
+          background-image url('/images/detail-align-center.png')
+        #icon-align-end
+          background-image url('/images/detail-align-right.png')
 
     .nav-tabs
       border-bottom 1px solid #999
@@ -408,6 +416,9 @@ body
 	#text-attribute-style
 	  .btn
       width 25%
+  #label-attribute-style
+    .btn
+      width 50%
 
   canvas.fill-preview,
   canvas.stroke-preview

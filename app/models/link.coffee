@@ -23,9 +23,13 @@ module.exports = class Link extends Model
     label_fill: '#999'
     label_fill_opacity: 100
     
-    label_offset_x: 75
-    label_offset_y: 5
+    label_bold: false
+    label_italic: false
+    label_align: 'start'
     label_spacing: 0
+
+    label_offset_x: 10
+    label_offset_y: 5
 
   #interpolation_types: ['basis', 'linear', 'step-before', 'step-after']
 

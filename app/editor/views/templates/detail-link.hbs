@@ -114,23 +114,40 @@
 
 				<div class="row-fluid label-controls">
 					<div class="span4">
-						<label>Indent</label>
-						<div class="input-append">
-							<input class="span9" id="label-attribute-x" type="text" value="{{label_offset_x}}">
-							<span class="add-on">px</span>
+						<label>Style</label>
+						<div class="btn-group" id="label-attribute-style" data-toggle="buttons-checkbox">
+							<button type="button" class="btn btn-inverse{{#if label_bold}} active{{/if}}" value="{{#if label_bold}}true{{else}}false{{/if}}"><b>B</b></button>
+							<button type="button" class="btn btn-inverse{{#if label_italic}} active{{/if}}" value="{{#if label_italic}}true{{else}}false{{/if}}"><i>I</i></button>
 						</div>
 					</div>
 					<div class="span4">
-						<label>Vertical</label>
-						<div class="input-append">
-							<input class="span9" id="label-attribute-y" type="text" value="{{label_offset_y}}">
-							<span class="add-on">px</span>
+						<label>Alignment</label>
+						<div class="btn-group attribute-align" id="label-attribute-align" data-toggle="buttons-radio">
+							<button type="button" class="btn btn-inverse" value="start"><span id="icon-align-start">Left</span></button>
+							<button type="button" class="btn btn-inverse" value="middle"><span id="icon-align-middle">Center</span></button>
+							<button type="button" class="btn btn-inverse" value="end"><span id="icon-align-end">Right</span></button>
 						</div>
 					</div>
 					<div class="span4">
 						<label>Spacing</label>
 						<div class="input-append">
 							<input class="span9" id="label-attribute-spacing" type="text" value="{{label_spacing}}">
+							<span class="add-on">px</span>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid label-controls">
+					<div class="span4">
+						<label>Padding</label>
+						<div class="input-append">
+							<input class="span9" id="label-attribute-x" type="text" value="{{label_offset_x}}">
+							<span class="add-on">%</span>
+						</div>
+					</div>
+					<div class="span4">
+						<label>Vertical</label>
+						<div class="input-append">
+							<input class="span9" id="label-attribute-y" type="text" value="{{label_offset_y}}">
 							<span class="add-on">px</span>
 						</div>
 					</div>

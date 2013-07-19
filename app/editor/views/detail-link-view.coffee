@@ -17,6 +17,8 @@ module.exports = class DetailLinkView extends View
     @delegate 'change', '#baseline-attributes input', @update_attributes
     @delegate 'click', '#baseline-attribute-interpolation button', @update_interpolation
     @delegate 'click', '#baseline-attribute-stroke-linecap button', @update_linecap
+    @delegate 'click', '#label-attribute-style button', @modify_style_attribute
+    @delegate 'click', '#label-attribute-align button', @update_align
 
   render: ->
     super
@@ -24,6 +26,7 @@ module.exports = class DetailLinkView extends View
     @subview 'marker-end-view', new DetailLinkMarkerEndView model: @model.marker_end, region: 'marker_end'
     
     @$('#baseline-attribute-interpolation button[value="' + @model.get('interpolation') + '"]').addClass('active')
+    @$('#label-attribute-align button[value="' + @model.get('label_align') + '"]').addClass('active')
     @$('#baseline-attribute-stroke-linecap button[value="' + @model.get('stroke_linecap') + '"]').addClass('active')
     _.each(@model.get('stroke_dasharray'), (d,i)=>
       @$('#baseline-attribute-stroke-dasharray input:eq(' + i + ')').val(d) unless d is 0
@@ -32,6 +35,11 @@ module.exports = class DetailLinkView extends View
       @$('div.label-controls:gt(0)').hide()
     else
       @$('div.label-controls:gt(0)').show()
+
+  modify_style_attribute: (e) =>
+    _button = $(e.currentTarget)
+    _button.val(_button.val() == 'false' ? 'true' : 'false')
+    @update_attributes()
 
   update_attributes: =>
     _stroke_width = parseInt($('#baseline-attribute-stroke-width').val())
@@ -54,11 +62,14 @@ module.exports = class DetailLinkView extends View
     _label_fill = $('#label-attribute-fill').val()
     _label_fill_opacity = parseInt($('#label-attribute-fill-opacity').val())
 
+    _label_bold = $('#label-attribute-style button:eq(0)').val() == 'true' ? true : false
+    _label_italic = $('#label-attribute-style button:eq(1)').val() == 'true' ? true : false
+
     _label_offset_x = parseInt($('#label-attribute-x').val())
     _label_offset_y = parseInt($('#label-attribute-y').val())
     _label_spacing = parseInt($('#label-attribute-spacing').val())
 
-    @model.save stroke_width: _stroke_width, stroke: _stroke, stroke_opacity: _stroke_opacity, stroke_dasharray: _stroke_dash, label_text: _label_text, label_font_size: _label_font_size, label_fill: _label_fill, label_fill_opacity: _label_fill_opacity, label_offset_x: _label_offset_x, label_offset_y: _label_offset_y, label_spacing: _label_spacing, fill: _fill
+    @model.save stroke_width: _stroke_width, stroke: _stroke, stroke_opacity: _stroke_opacity, stroke_dasharray: _stroke_dash, label_text: _label_text, label_font_size: _label_font_size, label_fill: _label_fill, label_fill_opacity: _label_fill_opacity, label_bold: _label_bold, label_italic: _label_italic, label_offset_x: _label_offset_x, label_offset_y: _label_offset_y, label_spacing: _label_spacing, fill: _fill
 
   update_interpolation: (e) =>
     @model.save interpolation: $(e.currentTarget).val()
@@ -66,4 +77,8 @@ module.exports = class DetailLinkView extends View
 
   update_linecap: (e) =>
     @model.save stroke_linecap: $(e.currentTarget).val()
+
+  update_align: (e) =>
+    @model.save label_align: $(e.currentTarget).val()
+    mediator.publish 'refresh_canvas'
 
