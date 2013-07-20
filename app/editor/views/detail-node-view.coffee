@@ -15,6 +15,7 @@ module.exports = class DetailNodeView extends View
   initialize: (data={}) ->
     super
     @delegate 'change', '#node-attributes input', @update_attributes
+    @delegate 'click', 'input', (e)-> @$(e.target).select()
 
   listen:
     'change model': 'update_view'

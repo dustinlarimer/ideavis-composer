@@ -8,14 +8,14 @@ module.exports = class ToolPointerView extends View
   initialize: ->
     super
     console.log '[-- Pointer tool activated --]'
-    @mode = 'pointer'
-    @copied_node = undefined
     
     $('#toolbar button.active').removeClass('active')
     $('#toolbar button#tool-pointer').addClass('active')
+
+    @nodes = null
+    @links = null
+    @copied_node = undefined
     
-    @nodes = d3.selectAll('g.nodeGroup')
-    @links = d3.selectAll('g.linkGroup')
     @activate()
     
     @delegate 'click', '#canvas_elements_background', @deselect_all
@@ -27,6 +27,8 @@ module.exports = class ToolPointerView extends View
   remove: ->
     @$el.off 'click', '#canvas_elements_background'
     @deactivate()
+    @nodes = null
+    @links = null
     @copied_node = undefined
     #@deselect_all()
     @setElement('')
@@ -45,15 +47,15 @@ module.exports = class ToolPointerView extends View
     key.filter = (e) ->
       tagName = (e.target || e.srcElement).tagName
       return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA')
-    
-    @nodes
+
+    @nodes = d3.selectAll('g.nodeGroup')
       .attr('cursor', 'pointer')
       .call(d3.behavior.drag()
         .on('dragstart', @node_drag_start)
         .on('drag', @node_drag_move)
         .on('dragend', @node_drag_stop))
     
-    @links
+    @links = d3.selectAll('g.linkGroup')
       .attr('cursor', 'pointer')
       .call(d3.behavior.drag()
         .on('dragstart', @link_drag_start)
