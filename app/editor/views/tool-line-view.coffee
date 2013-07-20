@@ -111,7 +111,17 @@ module.exports = class ToolLineView extends View
       _x2 = _x2 / _scale
       _y2 = _y2 / _scale
 
-      if Math.abs(@start_point.x - _x2) > Math.abs(@start_point.y - _y2)
+      _pair = [_x2 - @start_point.x, _y2 - @start_point.y]
+      theta = Math.atan2(-_pair[1], _pair[0])
+      if (theta < 0)
+        theta += 2 * Math.PI
+      _angle = theta * (180/Math.PI)
+
+      if (_angle > 30 and _angle < 60)
+        _x2 = @start_point.x + Math.abs(_pair[0] * 1.2) * Math.sin(45)
+        _y2 = @start_point.y - Math.abs(_pair[0] * 1.2) * Math.sin(45)
+        console.log [_x2,_y2]
+      else if Math.abs(@start_point.x - _x2) > Math.abs(@start_point.y - _y2)
         #or (Math.abs(_x2-@start_point.x) > Math.abs(_y2-@start_point.y))
         _y2 = @start_point.y
       else
