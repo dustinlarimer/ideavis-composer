@@ -128,8 +128,8 @@ module.exports = class ToolAxisView extends View
         #console.log @rotation
       else
         _x2 = @start_point.x
-        @rotation = (if (_pair[1] < 0) then 90 else 270)
-        #console.log @rotation
+        @rotation = (if (_pair[1] < 0) then 270 else 90)
+        console.log @rotation
 
       @end_point=
         x: _x2
@@ -141,17 +141,28 @@ module.exports = class ToolAxisView extends View
 
   set_line: (e) =>
     if @start_point? and @end_point?
-      console.log 'creating new line!'
-      _cx = (@start_point.x + @end_point.x) / 2
-      _cy = (@start_point.y + @end_point.y) / 2 
-      _start = [_cx - @start_point.x, _cy - @start_point.y]
-      _end   = [_cx - @end_point.x, _cy - @end_point.y]
+      
+      _cx    = (@start_point.x + @end_point.x) / 2
+      _cy    = (@start_point.y + @end_point.y) / 2 
+      if @rotation is 0
+        _start = [_cx - @end_point.x, _cy - @end_point.y]
+        _end   = [_cx - @start_point.x, _cy - @start_point.y]
+      else if @rotation is 90
+        _start = [_cy - @end_point.y, _cx - @end_point.x]
+        _end   = [_cy - @start_point.y, _cx - @start_point.x]
+      else if @rotation is 180
+        _start = [_cx - @start_point.x, _cy - @start_point.y]
+        _end   = [_cx - @end_point.x, _cy - @end_point.y]
+      else if @rotation is 270
+        _start = [_cy - @start_point.y, _cx - @start_point.x]
+        _end   = [_cy - @end_point.y, _cx - @end_point.x]
+      
       _axis=
         endpoints: [_start,_end]
-        rotation: @rotation
+        rotate: @rotation
         x: _cx
         y: _cy
-      console.log _axis
+      #console.log _axis
       mediator.axes.create _axis, {wait: true}
     @deactivate()
 

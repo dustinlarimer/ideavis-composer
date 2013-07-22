@@ -233,8 +233,7 @@ module.exports = class ToolPointerView extends View
 
   axis_drag_start: (d, i) ->
     mediator.zoom = false
-    mediator.publish 'refresh_canvas'
-    mediator.publish 'clear_active'    
+    mediator.publish 'clear_active'
     mediator.selected_axis = d
     mediator.selected_node = null
     mediator.selected_link = null
@@ -250,7 +249,7 @@ module.exports = class ToolPointerView extends View
   axis_drag_end: (d, i) =>
     mediator.zoom = true
     if mediator.selected_axis is null
-      d.save x: d.x, y: d.y
+      d.save x: d.x, y: d.y      
     else
       @reset()
       d.view.activate()
