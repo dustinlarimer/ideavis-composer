@@ -253,7 +253,7 @@ module.exports = class ToolPointerView extends View
     else
       @reset()
       d.view.activate()
-      #mediator.publish 'activate_detail', d.model
+      mediator.publish 'activate_detail', d
 
   destroy_axis_group: (axis_group) ->
     axis_group.view.dispose()

@@ -4,11 +4,13 @@ View = require 'views/base/view'
 
 Node = require 'models/node'
 Link = require 'models/link'
+Axis = require 'models/axis'
 
 DetailPaletteView = require 'editor/views/detail-palette-view'
 DetailCanvasView = require 'editor/views/detail-canvas-view'
 DetailNodeView = require 'editor/views/detail-node-view'
 DetailLinkView = require 'editor/views/detail-link-view'
+DetailAxisView = require 'editor/views/detail-axis-view'
 
 module.exports = class DetailView extends View
   autoRender: true
@@ -39,6 +41,8 @@ module.exports = class DetailView extends View
       @subview 'detail-tray', new DetailNodeView model: model, region: 'tray'
     else if model instanceof Link
       @subview 'detail-tray', new DetailLinkView model: model, region: 'tray'
+    else if model instanceof Axis
+      @subview 'detail-tray', new DetailAxisView model: model, region: 'tray'
     d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 1)
 
   deactivate_selection: =>
