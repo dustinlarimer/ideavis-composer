@@ -142,10 +142,16 @@ module.exports = class ToolAxisView extends View
   set_line: (e) =>
     if @start_point? and @end_point?
       console.log 'creating new line!'
+      _cx = (@start_point.x + @end_point.x) / 2
+      _cy = (@start_point.y + @end_point.y) / 2 
+      _start = [_cx - @start_point.x, _cy - @start_point.y]
+      _end   = [_cx - @end_point.x, _cy - @end_point.y]
       _axis=
-        endpoints: [[@start_point.x, @start_point.y],[@end_point.x,@end_point.y]]
+        endpoints: [_start,_end]
         rotation: @rotation
-      #console.log _axis
+        x: _cx
+        y: _cy
+      console.log _axis
       mediator.axes.create _axis, {wait: true}
     @deactivate()
 

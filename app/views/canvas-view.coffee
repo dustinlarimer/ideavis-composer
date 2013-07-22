@@ -135,6 +135,59 @@ module.exports = class CanvasView extends View
     @subscribeEvent 'link_removed', @remove_link
     @build_links()
 
+    @subscribeEvent 'axis_created', @add_axis
+    @subscribeEvent 'axis_updated', @update_axis
+    @subscribeEvent 'axis_removed', @remove_axis
+    @build_axes()
+
+
+  # ----------------------------------
+  # AXES
+  # ----------------------------------
+
+  add_axis: (axis) =>
+    @build_axes()
+
+  update_axis: (axis) =>
+    @refresh()
+
+  remove_axis: (axis_id) =>
+    @refresh()
+
+  build_axes: =>
+    axis_drag_events = d3.behavior.drag()
+      .on('dragstart', @drag_axis_start)
+      .on('drag', @drag_axis_move)
+      .on('dragend', @drag_axis_end)
+
+    mediator.axis = mediator.vis
+      .selectAll('g.axisGroup')
+      .data(mediator.axes.models)
+
+    mediator.axis
+      .enter()
+      .insert('g', 'g.linkGroup')
+      .attr('class', 'axisGroup')
+      .attr('opacity', 0.25)
+      .attr('transform', (d)->
+        return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')'
+      )
+      .each((d,i)-> d.view = new AxisView({model: d, el: @}))
+    
+    mediator.axis
+      .exit()
+      .remove()
+    
+    @refresh()
+
+
+
+
+
+
+
+
+
 
 
   # ----------------------------------

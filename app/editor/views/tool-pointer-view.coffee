@@ -14,6 +14,7 @@ module.exports = class ToolPointerView extends View
 
     @nodes = null
     @links = null
+    @axes = null
     @copied_node = undefined
     
     @activate()
@@ -29,6 +30,7 @@ module.exports = class ToolPointerView extends View
     @deactivate()
     @nodes = null
     @links = null
+    @axes = null
     @copied_node = undefined
     #@deselect_all()
     @setElement('')
@@ -62,6 +64,12 @@ module.exports = class ToolPointerView extends View
         .on('drag', @link_drag_move)
         .on('dragend', @link_drag_stop))
 
+    @axes = d3.selectAll('g.axisGroup')
+      .attr('cursor', 'pointer')
+      .call(d3.behavior.drag()
+        .on('dragstart', @axis_drag_start)
+        .on('drag', @axis_drag_move)
+        .on('dragend', @axis_drag_end))
 
   deactivate: =>
     key.unbind 'backspace', 'pointer'
@@ -87,6 +95,8 @@ module.exports = class ToolPointerView extends View
         .on('drag', null)
         .on('dragend', null))
 
+
+
   reset: =>
     @deactivate()
     @activate()
@@ -108,7 +118,9 @@ module.exports = class ToolPointerView extends View
       else
         @destroy_link_group(mediator.selected_link)
         mediator.selected_link = null
-      
+    if mediator.selected_axis?
+      @destroy_axis_group(mediator.selected_axis)
+      mediator.selected_axis = null
     return false
 
   keypress_copy: =>
@@ -139,6 +151,7 @@ module.exports = class ToolPointerView extends View
     mediator.publish 'clear_active'
     mediator.selected_node = d
     mediator.selected_link = null
+    mediator.selected_axis = null
 
   node_drag_move: (d, i) ->
     mediator.zoom = false
@@ -150,7 +163,7 @@ module.exports = class ToolPointerView extends View
     d.py = d.y
     d.scale = d.model.get('scale') or 1
     d.rotate = d.model.get('rotate')
-    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') scale(' + d.scale + ') rotate(' + d.rotate + ')')
+    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
   
   node_drag_stop: (d, i) =>
     mediator.zoom = true
@@ -176,6 +189,7 @@ module.exports = class ToolPointerView extends View
     mediator.publish 'clear_active'
     mediator.selected_link = d
     mediator.selected_node = null
+    mediator.selected_axis = null
 
   link_drag_move: (d,i) ->
     mediator.selected_link = null
@@ -198,6 +212,40 @@ module.exports = class ToolPointerView extends View
 
 
   # ----------------------------------
+  # AXIS METHODS
+  # ----------------------------------
+
+  axis_drag_start: (d, i) ->
+    mediator.zoom = false
+    mediator.publish 'refresh_canvas'
+    mediator.publish 'clear_active'    
+    mediator.selected_axis = d
+    mediator.selected_node = null
+    mediator.selected_link = null
+
+  axis_drag_move: (d, i) ->
+    mediator.zoom = false
+    mediator.selected_axis = null
+    d.x = d3.event.x
+    d.y = d3.event.y
+    d.rotate = d.get('rotate')
+    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
+
+  axis_drag_end: (d, i) =>
+    mediator.zoom = true
+    if mediator.selected_axis is null
+      d.save x: d.x, y: d.y
+    else
+      @reset()
+      d.view.activate()
+      #mediator.publish 'activate_detail', d.model
+
+  destroy_axis_group: (axis_group) ->
+    axis_group.view.dispose()
+    axis_group.destroy()
+
+
+  # ----------------------------------
   # MISC METHODS
   # ----------------------------------
 
@@ -205,6 +253,7 @@ module.exports = class ToolPointerView extends View
     #console.log $(e.target)[0]
     mediator.selected_node = null
     mediator.selected_link = null
+    mediator.selected_axis = null
 
     mediator.publish 'deactivate_detail'
     mediator.publish 'clear_active'

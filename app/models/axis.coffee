@@ -3,12 +3,15 @@ Model = require 'models/base/model'
 module.exports = class Axis extends Model
   defaults:
     endpoints: [[0,0],[0,0]]
-    rotation: 0
-    stroke: 'lightblue'
+    rotate: 0
+    x: 0
+    y: 0
+    
+    stroke: '#000'
     stroke_dasharray: []
-    stroke_linecap: 'round'
+    stroke_linecap: 'square'
     stroke_opacity: 100
-    stroke_width: 5
+    stroke_width: 1
     
     label_text: 'Axis label'
     

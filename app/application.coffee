@@ -36,8 +36,11 @@ module.exports = class Application extends Chaplin.Application
     
     mediator.node = undefined
     mediator.selected_node = undefined
-
+    
     mediator.link = undefined
     mediator.selected_link = undefined
+    
+    mediator.axis = undefined
+    mediator.selected_axis = undefined
     
     mediator.seal()
