@@ -6,7 +6,7 @@ User = require 'models/user'
 Canvas = require 'models/canvas'
 Nodes = require 'models/nodes'
 Links = require 'models/links'
-Lines = require 'models/lines'
+Axes = require 'models/axes'
 
 module.exports = class Application extends Chaplin.Application
   initialize: ->
@@ -22,9 +22,9 @@ module.exports = class Application extends Chaplin.Application
   initMediator: ->
     mediator.current_user = new User payload?.current_user
     mediator.canvas = new Canvas _id: payload?.composition
-    mediator.nodes = new Nodes
-    mediator.links = new Links
-    mediator.lines = new Lines
+    mediator.nodes  = new Nodes
+    mediator.links  = new Links
+    mediator.axes   = new Axes
     
     mediator.outer = undefined
     mediator.stage = undefined

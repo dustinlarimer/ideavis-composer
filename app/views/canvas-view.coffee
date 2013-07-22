@@ -4,6 +4,7 @@ template = require 'views/templates/canvas'
 
 NodeView = require 'views/node-view'
 LinkView = require 'views/link-view'
+AxisView = require 'views/axis-view'
 
 module.exports = class CanvasView extends View
   el: '#canvas'
@@ -17,7 +18,7 @@ module.exports = class CanvasView extends View
     @model.synced =>
       mediator.nodes.synced =>
         mediator.links.synced =>
-          mediator.lines.synced =>
+          mediator.axes.synced =>
             unless @rendered
               @render()
               @rendered = yes
@@ -324,8 +325,6 @@ module.exports = class CanvasView extends View
       bounds.height = window.innerHeight-150
       bounds.width = window.innerWidth
     
-    #bounds.height = Math.max((window.innerHeight-50), bounds.y)
-    #bounds.width = Math.max(window.innerWidth-50, bounds.x)
     #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)
     
     $('svg, #canvas_background, #canvas_elements_background')
@@ -335,6 +334,7 @@ module.exports = class CanvasView extends View
     force
       .size([bounds.width, bounds.height])
       .start()
+    
     
     #mediator.stage.select('g.x').call(xAxis)
     #mediator.stage.select('g.y').call(yAxis)

@@ -229,7 +229,6 @@ module.exports = class LinkView extends View
           .attr('stroke', (d)-> return d.get('stroke'))
           .attr('stroke-opacity', (d)-> return d.get('stroke_opacity')/100)
           .attr('stroke-width', (d)-> return d.get('stroke_width'))
-          #.attr('shape-rendering', 'geometricPrecision') #crispEdges
 
 
     @marker_end = @marker_end.data([@model.marker_end])
@@ -316,8 +315,8 @@ module.exports = class LinkView extends View
         .style('filter', 'url(#link_point_drop_shadow)')
         .attr('cx', (d)-> return d.x)
         .attr('cy', (d)-> return d.y)
-        .attr('r', 7)
-        .attr('fill', '#4d4d4d')
+        .attr('r', 5)
+        .attr('fill', '#333')
         .attr('stroke', '#fff')
         .attr('stroke-width', 2)
         .attr('cursor', 'move')

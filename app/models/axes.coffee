@@ -1,16 +1,16 @@
 Chaplin = require 'chaplin'
 mediator = require 'mediator'
 Collection = require 'models/base/collection'
-Line = require 'models/line'
+Axis = require 'models/axis'
 
-module.exports = class Lines extends Collection
+module.exports = class Axes extends Collection
   _.extend @prototype, Chaplin.SyncMachine
-  model: Line
+  model: Axis
 
   initialize: ->
-    @url = '/compositions/' + mediator.canvas.id + '/lines/'
+    @url = '/compositions/' + mediator.canvas.id + '/axes/'
     @fetch()
-    @on 'add', @line_created
+    @on 'add', @axis_created
 
   fetch: (options = {}) ->
     @beginSync()
@@ -20,6 +20,6 @@ module.exports = class Lines extends Collection
       @finishSync()
     super options
 
-  line_created: (line) =>
-    console.log '[pub] line_created'
-    @publishEvent 'line_created', line
+  axis_created: (axis) =>
+    console.log '[pub] axis_created'
+    @publishEvent 'axis_created', axis

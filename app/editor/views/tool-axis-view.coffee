@@ -1,11 +1,11 @@
 mediator = require 'mediator'
 View = require 'views/base/view'
 
-module.exports = class ToolLineView extends View
+module.exports = class ToolAxisView extends View
   
   initialize: ->
     super
-    console.log 'Initializing ToolLineView'
+    console.log 'Initializing ToolAxisView'
     $('#toolbar button.active').removeClass('active')
     $('#toolbar button#tool-line').addClass('active')
     mediator.outer.attr('cursor', 'crosshair')
@@ -51,33 +51,34 @@ module.exports = class ToolLineView extends View
     mediator.zoom = false
     @reset()
     
+    _offset = $('#canvas_elements')[0].getBBox()
     _parent = $(e.target.nextElementSibling)[0].getBoundingClientRect()
     _x = null
     _y = null
     _scale = mediator.offset[1] or 1
-    
+
     if _parent.left > 50
       #console.log '> 0'
-      _x = (e.clientX-50) - (_parent.left-50)
+      _x = (e.clientX-50) - (_parent.left-50) - Math.abs(_offset.x*_scale)
     else
       #console.log '< 0'
-      _x = Math.abs(_parent.left-50) + (e.clientX-50)
+      _x = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
     
     if _parent.top > 50
-      _y = (e.clientY-50) - (_parent.top-50)
+      _y = (e.clientY-50) - (_parent.top-50) - Math.abs(_offset.y*_scale)
     else
-      _y = Math.abs(_parent.top-50) + (e.clientY-50)
+      _y = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
     
     @start_point=
       x: _x / _scale
       y: _y / _scale
     
-    @ghost_line = mediator.controls.selectAll('g#newLine')
+    @ghost_line = mediator.controls.selectAll('g#newAxis')
       .data([@start_point])
     @ghost_line
       .enter()
       .append('svg:g')
-        .attr('id', '#newLine')
+        .attr('id', '#newAxis')
         .append('svg:line')
           .attr('id', 'ghost_line')
           .attr('x1', (d)-> return d.x)
@@ -93,30 +94,29 @@ module.exports = class ToolLineView extends View
   draw_line: (e) =>
     mediator.zoom = false
     if @start_point?
+      _offset = $('#canvas_elements')[0].getBBox()
       _parent = $(e.target.nextElementSibling)[0].getBoundingClientRect()
       _x2 = null
       _y2 = null
       _scale = mediator.offset[1] or 1
       
       if _parent.left > 50
-        _x2 = (e.clientX-50) - (_parent.left-50)
+        _x2 = (e.clientX-50) - (_parent.left-50) - Math.abs(_offset.x*_scale)
       else
-        _x2 = Math.abs(_parent.left-50) + (e.clientX-50)
-      
+        _x2 = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
       if _parent.top > 50
-        _y2 = (e.clientY-50) - (_parent.top-50)
+        _y2 = (e.clientY-50) - (_parent.top-50) - Math.abs(_offset.y*_scale)
       else
-        _y2 = Math.abs(_parent.top-50) + (e.clientY-50)
+        _y2 = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
 
       _x2 = _x2 / _scale
       _y2 = _y2 / _scale
 
       _pair = [_x2 - @start_point.x, _y2 - @start_point.y]
-      theta = Math.atan2(-_pair[1], _pair[0])
-      if (theta < 0)
-        theta += 2 * Math.PI
-      _angle = theta * (180/Math.PI)
-
+      #theta = Math.atan2(-_pair[1], _pair[0])
+      #if (theta < 0)
+      #  theta += 2 * Math.PI
+      #_angle = theta * (180/Math.PI)
       #if (_angle > 30 and _angle < 60)
       #  _x2 = @start_point.x + Math.abs(_pair[0])
       #  _y2 = @start_point.y - Math.abs(_pair[0])
@@ -125,11 +125,11 @@ module.exports = class ToolLineView extends View
         #or (Math.abs(_x2-@start_point.x) > Math.abs(_y2-@start_point.y))
         _y2 = @start_point.y
         @rotation = (if (_pair[0] < 0) then 180 else 0)
-        console.log @rotation
+        #console.log @rotation
       else
         _x2 = @start_point.x
         @rotation = (if (_pair[1] < 0) then 90 else 270)
-        console.log @rotation
+        #console.log @rotation
 
       @end_point=
         x: _x2
@@ -142,10 +142,11 @@ module.exports = class ToolLineView extends View
   set_line: (e) =>
     if @start_point? and @end_point?
       console.log 'creating new line!'
-      _line=
+      _axis=
         endpoints: [[@start_point.x, @start_point.y],[@end_point.x,@end_point.y]]
-      console.log _line
-      #mediator.lines.create {}, {wait: true}
+        rotation: @rotation
+      #console.log _axis
+      mediator.axes.create _axis, {wait: true}
     @deactivate()
 
 

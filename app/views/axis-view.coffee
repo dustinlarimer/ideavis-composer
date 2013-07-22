@@ -1,7 +1,7 @@
 mediator = require 'mediator'
 View = require 'views/base/view'
 
-module.exports = class LineView extends View
+module.exports = class AxisView extends View
   autoRender: true
   
   initialize: (data={}) ->
@@ -11,7 +11,7 @@ module.exports = class LineView extends View
 
   render: ->
     super
-    console.log '[LineView Rendered]'
+    console.log '[AxisView Rendered]'
 
   activate: ->
     d3.select(@el).classed 'active', true
