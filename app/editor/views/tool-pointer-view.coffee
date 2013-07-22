@@ -24,7 +24,7 @@ module.exports = class ToolPointerView extends View
     
     @subscribeEvent 'node_created', @reset
     @subscribeEvent 'node_removed', @prune_links
-
+    @subscribeEvent 'axis_created', @reset
 
   remove: ->
     @$el.off 'click', '#canvas_elements_background'
@@ -91,6 +91,13 @@ module.exports = class ToolPointerView extends View
         .on('dragend', null))
     
     @links
+      .attr('cursor', 'default')
+      .call(d3.behavior.drag()
+        .on('dragstart', null)
+        .on('drag', null)
+        .on('dragend', null))
+
+    @axes = d3.selectAll('g.axisGroup')
       .attr('cursor', 'default')
       .call(d3.behavior.drag()
         .on('dragstart', null)
