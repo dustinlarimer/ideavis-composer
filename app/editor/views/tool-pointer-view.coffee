@@ -16,6 +16,7 @@ module.exports = class ToolPointerView extends View
     @links = null
     @axes = null
     @copied_node = undefined
+    @copied_axis = undefined
     
     @activate()
     
@@ -32,6 +33,7 @@ module.exports = class ToolPointerView extends View
     @links = null
     @axes = null
     @copied_node = undefined
+    @copied_axis = undefined
     #@deselect_all()
     @setElement('')
     super
@@ -95,8 +97,6 @@ module.exports = class ToolPointerView extends View
         .on('drag', null)
         .on('dragend', null))
 
-
-
   reset: =>
     @deactivate()
     @activate()
@@ -127,6 +127,8 @@ module.exports = class ToolPointerView extends View
     console.log 'keypress_copy'
     if mediator.selected_node?
       @copied_node = mediator.selected_node
+    if mediator.selected_axis?
+      @copied_axis = mediator.selected_axis
     return false
 
   keypress_paste: =>
@@ -138,6 +140,13 @@ module.exports = class ToolPointerView extends View
       clone.x = clone.x + 25
       clone.y = clone.y + 25
       mediator.nodes.create clone, {wait: true}
+    if @copied_axis?
+      clone = @copied_axis.toJSON()
+      clone._id = undefined
+      clone.__v = undefined
+      clone.x = clone.x + 25
+      clone.y = clone.y + 25
+      mediator.axes.create clone, {wait: true}
     return false
 
 

@@ -172,6 +172,7 @@ module.exports = class CanvasView extends View
       .attr('transform', (d)->
         return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')'
       )
+      .attr('pointer-events', 'painted')
       .each((d,i)-> d.view = new AxisView({model: d, el: @}))
     
     mediator.axis
