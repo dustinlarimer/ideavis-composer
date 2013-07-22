@@ -149,7 +149,7 @@ module.exports = class CanvasView extends View
     @build_axes()
 
   update_axis: (axis) =>
-    @refresh()
+    @build_axes()
 
   remove_axis: (axis_id) =>
     @refresh()
@@ -168,12 +168,13 @@ module.exports = class CanvasView extends View
       .enter()
       .insert('g', 'g.linkGroup')
       .attr('class', 'axisGroup')
-      .attr('opacity', 0.25)
+      .attr('pointer-events', 'all')
+      .each((d,i)-> d.view = new AxisView({model: d, el: @}))
+
+    mediator.axis
       .attr('transform', (d)->
         return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')'
       )
-      .attr('pointer-events', 'all')
-      .each((d,i)-> d.view = new AxisView({model: d, el: @}))
     
     mediator.axis
       .exit()

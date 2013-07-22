@@ -6,28 +6,25 @@ module.exports = class AxisView extends View
   
   initialize: (data={}) ->
     super
-
     @view      = d3.select(@el)
     @baseline  = @view.selectAll('path.baseline')
     @tickline  = @view.selectAll('path.tickline')
-    @label     = @view.selectAll('text.label')
-    #@center    = @view.selectAll('circle.center')
-    #@endpoints = @view.selectAll('circle.endpoint')
-
-    @selected_endpoint = null
-
-    #@subscribeEvent 'deactivate_detail', @deactivate
+    @label     = @view.selectAll('text')
+    @textline = mediator.defs
+      .append('svg:path')
+        .attr('id', 'axis_' + @model.id + '_path')
+        .attr('class', 'textline')
+    
     @subscribeEvent 'clear_active', @clear
-
-    #@listenTo @model, 'change', @render
+    
+    @listenTo @model, 'change', @reset
 
   render: ->
     super
-    console.log '[AxisView Rendered]'
+    #console.log '[AxisView Rendered]'
     @build()
 
   activate: ->
-    console.log 'Axis activated!'
     @view.classed 'active', true
     @build_points()
 
@@ -40,13 +37,16 @@ module.exports = class AxisView extends View
     @view.classed 'active', false
     @deactivate()
 
+  reset: =>
+    @build()
+    @build_points()
+
   build: =>
     @baseline = @baseline.data([@model])
     @baseline
       .enter()
       .append('svg:path')
       .attr('class', 'baseline')
-      #.attr('shape-rendering', 'crispEdges')
       .attr('stroke', (d)-> d.get('stroke'))
       .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray'))
       .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
@@ -71,13 +71,15 @@ module.exports = class AxisView extends View
           'M ' + d.get('endpoints')[0][0] + ', ' + d.get('endpoints')[0][1] +
           'L ' + d.get('endpoints')[1][0] + ', ' + d.get('endpoints')[1][1]
       )
+    @baseline
+      .exit()
+      .remove()
 
     @tickline = @tickline.data([@model])
     @tickline
       .enter()
       .insert('path', 'path.baseline')
       .attr('class', 'tickline')
-      #.attr('shape-rendering', 'crispEdges')
       .attr('stroke', (d)-> d.get('stroke'))
       .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray'))
       .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
@@ -109,13 +111,72 @@ module.exports = class AxisView extends View
           'M ' + d.get('endpoints')[0][0] + ', ' + d.get('endpoints')[0][1] +
           'L ' + d.get('endpoints')[1][0] + ', ' + d.get('endpoints')[1][1]
       )
+    @tickline
+      .exit()
+      .remove()
+
+    @textline
+      .attr('d', =>
+        return '' +
+          'M ' + @model.get('endpoints')[0][0] + ', ' + @model.get('endpoints')[0][1] +
+          'L ' + @model.get('endpoints')[1][0] + ', ' + @model.get('endpoints')[1][1]
+      )
+
+    @label = @label.data([@model])
+    @label
+      .enter()
+      .append('svg:text')
+      .attr('font-family', 'Helvetica, sans-serif')
+      .attr('fill', (d)-> d.get('label_fill'))
+      .attr('fill-opacity', (d)-> d.get('label_fill_opacity')/100)
+      .attr('font-size', (d)-> d.get('label_font_size'))
+      .attr('font-style', (d)-> if d.get('label_italic') then return 'italic' else return 'normal')
+      .attr('font-weight', (d)-> if d.get('label_bold') then return 'bold' else return 'normal')
+      .append('svg:textPath')
+        .attr('class', 'textpath')
+        .attr('xlink:href', (d)-> '#axis_' + d.id + '_path')
+        .attr('letter-spacing', (d)-> d.get('label_spacing'))
+        .attr('startOffset', (d)->
+          _align = d.get('label_align')
+          _offset = d.get('label_offset_x')
+          if _align is 'start' then return _offset + '%' else if _align is 'end' then return (100 - _offset) + '%' else return '50%'
+        )
+        .attr('text-anchor', (d)-> d.get('label_align'))
+        .append('svg:tspan')
+          .attr('class', 'tspan')
+          .attr('dy', (d)-> -1 * d.get('label_offset_y'))
+          .text((d)-> d.get('label_text'))
+
+    @label
+      .attr('fill', (d)-> d.get('label_fill'))
+      .attr('fill-opacity', (d)-> d.get('label_fill_opacity')/100)
+      .attr('font-size', (d)-> d.get('label_font_size'))
+      .attr('font-style', (d)-> if d.get('label_italic') then return 'italic' else return 'normal')
+      .attr('font-weight', (d)-> if d.get('label_bold') then return 'bold' else return 'normal')
+      .transition()
+        .ease('linear')
+        .selectAll('.textpath')
+          .attr('letter-spacing', (d)-> d.get('label_spacing'))
+          .attr('startOffset', (d)->
+            _align = d.get('label_align')
+            _offset = d.get('label_offset_x')
+            if _align is 'start' then return _offset + '%' else if _align is 'end' then return (100 - _offset) + '%' else return '50%'
+          )
+          .attr('text-anchor', (d)-> d.get('label_align'))
+          .selectAll('.tspan')
+            .attr('dy', (d)-> -1 * d.get('label_offset_y'))
+            .text((d)-> d.get('label_text'))
+
+    @label
+      .exit()
+      .remove()
+      
 
   build_points: =>
     
     @view.selectAll('circle.center').remove()
 
     center = @view.selectAll('circle.center').data([@model])
-
     center
       .enter()
       .append('svg:circle')

@@ -249,11 +249,11 @@ module.exports = class ToolPointerView extends View
   axis_drag_end: (d, i) =>
     mediator.zoom = true
     if mediator.selected_axis is null
-      d.save x: d.x, y: d.y      
+      d.save x: d.x, y: d.y
     else
       @reset()
       d.view.activate()
-      mediator.publish 'activate_detail', d
+    mediator.publish 'activate_detail', d
 
   destroy_axis_group: (axis_group) ->
     axis_group.view.dispose()
