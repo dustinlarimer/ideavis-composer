@@ -40,17 +40,14 @@ module.exports = class ToolPointerView extends View
 
 
   activate: =>
-    key 'backspace', 'pointer', @keypress_delete
-    key 'delete', 'pointer', @keypress_delete
-    key 'del', 'pointer', @keypress_delete
-    key 'command+c', 'pointer', @keypress_copy
-    key 'control+c', 'pointer', @keypress_copy
-    key 'command+v', 'pointer', @keypress_paste
-    key 'control+v', 'pointer', @keypress_paste
-    key.setScope 'pointer'
-    key.filter = (e) ->
-      tagName = (e.target || e.srcElement).tagName
-      return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA')
+    key 'backspace', 'editor', @keypress_delete
+    key 'delete', 'editor', @keypress_delete
+    key 'del', 'editor', @keypress_delete
+    key 'command+c', 'editor', @keypress_copy
+    key 'control+c', 'editor', @keypress_copy
+    key 'command+v', 'editor', @keypress_paste
+    key 'control+v', 'editor', @keypress_paste
+    #key.setScope('editor')
 
     @nodes = d3.selectAll('g.nodeGroup')
       .attr('cursor', 'pointer')
@@ -74,14 +71,14 @@ module.exports = class ToolPointerView extends View
         .on('dragend', @axis_drag_end))
 
   deactivate: =>
-    key.unbind 'backspace', 'pointer'
-    key.unbind 'delete', 'pointer'
-    key.unbind 'del', 'pointer'
-    key.unbind 'command+c', 'pointer'
-    key.unbind 'control+c', 'pointer'
-    key.unbind 'command+v', 'pointer'
-    key.unbind 'control+v', 'pointer'
-    key.setScope ''
+    key.unbind 'backspace', 'editor'
+    key.unbind 'delete', 'editor'
+    key.unbind 'del', 'editor'
+    key.unbind 'command+c', 'editor'
+    key.unbind 'control+c', 'editor'
+    key.unbind 'command+v', 'editor'
+    key.unbind 'control+v', 'editor'
+    #key.setScope('')
 
     @nodes
       .attr('cursor', 'default')
@@ -118,6 +115,7 @@ module.exports = class ToolPointerView extends View
     if mediator.selected_node?
       @destroy_node_group(mediator.selected_node)
       mediator.selected_node = null
+      @deselect_all()
     if mediator.selected_link?
       #console.log mediator.selected_link.view.selected_midpoint
       if mediator.selected_link.view.selected_midpoint?
@@ -125,9 +123,11 @@ module.exports = class ToolPointerView extends View
       else
         @destroy_link_group(mediator.selected_link)
         mediator.selected_link = null
+        @deselect_all()
     if mediator.selected_axis?
       @destroy_axis_group(mediator.selected_axis)
       mediator.selected_axis = null
+      @deselect_all()
     return false
 
   keypress_copy: =>
@@ -264,8 +264,9 @@ module.exports = class ToolPointerView extends View
   # MISC METHODS
   # ----------------------------------
 
-  deselect_all: (e) ->
-    #console.log $(e.target)[0]
+  deselect_all: ->
+    # (e)
+    # console.log $(e.target)[0]
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null

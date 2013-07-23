@@ -36,10 +36,16 @@ module.exports = class EditorView extends CanvasView
     key 'a', 'editor', @activate_axis
     key 't', 'editor', @activate_text
     key 'i', 'editor', @activate_eyedropper
-    key.setScope 'editor'
+    key.setScope('editor')
+    
     key.filter = (e) ->
+      scope = key.getScope()
       tagName = (e.target || e.srcElement).tagName
-      return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA')
+      if scope is 'all' or scope is 'editor'
+        console.log scope
+        return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA')
+      else
+        return !(tagName == 'SELECT' || tagName == 'TEXTAREA')
 
 
   render: ->
@@ -67,6 +73,7 @@ module.exports = class EditorView extends CanvasView
     @removeSubview 'tool_view'
     mediator.selected_node = null
     mediator.selected_link = null
+    mediator.selected_axis = null
     @toolbar_view = new ToolNodeView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
@@ -75,6 +82,7 @@ module.exports = class EditorView extends CanvasView
     @removeSubview 'tool_view'
     mediator.selected_node = null
     mediator.selected_link = null
+    mediator.selected_axis = null
     @toolbar_view = new ToolLinkView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
@@ -83,6 +91,7 @@ module.exports = class EditorView extends CanvasView
     @removeSubview 'tool_view'
     mediator.selected_node = null
     mediator.selected_link = null
+    mediator.selected_axis = null
     @toolbar_view = new ToolAxisView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
@@ -91,6 +100,7 @@ module.exports = class EditorView extends CanvasView
     @removeSubview 'tool_view'
     mediator.selected_node = null
     mediator.selected_link = null
+    mediator.selected_axis = null
     @toolbar_view = new ToolTextView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false

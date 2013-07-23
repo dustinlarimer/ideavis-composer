@@ -44,13 +44,10 @@ module.exports = class DetailPaletteView extends View
     key 'control+c', 'demo_palette', @deactivate
     key 'enter', 'demo_palette', @deactivate
     key 'esc', 'demo_palette', @deactivate
-    key.setScope 'demo_palette'
-    key.filter = (e) ->
-      tagName = (e.target || e.srcElement).tagName
-      return !(tagName == 'SELECT' || tagName == 'TEXTAREA')
+    key.setScope('demo_palette')
     
     val = $(e.currentTarget).attr('title')
-    @$('.demo-palette-overlay').addClass('active').html('<div class="palette-overlay-panel"></div><input class="span4" type="text" value="' + val + '"/>')
+    @$('.demo-palette-overlay').addClass('active').html('<div class="palette-overlay-panel"></div><input class="span4 input-palette" type="text" value="' + val + '"/>')
     @$('.palette-overlay-panel').css('background', val)
     @$('.demo-palette-overlay input').focus()
 
@@ -59,7 +56,7 @@ module.exports = class DetailPaletteView extends View
     key.unbind 'control+c', 'demo_palette'
     key.unbind 'enter', 'demo_palette'
     key.unbind 'esc', 'demo_palette'
-    key.setScope ''
+    key.setScope('editor')
     
     code = e.keyCode or ''
     

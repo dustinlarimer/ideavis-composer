@@ -57,16 +57,27 @@ module.exports = class ToolAxisView extends View
     _y = null
     _scale = mediator.offset[1] or 1
 
+    
+    #console.log _parent
+
+    #_offset.x = 0 if _offset.x > 0
+    #_offset.y = 0 if _offset.y > 0
+
+
     if _parent.left > 50
-      #console.log '> 0'
-      _x = (e.clientX-50) - (_parent.left-50) - Math.abs(_offset.x*_scale)
+      console.log 'l > 0'
+      console.log _offset.x
+      _x = (e.clientX-50) - (_parent.left-50) + Math.abs(_offset.x*_scale)
     else
-      #console.log '< 0'
+      console.log 'l < 0'
       _x = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
     
     if _parent.top > 50
-      _y = (e.clientY-50) - (_parent.top-50) - Math.abs(_offset.y*_scale)
+      console.log 't > 0'
+      console.log _offset.y
+      _y = (e.clientY-50) - (_parent.top-50) + Math.abs(_offset.y*_scale)
     else
+      console.log 't < 0'
       _y = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
     
     @start_point=
@@ -101,11 +112,11 @@ module.exports = class ToolAxisView extends View
       _scale = mediator.offset[1] or 1
       
       if _parent.left > 50
-        _x2 = (e.clientX-50) - (_parent.left-50) - Math.abs(_offset.x*_scale)
+        _x2 = (e.clientX-50) - (_parent.left-50) + Math.abs(_offset.x*_scale)
       else
         _x2 = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
       if _parent.top > 50
-        _y2 = (e.clientY-50) - (_parent.top-50) - Math.abs(_offset.y*_scale)
+        _y2 = (e.clientY-50) - (_parent.top-50) + Math.abs(_offset.y*_scale)
       else
         _y2 = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
 

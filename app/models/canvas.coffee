@@ -28,6 +28,7 @@ module.exports = class Canvas extends Model
   build_palette: =>
     @colors = new Palette @get('palette')
     @listenTo @colors, 'add', @update_palette
+    @listenTo @colors, 'change', @update_palette
     @listenTo @colors, 'remove', @update_palette
 
   update_palette: =>
