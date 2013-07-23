@@ -14,6 +14,8 @@ module.exports = class CanvasView extends View
     super
     console.log 'Initializing CanvasView'
     $(window).on 'resize', @refresh
+    key 'command+1', @zoom_reset
+    key 'control+1', @zoom_reset
     
     @model.synced =>
       mediator.nodes.synced =>
@@ -66,7 +68,6 @@ module.exports = class CanvasView extends View
 
   force = d3.layout.force()
   force.on 'tick', ->
-    
     if mediator.node?
       mediator.node
         #.transition()
@@ -198,10 +199,10 @@ module.exports = class CanvasView extends View
 
   drag_node_start: (d, i) ->
     mediator.publish 'refresh_canvas'
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
 
   drag_node_move: (d, i) ->
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     d.rotate = d.model.get('rotate')
     d.x = d3.event.x
     d.y = d3.event.y
@@ -211,7 +212,6 @@ module.exports = class CanvasView extends View
   
   drag_node_end: (d, i) ->
     mediator.publish 'refresh_canvas'
-    mediator.zoom = true
 
   add_node: (node) ->
     force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
@@ -318,6 +318,13 @@ module.exports = class CanvasView extends View
   render: ->
     super
     console.log 'Rendering CanvasView [...]'
+
+    @zoom = d3.behavior.zoom()
+      .x(x)
+      .y(y)
+      .scaleExtent([1, 5])
+      .on('zoom', @canvas_zoom)
+
     mediator.outer = d3.select('#stage')
       .append('svg:svg')
       .attr('xmlns', 'http://www.w3.org/2000/svg')
@@ -329,7 +336,7 @@ module.exports = class CanvasView extends View
     
     mediator.stage = mediator.outer.append('svg:g')
       .attr('id', 'canvas_wrapper')
-      .call(zoom)
+      .call(@zoom)
     
     mediator.stage.append('svg:rect')
       .attr('id', 'canvas_background')
@@ -368,6 +375,7 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   refresh: =>
+    console.log d3.mouse.sourceEvent
     editor_offset = ($('#detail').width()*1.3) or 0
     canvas_elements = $('#canvas_elements')[0].getBoundingClientRect()
 
@@ -399,23 +407,21 @@ module.exports = class CanvasView extends View
   # ZOOM CANVAS
   # ----------------------------------
 
-  zoom = d3.behavior.zoom()
-    .x(x)
-    .y(y)
-    .scaleExtent([1, 5])
-    .on('zoom', ->
-      if mediator.zoom
-        mediator.offset = [d3.event.translate, d3.event.scale]
-        #console.log mediator.offset[0]
-        d3.select('#canvas_elements')
-          .attr('transform', 'translate(' + d3.event.translate + ') scale(' + d3.event.scale + ')')
-        d3.select('#canvas_controls')
-          .attr('transform', 'translate(' + d3.event.translate + ') scale(' + d3.event.scale + ')')
-        mediator.stage?.select('.x.axis').call(xAxis)
-        mediator.stage?.select('.y.axis').call(yAxis)
-        d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 1)
-        #setTimeout =>
-        #  d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 0)
-        #, 4000
-    )
+  canvas_zoom: =>
+    console.log d3.event?.translate or [0,0]
+    mediator.offset = [d3.event?.translate or [0,0], d3.event?.scale or 1]
+    d3.select('#canvas_elements')
+      .attr('transform', 'translate(' + (d3.event?.translate or [0,0]) + ') scale(' + (d3.event?.scale or 1) + ')')
+    d3.select('#canvas_controls')
+      .attr('transform', 'translate(' + (d3.event?.translate or [0,0]) + ') scale(' + (d3.event?.scale or 1) + ')')
+    mediator.stage?.select('.x.axis').call(xAxis)
+    mediator.stage?.select('.y.axis').call(yAxis)
+    d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 1)
+
+  zoom_reset: =>
+    @canvas_zoom()
+    return false
+
+  zoom_in: =>
+    @zoom.scale(zoom.scale()*2)
 

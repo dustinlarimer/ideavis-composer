@@ -17,16 +17,27 @@ module.exports = class ToolAxisView extends View
     @end_point = null
     @ghost_line = null
     
-    @delegate 'mousedown', '#canvas_elements_background', @start_line
-    @delegate 'mousemove', '#canvas_elements_background', @draw_line
-    @delegate 'mouseup'  , '#canvas_elements_background', @set_line
+    #@delegate 'mousedown', '#canvas_elements_background', @start_line
+    #@delegate 'mousemove', '#canvas_elements_background', @draw_line
+    #@delegate 'mouseup'  , '#canvas_elements_background', @set_line
+
+    d3.select('#canvas_elements_background')
+      .call(d3.behavior.drag()
+        .on('dragstart', @start_line)
+        .on('drag', @draw_line)
+        .on('dragend', @set_line))
+
 
   remove: ->
     # Unbind delgated events ------
-    @$el.off 'mousedown', '#canvas_elements_background'
-    @$el.off 'mousemove', '#canvas_elements_background'
-    @$el.off 'mouseup', '#canvas_elements_background'
-
+    #@$el.off 'mousedown', '#canvas_elements_background'
+    #@$el.off 'mousemove', '#canvas_elements_background'
+    #@$el.off 'mouseup', '#canvas_elements_background'
+    d3.select('#canvas_elements_background')
+      .call(d3.behavior.drag()
+        .on('dragstart', null)
+        .on('drag', null)
+        .on('dragend', null))
     @nodes.attr('pointer-events', 'all')
     @links.attr('pointer-events', 'visibleStroke')
     @deactivate()
@@ -39,16 +50,15 @@ module.exports = class ToolAxisView extends View
 
   deactivate: ->
     @reset()
-    mediator.zoom = true
 
   reset: =>
     @ghost_line?.remove()
     @start_point = null
     @end_point = null
 
-  start_line: (e) =>
-    #console.log 'Starting a line'
-    mediator.zoom = false
+  start_line: =>
+    d3.event.sourceEvent.stopPropagation()
+    e = d3.event.sourceEvent
     @reset()
     
     _offset = $('#canvas_elements')[0].getBBox()
@@ -102,8 +112,8 @@ module.exports = class ToolAxisView extends View
       .exit()
       .remove()
 
-  draw_line: (e) =>
-    mediator.zoom = false
+  draw_line: =>
+    e = d3.event.sourceEvent
     if @start_point?
       _offset = $('#canvas_elements')[0].getBBox()
       _parent = $(e.target.nextElementSibling)[0].getBoundingClientRect()
@@ -150,7 +160,7 @@ module.exports = class ToolAxisView extends View
         .attr('x2', @end_point.x)
         .attr('y2', @end_point.y)
 
-  set_line: (e) =>
+  set_line: =>
     if @start_point? and @end_point?
       
       _cx    = (@start_point.x + @end_point.x) / 2

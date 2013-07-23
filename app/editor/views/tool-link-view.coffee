@@ -43,7 +43,7 @@ module.exports = class ToolLinkView extends View
 
 
   set_source_node: (d,i) =>
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     @source_node = d
     _x = d.x
     _y = d.y
@@ -70,7 +70,7 @@ module.exports = class ToolLinkView extends View
         .attr('fill', '#e5e5e5')
 
   stretch_link: (d,i) =>
-    #console.log 'stretch_link'
+    d3.event.sourceEvent.stopPropagation()
     @placeholder.select('#ghost_line')
       .attr('x2', d3.event.x)
       .attr('y2', d3.event.y)
@@ -79,18 +79,13 @@ module.exports = class ToolLinkView extends View
       .attr('cy', d3.event.y)
 
   detect_target_node: (d,i) =>
-    #console.log 'detect_target_node'
     if @source_node?
       @target_node = d unless d.id is @source_node.id
-      #console.log @target_node
 
   reject_target_node: (d,i) =>
-    #console.log 'reject_target_node'
     @target_node = null
 
   set_target_node: (d,i) =>
-    #console.log 'set_target_node'
     if @source_node? and @target_node?
       mediator.links.create {source: @source_node.id, target: @target_node.id}, {wait: true}
     @placeholder.remove()
-    mediator.zoom = true

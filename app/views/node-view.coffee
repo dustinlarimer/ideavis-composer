@@ -252,19 +252,19 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   drag_text_start: (d,i) =>
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     console.log 'drag_text_start'
     d.px = d.get('x')
     d.py = d.get('y')
 
   drag_text_move: (d,i) ->
+    d3.event.sourceEvent.stopPropagation()
     console.log 'drag_text_move'
     d.px = Math.round(d3.event.x)
     d.py = Math.round(d3.event.y)
     d3.select(@).attr('transform', 'translate('+ d.px + ',' + d.py + ') rotate(' + d.get('rotate') + ')' )
 
   drag_text_end: (d,i) =>
-    mediator.zoom = true
     console.log 'drag_text_end'
     unless d.px is d.get("x")
       d.set x: d.px, y: d.py

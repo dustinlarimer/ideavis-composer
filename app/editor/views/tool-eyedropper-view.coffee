@@ -60,7 +60,7 @@ module.exports = class ToolEyedropperView extends View
   # ----------------------------------
 
   node_drag_start: (d, i) =>
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     @nodes.attr('cursor', 'default')
     @links.attr('cursor', 'pointer')
     
@@ -80,7 +80,7 @@ module.exports = class ToolEyedropperView extends View
     @nodes.attr('cursor', 'crosshair')
   
   node_drag_stop: (d, i) =>
-    mediator.zoom = true
+    console.log 'node_drag_stop'
 
 
 
@@ -89,7 +89,7 @@ module.exports = class ToolEyedropperView extends View
   # ----------------------------------
 
   link_drag_start: (d,i) =>
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     @nodes.attr('cursor', 'pointer')
     @links.attr('cursor', 'default')
     #mediator.selected_node = null
@@ -108,7 +108,7 @@ module.exports = class ToolEyedropperView extends View
     @links.attr('cursor', 'crosshair')
 
   link_drag_stop: (d,i) =>
-    mediator.zoom = true
+    console.log 'link_drag_stop'
 
 
   # ----------------------------------

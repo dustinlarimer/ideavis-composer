@@ -48,7 +48,6 @@ module.exports = class LinkView extends View
     super
 
   activate: ->
-    #mediator.zoom = false
     d3.select(@el).classed('active', true)
     @baseline.attr('visibility', 'hidden')
     @tickline
@@ -76,7 +75,6 @@ module.exports = class LinkView extends View
       .on('dragend', null)).remove()
     @controls?.remove()
     @filter?.remove()
-    #mediator.zoom = true
 
   clear: ->
     d3.select(@el).classed 'active', false
@@ -363,10 +361,11 @@ module.exports = class LinkView extends View
   # ----------------------------------
 
   drag_endpoint_start: (d,i) =>
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     @selected_endpoint = d
 
   drag_endpoint_move: (d,i) =>
+    d3.event.sourceEvent.stopPropagation()
     @selected_endpoint = null
     d.x = d3.event.x
     d.y = d3.event.y
@@ -375,7 +374,6 @@ module.exports = class LinkView extends View
       .attr('cy', (d)-> return d.y)
 
   drag_endpoint_end: (d,i) =>
-    mediator.zoom = true
     if @selected_endpoint is null
       if i is 0
         @model.save endpoints: [ [(d.x-@source.x),(d.y-@source.y)], @model.get('endpoints')[1] ]
@@ -448,7 +446,6 @@ module.exports = class LinkView extends View
     
     @build_points()
     mediator.publish 'refresh_canvas'
-    mediator.zoom = true
 
   destroy_midpoint: =>
     _midpoints = @model.get('midpoints')
@@ -459,14 +456,14 @@ module.exports = class LinkView extends View
     mediator.publish 'refresh_canvas'
 
   drag_midpoint_start: (d,i) =>
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     @midpoints.classed('active', false)
     d3.select(@midpoints[0][i]).classed('active', true)
     @selected_midpoint = d
     @selected_midpoint.index = i
 
   drag_midpoint_move: (d,i) =>
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     d.x = d3.event.x
     d.y = d3.event.y
     d3.select(@midpoints[0][i])
@@ -474,7 +471,6 @@ module.exports = class LinkView extends View
       .attr('cy', (d)-> return d.y)
 
   drag_midpoint_end: (d,i) =>
-    mediator.zoom = true
     _midpoints = @model.get('midpoints')
     _midpoints[i][0] = d.x
     _midpoints[i][1] = d.y

@@ -225,11 +225,10 @@ module.exports = class AxisView extends View
 
 
   drag_endpoint_start: (d,i) =>
-    mediator.zoom = false
     d3.event.sourceEvent.stopPropagation()
 
   drag_endpoint_move: (d,i) =>
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     d.x = d3.event.x
     d.y = d.y
     d3.select(@view.selectAll('circle.endpoint')[0][i])
@@ -237,7 +236,6 @@ module.exports = class AxisView extends View
       .attr('cy', (d)-> return d.y)
 
   drag_endpoint_end: (d,i) =>
-    mediator.zoom = true
     if i is 0
       @model.save endpoints: [ [d.x, d.y], @model.get('endpoints')[1] ]
     else

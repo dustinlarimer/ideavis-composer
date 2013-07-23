@@ -162,7 +162,7 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   node_drag_start: (d, i) ->
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     mediator.publish 'refresh_canvas'
     mediator.publish 'clear_active'
     mediator.selected_node = d
@@ -170,7 +170,7 @@ module.exports = class ToolPointerView extends View
     mediator.selected_axis = null
 
   node_drag_move: (d, i) ->
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     mediator.selected_node = null
     d.fixed = true
     d.x = d3.event.x
@@ -182,7 +182,6 @@ module.exports = class ToolPointerView extends View
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
   
   node_drag_stop: (d, i) =>
-    mediator.zoom = true
     if mediator.selected_node is null
       d.model.save x: d.x, y: d.y
     else
@@ -200,7 +199,7 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   link_drag_start: (d,i) ->
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     mediator.publish 'refresh_canvas'
     mediator.publish 'clear_active'
     mediator.selected_link = d
@@ -208,10 +207,10 @@ module.exports = class ToolPointerView extends View
     mediator.selected_axis = null
 
   link_drag_move: (d,i) ->
+    d3.event.sourceEvent.stopPropagation()
     mediator.selected_link = null
 
   link_drag_stop: (d,i) ->
-    mediator.zoom = true
     if mediator.selected_link?
       d.view.activate()
       mediator.publish 'activate_detail', d.model
@@ -232,14 +231,14 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   axis_drag_start: (d, i) ->
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     mediator.publish 'clear_active'
     mediator.selected_axis = d
     mediator.selected_node = null
     mediator.selected_link = null
 
   axis_drag_move: (d, i) ->
-    mediator.zoom = false
+    d3.event.sourceEvent.stopPropagation()
     mediator.selected_axis = null
     d.x = d3.event.x
     d.y = d3.event.y
@@ -247,7 +246,6 @@ module.exports = class ToolPointerView extends View
     d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
 
   axis_drag_end: (d, i) =>
-    mediator.zoom = true
     if mediator.selected_axis is null
       d.save x: d.x, y: d.y
     else
