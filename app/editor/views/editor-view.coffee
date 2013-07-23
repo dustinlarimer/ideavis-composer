@@ -30,12 +30,17 @@ module.exports = class EditorView extends CanvasView
     
     @delegate 'click', '#tool-download', @download_svg
     
-    key 'v', @activate_pointer
-    key 'n', @activate_node
-    key 'l', @activate_link
-    key 'a', @activate_axis
-    key 't', @activate_text
-    key 'i', @activate_eyedropper
+    key 'v', 'editor', @activate_pointer
+    key 'n', 'editor', @activate_node
+    key 'l', 'editor', @activate_link
+    key 'a', 'editor', @activate_axis
+    key 't', 'editor', @activate_text
+    key 'i', 'editor', @activate_eyedropper
+    key.setScope 'editor'
+    key.filter = (e) ->
+      tagName = (e.target || e.srcElement).tagName
+      return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA')
+
 
   render: ->
     super

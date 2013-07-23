@@ -14,7 +14,6 @@ module.exports = class DetailAxisView extends View
     @delegate 'click', '.attribute-label-align button', @update_align
     @delegate 'change', '.axis-attributes input', @update_attributes
 
-
   listen:
     'change model': 'update_view'
 

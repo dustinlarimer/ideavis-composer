@@ -177,10 +177,26 @@ body
               margin 0
               opacity .5
               vertical-align top
-      .palette-overlay
+
+      .demo-palette-overlay
         display none
         &.active
-          display block
+          display block !important
+
+      .palette-overlay,
+      .demo-palette-overlay
+        height 100%
+        left 0
+        position absolute
+        top 0
+        width 100%
+        .palette-overlay-panel
+          height 100%
+          opacity .75
+          left 0
+          position absolute
+          right 0
+          top 0
         input
           font-size 32px
           height 50%
@@ -189,13 +205,6 @@ body
           top 25%
           width 50%
           z-index 2
-        .palette-overlay-panel
-          height 100%
-          opacity .75
-          left 0
-          position absolute
-          right 0
-          top 0
 
 
     #detail-tray
