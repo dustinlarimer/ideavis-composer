@@ -32,6 +32,8 @@ module.exports = class ToolAxisView extends View
         .on('dragend', null))
     @nodes.attr('pointer-events', 'all')
     @links.attr('pointer-events', 'visibleStroke')
+    @nodes = null
+    @links = null
     @deactivate()
 
     # Unbind @el ------------------

@@ -29,7 +29,8 @@ module.exports = class ToolNodeView extends View
     
     @nodes.attr('pointer-events', 'all')
     @links.attr('pointer-events', 'visibleStroke')
-    
+    @nodes = null
+    @links = null
     # Unbind @el ------------------
     @setElement('')
     super
