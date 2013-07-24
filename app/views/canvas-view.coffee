@@ -389,7 +389,8 @@ module.exports = class CanvasView extends View
     $('svg, #canvas_background, #canvas_elements_background')
       .attr('height', bounds.height)
       .attr('width', bounds.width)
-    
+    $('#detail-wrapper').css('min-height', bounds.height+50)
+
     force
       .size([bounds.width, bounds.height])
       .start()
