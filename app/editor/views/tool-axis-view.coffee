@@ -8,7 +8,13 @@ module.exports = class ToolAxisView extends View
     console.log 'Initializing ToolAxisView'
     $('#toolbar button.active').removeClass('active')
     $('#toolbar button#tool-line').addClass('active')
+    
     mediator.outer.attr('cursor', 'crosshair')
+    d3.select('#canvas_elements_background')
+      .call(d3.behavior.drag()
+        .on('dragstart', @start_line)
+        .on('drag', @draw_line)
+        .on('dragend', @set_line))
     
     @nodes = d3.selectAll('g.nodeGroup').attr('pointer-events', 'none')
     @links = d3.selectAll('g.linkGroup').attr('pointer-events', 'none')
@@ -16,23 +22,9 @@ module.exports = class ToolAxisView extends View
     @start_point = null
     @end_point = null
     @ghost_line = null
-    
-    #@delegate 'mousedown', '#canvas_elements_background', @start_line
-    #@delegate 'mousemove', '#canvas_elements_background', @draw_line
-    #@delegate 'mouseup'  , '#canvas_elements_background', @set_line
-
-    d3.select('#canvas_elements_background')
-      .call(d3.behavior.drag()
-        .on('dragstart', @start_line)
-        .on('drag', @draw_line)
-        .on('dragend', @set_line))
-
 
   remove: ->
-    # Unbind delgated events ------
-    #@$el.off 'mousedown', '#canvas_elements_background'
-    #@$el.off 'mousemove', '#canvas_elements_background'
-    #@$el.off 'mouseup', '#canvas_elements_background'
+    mediator.outer.attr('cursor', 'default')
     d3.select('#canvas_elements_background')
       .call(d3.behavior.drag()
         .on('dragstart', null)
@@ -44,8 +36,6 @@ module.exports = class ToolAxisView extends View
 
     # Unbind @el ------------------
     @setElement('')
-    
-    mediator.outer.attr('cursor', 'default')
     super
 
   deactivate: ->
@@ -62,32 +52,21 @@ module.exports = class ToolAxisView extends View
     @reset()
     
     _offset = $('#canvas_elements')[0].getBBox()
-    _parent = $(e.target.nextElementSibling)[0].getBoundingClientRect()
+    _parent = $('#canvas_elements')[0].getBoundingClientRect()
     _x = null
     _y = null
     _scale = mediator.offset[1] or 1
 
-    
-    #console.log _parent
-
-    #_offset.x = 0 if _offset.x > 0
-    #_offset.y = 0 if _offset.y > 0
-
-
     if _parent.left > 50
-      console.log 'l > 0'
-      console.log _offset.x
-      _x = (e.clientX-50) - (_parent.left-50) + Math.abs(_offset.x*_scale)
+      _x = (_offset.x*_scale) - (_parent.left-50) + (e.clientX-50)
+      #_x = (e.clientX-50) - (_parent.left-50) + Math.abs(_offset.x*_scale)
     else
-      console.log 'l < 0'
       _x = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
     
     if _parent.top > 50
-      console.log 't > 0'
-      console.log _offset.y
-      _y = (e.clientY-50) - (_parent.top-50) + Math.abs(_offset.y*_scale)
+      _y = (_offset.y*_scale) - (_parent.top-50) + (e.clientY-50)
+      #_y = (e.clientY-50) - (_parent.top-50) + Math.abs(_offset.y*_scale)
     else
-      console.log 't < 0'
       _y = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
     
     @start_point=
@@ -116,17 +95,19 @@ module.exports = class ToolAxisView extends View
     e = d3.event.sourceEvent
     if @start_point?
       _offset = $('#canvas_elements')[0].getBBox()
-      _parent = $(e.target.nextElementSibling)[0].getBoundingClientRect()
+      _parent = $('#canvas_elements')[0].getBoundingClientRect()
       _x2 = null
       _y2 = null
       _scale = mediator.offset[1] or 1
       
       if _parent.left > 50
-        _x2 = (e.clientX-50) - (_parent.left-50) + Math.abs(_offset.x*_scale)
+        _x2 = (_offset.x*_scale) - (_parent.left-50) + (e.clientX-50)
+        #_x2 = (e.clientX-50) - (_parent.left-50) + Math.abs(_offset.x*_scale)
       else
         _x2 = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
       if _parent.top > 50
-        _y2 = (e.clientY-50) - (_parent.top-50) + Math.abs(_offset.y*_scale)
+        _y2 = (_offset.y*_scale) - (_parent.top-50) + (e.clientY-50)
+        #_y2 = (e.clientY-50) - (_parent.top-50) + Math.abs(_offset.y*_scale)
       else
         _y2 = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
 
@@ -143,14 +124,11 @@ module.exports = class ToolAxisView extends View
       #  _y2 = @start_point.y - Math.abs(_pair[0])
       
       if Math.abs(@start_point.x - _x2) > Math.abs(@start_point.y - _y2)
-        #or (Math.abs(_x2-@start_point.x) > Math.abs(_y2-@start_point.y))
         _y2 = @start_point.y
         @rotation = (if (_pair[0] < 0) then 180 else 0)
-        #console.log @rotation
       else
         _x2 = @start_point.x
         @rotation = (if (_pair[1] < 0) then 270 else 90)
-        console.log @rotation
 
       @end_point=
         x: _x2
@@ -162,9 +140,8 @@ module.exports = class ToolAxisView extends View
 
   set_line: =>
     if @start_point? and @end_point?
-      
-      _cx    = (@start_point.x + @end_point.x) / 2
-      _cy    = (@start_point.y + @end_point.y) / 2 
+      _cx = (@start_point.x + @end_point.x) / 2
+      _cy = (@start_point.y + @end_point.y) / 2 
       if @rotation is 0
         _start = [_cx - @end_point.x, _cy - @end_point.y]
         _end   = [_cx - @start_point.x, _cy - @start_point.y]
@@ -183,7 +160,6 @@ module.exports = class ToolAxisView extends View
         rotate: @rotation
         x: _cx
         y: _cy
-      #console.log _axis
       mediator.axes.create _axis, {wait: true}
     @deactivate()
 

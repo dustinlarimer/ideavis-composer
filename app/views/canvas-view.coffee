@@ -142,56 +142,6 @@ module.exports = class CanvasView extends View
     @build_axes()
 
 
-  # ----------------------------------
-  # AXES
-  # ----------------------------------
-
-  add_axis: (axis) =>
-    @build_axes()
-
-  update_axis: (axis) =>
-    @build_axes()
-
-  remove_axis: (axis_id) =>
-    @refresh()
-
-  build_axes: =>
-    axis_drag_events = d3.behavior.drag()
-      .on('dragstart', @drag_axis_start)
-      .on('drag', @drag_axis_move)
-      .on('dragend', @drag_axis_end)
-
-    mediator.axis = mediator.vis
-      .selectAll('g.axisGroup')
-      .data(mediator.axes.models)
-
-    mediator.axis
-      .enter()
-      .insert('g', 'g.linkGroup')
-      .attr('class', 'axisGroup')
-      .attr('pointer-events', 'all')
-      .each((d,i)-> d.view = new AxisView({model: d, el: @}))
-
-    mediator.axis
-      .attr('transform', (d)->
-        return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')'
-      )
-    
-    mediator.axis
-      .exit()
-      .remove()
-    
-    @refresh()
-
-
-
-
-
-
-
-
-
-
 
   # ----------------------------------
   # NODES
@@ -312,6 +262,49 @@ module.exports = class CanvasView extends View
 
 
   # ----------------------------------
+  # AXES
+  # ----------------------------------
+
+  add_axis: (axis) =>
+    @build_axes()
+
+  update_axis: (axis) =>
+    @build_axes()
+
+  remove_axis: (axis_id) =>
+    @refresh()
+
+  build_axes: =>
+    axis_drag_events = d3.behavior.drag()
+      .on('dragstart', @drag_axis_start)
+      .on('drag', @drag_axis_move)
+      .on('dragend', @drag_axis_end)
+
+    mediator.axis = mediator.vis_axes
+      .selectAll('g.axisGroup')
+      .data(mediator.axes.models)
+
+    mediator.axis
+      .enter()
+      .append('svg:g')
+      .attr('class', 'axisGroup')
+      .attr('pointer-events', 'all')
+      .each((d,i)-> d.view = new AxisView({model: d, el: @}))
+
+    mediator.axis
+      .attr('transform', (d)->
+        return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')'
+      )
+    
+    mediator.axis
+      .exit()
+      .remove()
+    
+    @refresh()
+
+
+
+  # ----------------------------------
   # RENDER VIEW
   # ----------------------------------
 
@@ -356,6 +349,9 @@ module.exports = class CanvasView extends View
     mediator.vis = mediator.stage.append('svg:g')
       .attr('id', 'canvas_elements')
 
+    mediator.vis_axes = mediator.vis.append('svg:g')
+      .attr('id', 'canvas_axes')
+
     mediator.controls = mediator.stage.append('svg:g')
       .attr('id', 'canvas_controls')
 
@@ -375,7 +371,6 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   refresh: =>
-    console.log d3.mouse.sourceEvent
     editor_offset = ($('#detail').width()*1.3) or 0
     canvas_elements = $('#canvas_elements')[0].getBoundingClientRect()
 
@@ -398,7 +393,6 @@ module.exports = class CanvasView extends View
       .size([bounds.width, bounds.height])
       .start()
     
-    
     #mediator.stage.select('g.x').call(xAxis)
     #mediator.stage.select('g.y').call(yAxis)
 
@@ -408,7 +402,7 @@ module.exports = class CanvasView extends View
   # ----------------------------------
 
   canvas_zoom: =>
-    console.log d3.event?.translate or [0,0]
+    #console.log d3.event?.translate or [0,0]
     mediator.offset = [d3.event?.translate or [0,0], d3.event?.scale or 1]
     d3.select('#canvas_elements')
       .attr('transform', 'translate(' + (d3.event?.translate or [0,0]) + ') scale(' + (d3.event?.scale or 1) + ')')
@@ -419,9 +413,7 @@ module.exports = class CanvasView extends View
     d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 1)
 
   zoom_reset: =>
+    @zoom.scale(1).translate([0,0])
     @canvas_zoom()
     return false
-
-  zoom_in: =>
-    @zoom.scale(zoom.scale()*2)
 

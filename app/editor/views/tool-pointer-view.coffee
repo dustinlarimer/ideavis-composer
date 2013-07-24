@@ -132,6 +132,8 @@ module.exports = class ToolPointerView extends View
 
   keypress_copy: =>
     console.log 'keypress_copy'
+    @copied_node = null
+    @copied_axis = null
     if mediator.selected_node?
       @copied_node = mediator.selected_node
     if mediator.selected_axis?
