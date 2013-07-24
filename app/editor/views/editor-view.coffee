@@ -140,7 +140,7 @@ module.exports = class EditorView extends CanvasView
     
     @print_window = window.open() #data
     @print_window.document.write(html)
-    @print_window.document.title = 'Save as PDF'
+    @print_window.document.title = mediator.canvas.get('title')
     @print_window.document.close()
     @print_window.focus()
     @print_window.print()
