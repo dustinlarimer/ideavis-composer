@@ -114,22 +114,40 @@ module.exports = class EditorView extends CanvasView
 
 
   download_svg: =>
-    console.log 'Downloading'
     mediator.stage.select('g.x').style('opacity', 0)
     mediator.stage.select('g.y').style('opacity', 0)
     
+    mediator.publish 'refresh_zoom'
+    _wrapper  = $('svg g:eq(0)')[0].getBBox()
+    _elements = $('#canvas_elements')[0].getBBox()
+    $('svg')
+      .attr('height', _wrapper.height)
+      .attr('width', _wrapper.width)
+    $('svg g:eq(0)').attr('transform', => 
+      if _elements.x < 0 then _x = Math.abs(_elements.x) else _x = 0
+      if _elements.y < 0 then _y = Math.abs(_elements.y) else _y = 0
+      #Max: 2135 x 1435
+      if _wrapper.width+_x > 2135
+        _scale = (2135-_x/2) / (_wrapper.width+_x)
+      else
+        _scale = 1
+      return 'translate(' + (_x*_scale) + ',' + (_y*_scale) + ') scale(' + _scale + ')'
+    )
+
     html = mediator.outer.node().parentNode.innerHTML
     data = "data:image/svg+xml;base64,"+ btoa(html)
     
     @print_window = window.open() #data
     @print_window.document.write(html)
+    @print_window.document.title = 'Save as PDF'
     @print_window.document.close()
     @print_window.focus()
     @print_window.print()
     @print_window.close()
 
+    $('svg g:eq(0)').attr('transform', null)
+    mediator.publish 'refresh_canvas'
     mediator.stage.select('g.x').transition().ease('linear').style('opacity', 1)
     mediator.stage.select('g.y').transition().ease('linear').style('opacity', 1)
-
 
 

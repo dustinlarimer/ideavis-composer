@@ -14,8 +14,8 @@ module.exports = class CanvasView extends View
     super
     console.log 'Initializing CanvasView'
     $(window).on 'resize', @refresh
-    key 'command+1', @zoom_reset
-    key 'control+1', @zoom_reset
+    key 'command+1', @reset_zoom
+    key 'control+1', @reset_zoom
     
     @model.synced =>
       mediator.nodes.synced =>
@@ -362,6 +362,7 @@ module.exports = class CanvasView extends View
       .size([bounds.width, bounds.height])
     
     @subscribeEvent 'refresh_canvas', @refresh
+    @subscribeEvent 'refresh_zoom', @reset_zoom
     @init_artifacts()
 
 
@@ -412,7 +413,7 @@ module.exports = class CanvasView extends View
     mediator.stage?.select('.y.axis').call(yAxis)
     d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 1)
 
-  zoom_reset: =>
+  reset_zoom: =>
     @zoom.scale(1).translate([0,0])
     @canvas_zoom()
     return false
