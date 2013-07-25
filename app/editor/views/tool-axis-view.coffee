@@ -7,7 +7,7 @@ module.exports = class ToolAxisView extends View
     super
     console.log 'Initializing ToolAxisView'
     $('#toolbar button.active').removeClass('active')
-    $('#toolbar button#tool-line').addClass('active')
+    $('#toolbar button#tool-axis').addClass('active')
     
     mediator.outer.attr('cursor', 'crosshair')
     d3.select('#canvas_elements_background')

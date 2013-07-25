@@ -25,7 +25,7 @@ module.exports = class EditorView extends CanvasView
     @delegate 'click', '#tool-pointer',    @activate_pointer
     @delegate 'click', '#tool-node',       @activate_node
     @delegate 'click', '#tool-link',       @activate_link
-    @delegate 'click', '#tool-line',       @activate_axis
+    @delegate 'click', '#tool-axis',       @activate_axis
     #@delegate 'click', '#tool-text',       @activate_text
     @delegate 'click', '#tool-eyedropper', @activate_eyedropper
     
