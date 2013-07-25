@@ -44,21 +44,38 @@ module.exports = class ToolNodeView extends View
     _x = null
     _y = null
     _scale = mediator.offset[1] or 1
+
+    #console.log $('#canvas_elements').offset().top
+    #console.log '--'
+
+    #console.log _offset
+    #console.log _parent
+    #console.log e.clientX-50
+    #console.log e.clientY
+    #console.log e
+    #console.log d3.event
     
     #_parent.left-50 == _offset.x
     #_parent.top-50  == _offset.y
 
     if _parent.left > 50
+      if _offset.x > 0
+        console.log 'special case1!'
       _x = (_offset.x*_scale) - (_parent.left-50) + (e.clientX-50)
-      #_x = (e.clientX-50) - (_parent.left-50) + Math.abs(_offset.x*_scale)
     else
-      _x = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
+      if _offset.x > 0
+        #console.log 'special case2!'
+        _x = Math.abs(_parent.left-50) + (e.clientX-50) + Math.abs(_offset.x*_scale)
+      else
+        _x = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
     
     if _parent.top > 50
       _y = (_offset.y*_scale) - (_parent.top-50) + (e.clientY-50)
-      #_y = (e.clientY-50) - (_parent.top-50) + Math.abs(_offset.y*_scale)
     else
-      _y = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
+      if _offset.y > 0
+        _y = Math.abs(_parent.top-50) + (e.clientY-50) + Math.abs(_offset.y*_scale)
+      else
+        _y = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
     
     point=
       x: _x / _scale

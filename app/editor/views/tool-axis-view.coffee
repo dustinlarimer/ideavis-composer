@@ -61,15 +61,21 @@ module.exports = class ToolAxisView extends View
 
     if _parent.left > 50
       _x = (_offset.x*_scale) - (_parent.left-50) + (e.clientX-50)
-      #_x = (e.clientX-50) - (_parent.left-50) + Math.abs(_offset.x*_scale)
     else
-      _x = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
+      if _offset.x > 0
+        #console.log 'special case2!'
+        _x = Math.abs(_parent.left-50) + (e.clientX-50) + Math.abs(_offset.x*_scale)
+      else
+        _x = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
     
     if _parent.top > 50
       _y = (_offset.y*_scale) - (_parent.top-50) + (e.clientY-50)
-      #_y = (e.clientY-50) - (_parent.top-50) + Math.abs(_offset.y*_scale)
     else
-      _y = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
+      #_y = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
+      if _offset.y > 0
+        _y = Math.abs(_parent.top-50) + (e.clientY-50) + Math.abs(_offset.y*_scale)
+      else
+        _y = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
     
     @start_point=
       x: _x / _scale
@@ -104,14 +110,21 @@ module.exports = class ToolAxisView extends View
       
       if _parent.left > 50
         _x2 = (_offset.x*_scale) - (_parent.left-50) + (e.clientX-50)
-        #_x2 = (e.clientX-50) - (_parent.left-50) + Math.abs(_offset.x*_scale)
       else
-        _x2 = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
+        if _offset.x > 0
+          #console.log 'special case2!'
+          _x2 = Math.abs(_parent.left-50) + (e.clientX-50) + Math.abs(_offset.x*_scale)
+        else
+          _x2 = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
       if _parent.top > 50
         _y2 = (_offset.y*_scale) - (_parent.top-50) + (e.clientY-50)
         #_y2 = (e.clientY-50) - (_parent.top-50) + Math.abs(_offset.y*_scale)
       else
-        _y2 = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
+        #_y2 = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
+        if _offset.y > 0
+          _y2 = Math.abs(_parent.top-50) + (e.clientY-50) + Math.abs(_offset.y*_scale)
+        else
+          _y2 = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
 
       _x2 = _x2 / _scale
       _y2 = _y2 / _scale
