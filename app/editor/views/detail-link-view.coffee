@@ -43,15 +43,15 @@ module.exports = class DetailLinkView extends View
     @update_attributes()
 
   update_attributes: =>
-    _stroke_width = parseInt($('#baseline-attribute-stroke-width').val())
+    _stroke_width = parseInt($('#baseline-attribute-stroke-width').val()) or 0
     _stroke = $('#baseline-attribute-stroke').val()
-    _stroke_opacity = $('#baseline-attribute-stroke-opacity').val()
+    _stroke_opacity = $('#baseline-attribute-stroke-opacity').val() or 100
 
     _stroke_dash = []
     _.each($('#baseline-attribute-stroke-dasharray input'), (d,i)->
       _stroke_dash.push parseInt($(d).val()) or 0
     )
-    _fill = $('#baseline-attribute-fill').val()
+    _fill = $('#baseline-attribute-fill').val() or 'none'
 
     _label_text = $('#label-attribute-text').val()
     if _label_text is ''
@@ -59,16 +59,16 @@ module.exports = class DetailLinkView extends View
     else
       @$('div.label-controls:gt(0)').show()
 
-    _label_font_size = parseInt($('#label-attribute-font-size').val())
+    _label_font_size = parseInt($('#label-attribute-font-size').val()) or 12
     _label_fill = $('#label-attribute-fill').val()
-    _label_fill_opacity = parseInt($('#label-attribute-fill-opacity').val())
+    _label_fill_opacity = parseInt($('#label-attribute-fill-opacity').val()) or 100
 
     _label_bold = $('#label-attribute-style button:eq(0)').val() == 'true' ? true : false
     _label_italic = $('#label-attribute-style button:eq(1)').val() == 'true' ? true : false
 
-    _label_offset_x = parseInt($('#label-attribute-x').val())
-    _label_offset_y = parseInt($('#label-attribute-y').val())
-    _label_spacing = parseInt($('#label-attribute-spacing').val())
+    _label_offset_x = parseInt($('#label-attribute-x').val()) or 0
+    _label_offset_y = parseInt($('#label-attribute-y').val()) or 0
+    _label_spacing = parseInt($('#label-attribute-spacing').val()) or 0
 
     @model.save stroke_width: _stroke_width, stroke: _stroke, stroke_opacity: _stroke_opacity, stroke_dasharray: _stroke_dash, label_text: _label_text, label_font_size: _label_font_size, label_fill: _label_fill, label_fill_opacity: _label_fill_opacity, label_bold: _label_bold, label_italic: _label_italic, label_offset_x: _label_offset_x, label_offset_y: _label_offset_y, label_spacing: _label_spacing, fill: _fill
 

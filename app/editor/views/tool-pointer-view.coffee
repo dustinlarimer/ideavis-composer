@@ -15,6 +15,11 @@ module.exports = class ToolPointerView extends View
     @nodes = null
     @links = null
     @axes = null
+    
+    @node_motion = null
+    @link_motion = null
+    @axis_motion = null
+    
     @copied_node = undefined
     @copied_axis = undefined
     
@@ -32,6 +37,9 @@ module.exports = class ToolPointerView extends View
     @nodes = null
     @links = null
     @axes = null
+    @active_node = null
+    @active_link = null
+    @active_axis = null
     @copied_node = undefined
     @copied_axis = undefined
     #@deselect_all()
@@ -60,7 +68,7 @@ module.exports = class ToolPointerView extends View
       .attr('cursor', 'pointer')
       .call(d3.behavior.drag()
         .on('dragstart', @link_drag_start)
-        .on('drag', @link_drag_move)
+        #.on('drag', @link_drag_move)
         .on('dragend', @link_drag_stop))
 
     @axes = d3.selectAll('g.axisGroup')
@@ -91,7 +99,7 @@ module.exports = class ToolPointerView extends View
       .attr('cursor', 'default')
       .call(d3.behavior.drag()
         .on('dragstart', null)
-        .on('drag', null)
+        #.on('drag', null)
         .on('dragend', null))
 
     @axes = d3.selectAll('g.axisGroup')
@@ -171,25 +179,24 @@ module.exports = class ToolPointerView extends View
     mediator.selected_link = null
     mediator.selected_axis = null
 
-  node_drag_move: (d, i) ->
+  node_drag_move: (d, i) =>
     d3.event.sourceEvent.stopPropagation()
-    mediator.selected_node = null
-    d.fixed = true
+    @node_motion = true
     d.x = d3.event.x
     d.y = d3.event.y
     d.px = d.x
     d.py = d.y
     d.scale = d.model.get('scale') or 1
     d.rotate = d.model.get('rotate')
-    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
+    d3.select(@nodes[0][i]).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
+    #d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
   
   node_drag_stop: (d, i) =>
-    if mediator.selected_node is null
+    if @node_motion
       d.model.save x: d.x, y: d.y
-    else
-      @reset() # Ensure keybindings for Copy, Paste, Delete
-      d.view.activate()
-      mediator.publish 'activate_detail', d.model
+    @reset() # Ensure keybindings for Copy, Paste, Delete
+    d.view.activate()
+    mediator.publish 'activate_detail', d.model
 
   destroy_node_group: (node_group) ->
     node_group.view.dispose()
@@ -208,9 +215,9 @@ module.exports = class ToolPointerView extends View
     mediator.selected_node = null
     mediator.selected_axis = null
 
-  link_drag_move: (d,i) ->
-    d3.event.sourceEvent.stopPropagation()
-    mediator.selected_link = null
+  #link_drag_move: (d,i) ->
+  #  d3.event.sourceEvent.stopPropagation()
+  #  mediator.selected_link = null
 
   link_drag_stop: (d,i) ->
     if mediator.selected_link?
@@ -234,25 +241,26 @@ module.exports = class ToolPointerView extends View
 
   axis_drag_start: (d, i) ->
     d3.event.sourceEvent.stopPropagation()
+    mediator.publish 'refresh_canvas'
     mediator.publish 'clear_active'
     mediator.selected_axis = d
     mediator.selected_node = null
     mediator.selected_link = null
 
-  axis_drag_move: (d, i) ->
+  axis_drag_move: (d, i) =>
     d3.event.sourceEvent.stopPropagation()
-    mediator.selected_axis = null
+    @axis_motion = true
     d.x = d3.event.x
     d.y = d3.event.y
     d.rotate = d.get('rotate')
-    d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
+    d3.select(@axes[0][i]).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
+    #d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
 
   axis_drag_end: (d, i) =>
-    if mediator.selected_axis is null
+    if @axis_motion
       d.save x: d.x, y: d.y
-    else
-      @reset()
-      d.view.activate()
+    @reset()
+    d.view.activate()
     mediator.publish 'activate_detail', d
 
   destroy_axis_group: (axis_group) ->
@@ -273,3 +281,4 @@ module.exports = class ToolPointerView extends View
 
     mediator.publish 'deactivate_detail'
     mediator.publish 'clear_active'
+    mediator.publish 'refresh_canvas'

@@ -24,7 +24,6 @@ module.exports = class LinkView extends View
     @selected_endpoint = null
     @selected_midpoint = null
     
-    #@subscribeEvent 'deactivate_detail', @deactivate
     @subscribeEvent 'clear_active', @clear
 
     @listenTo @model, 'change', @build_baseline
@@ -98,7 +97,7 @@ module.exports = class LinkView extends View
       .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray'))
       .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
       .attr('stroke-linejoin', (d)-> d.get('stroke_linecap'))
-      #.attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
+      .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
       .attr('stroke-width', (d)-> d.get('stroke_width'))
       .attr('fill', (d)-> d.get('fill'))
       .attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
@@ -112,7 +111,7 @@ module.exports = class LinkView extends View
         _linecap = d.get('stroke_linecap')
         if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
       )
-      #.attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
+      .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
       .attr('stroke-width', (d)-> d.get('stroke_width'))
       .attr('fill', (d)-> d.get('fill'))
 
@@ -130,7 +129,7 @@ module.exports = class LinkView extends View
         .attr('stroke-dasharray', (d)=> return @baseline.attr('stroke-dasharray'))
         .attr('stroke-linecap', (d)=> return @baseline.attr('stroke-linecap'))
         .attr('stroke-linejoin', (d)=> return @baseline.attr('stroke-linejoin'))
-        #.attr('stroke-opacity', (d)=> return @baseline.attr('stroke-opacity'))
+        .attr('stroke-opacity', (d)=> return @baseline.attr('stroke-opacity'))
         .attr('stroke-width', (d)=> return @baseline.attr('stroke-width'))
         .attr('fill', (d)=> return @baseline.attr('fill'))
         .attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
@@ -141,7 +140,7 @@ module.exports = class LinkView extends View
       .attr('stroke-dasharray', (d)=> return @baseline.attr('stroke-dasharray'))
       .attr('stroke-linecap', (d)=> return @baseline.attr('stroke-linecap'))
       .attr('stroke-linejoin', (d)=> return @baseline.attr('stroke-linejoin'))
-      #.attr('stroke-opacity', (d)=> return @baseline.attr('stroke-opacity'))
+      .attr('stroke-opacity', (d)=> return @baseline.attr('stroke-opacity'))
       .attr('stroke-width', (d)=> return @baseline.attr('stroke-width'))
       .attr('fill', (d)=> return @baseline.attr('fill'))
 

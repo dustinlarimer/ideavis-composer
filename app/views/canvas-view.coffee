@@ -67,6 +67,7 @@ module.exports = class CanvasView extends View
 
 
   force = d3.layout.force()
+
   force.on 'tick', ->
     if mediator.node?
       mediator.node
@@ -79,7 +80,7 @@ module.exports = class CanvasView extends View
 
     if mediator.link?
       mediator.link
-        .attr('opacity', (d)-> d.opacity)
+        #.attr('opacity', (d)-> d.opacity)
         .selectAll('path.baseline, path.tickline')
         #.transition()
         #.ease('linear')
@@ -223,14 +224,15 @@ module.exports = class CanvasView extends View
   add_link: (link) ->
     _source = _.where(force.nodes(), {id: link.get('source')})[0]
     _target = _.where(force.nodes(), {id: link.get('target')})[0]
-    force.links().push { id: link.id, source: _source, target: _target, opacity: link.get('stroke_opacity')/100, model: link }
+    force.links().push { id: link.id, source: _source, target: _target, model: link }
+    #opacity: link.get('stroke_opacity')/100, 
     @build_links()
 
   update_link: (link) ->
-    _.each(force.links(), (d,i)->
-      if d.id is link.id
-        d.opacity = link.get('stroke_opacity')/100
-    )
+    #_.each(force.links(), (d,i)->
+    #  if d.id is link.id
+    #    d.opacity = link.get('stroke_opacity')/100
+    #)
     @refresh()
 
   remove_link: (link_id) ->
@@ -250,7 +252,7 @@ module.exports = class CanvasView extends View
       .insert('svg:g', 'g.nodeGroup')
       .attr('class', 'linkGroup')
       .attr('pointer-events', 'visibleStroke')
-      .attr('opacity', (d)-> d.model.get('stroke_opacity')/100)
+      #.attr('opacity', (d)-> d.model.get('stroke_opacity')/100)
       .each((d,i)-> d.view = new LinkView({model: d.model, el: @, source: d.source, target: d.target}))
     
     mediator.link
@@ -364,7 +366,6 @@ module.exports = class CanvasView extends View
     @subscribeEvent 'refresh_canvas', @refresh
     @subscribeEvent 'refresh_zoom', @reset_zoom
     @init_artifacts()
-
 
 
   # ----------------------------------

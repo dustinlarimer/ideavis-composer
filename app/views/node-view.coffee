@@ -7,7 +7,6 @@ module.exports = class NodeView extends View
   initialize: (data={}) ->
     super
     
-    @subscribeEvent 'deactivate_detail', @deactivate
     @subscribeEvent 'clear_active', @clear
     
     @listenTo @model, 'change', @render
@@ -38,12 +37,12 @@ module.exports = class NodeView extends View
       #  .on('dragend', @drag_text_end))
     @build_origin()
 
-  deactivate: ->
-    d3.select(@el).select('path.origin').remove()
-    d3.select(@el).selectAll('g.nodePath').remove()
-    d3.select(@el).selectAll('g.nodeText').remove()
-    @clear()
-    @render()
+  #deactivate: ->
+  #  d3.select(@el).select('path.origin').remove()
+  #  d3.select(@el).selectAll('g.nodePath').remove()
+  #  d3.select(@el).selectAll('g.nodeText').remove()
+  #  @clear()
+  #  @render()
 
   clear: ->
     d3.select(@el).classed 'active', false
