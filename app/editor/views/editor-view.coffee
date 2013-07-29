@@ -20,7 +20,7 @@ module.exports = class EditorView extends CanvasView
   initialize: ->
     super
     console.log 'Initializing EditorView'
-    #console.log @model
+    console.log @model
     
     @delegate 'click', '#tool-pointer',    @activate_pointer
     @delegate 'click', '#tool-node',       @activate_node
@@ -48,6 +48,9 @@ module.exports = class EditorView extends CanvasView
       else
         return !(tagName == 'SELECT' || tagName == 'TEXTAREA')
 
+    @listenTo mediator.nodes,  'change', @refresh_preview
+    @listenTo mediator.links,  'change', @refresh_preview
+    @listenTo mediator.axes,   'change', @refresh_preview
 
   render: ->
     super
@@ -145,10 +148,22 @@ module.exports = class EditorView extends CanvasView
     @print_window.focus()
     @print_window.print()
     @print_window.close()
-
+    
     $('svg g:eq(0)').attr('transform', null)
     mediator.publish 'refresh_canvas'
     mediator.stage.select('g.x').transition().ease('linear').style('opacity', 1)
     mediator.stage.select('g.y').transition().ease('linear').style('opacity', 1)
 
 
+  refresh_preview: =>
+    _html = mediator.outer.node().parentNode.innerHTML
+    _wrapper = $('svg g:eq(0)')[0].getBBox()
+    _elements = $('#canvas_elements')[0].getBBox()
+    if _elements.x < 0 then _x = Math.abs(_elements.x) else _x = 0
+    if _elements.y < 0 then _y = Math.abs(_elements.y) else _y = 0
+    data=
+      source: window.btoa(unescape(encodeURIComponent( _html )))
+      height: _wrapper.height + _y
+      width: _wrapper.width + _x
+    @model.save preview_data: data
+    console.log '[-Refresh Preview-]'

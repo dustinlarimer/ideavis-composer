@@ -15,7 +15,7 @@ module.exports = class DetailNodePathView extends View
 
   render: ->
     super
-    
+    @$('#path-attribute-scale').val(@model.get('scale')*100)
     @$('#path-attribute-shape button[value="' + @model.get('shape') + '"]').addClass('active')
     if @model.get('shape') is 'none'
       @$('div.shape-controls:gt(0)').hide()
@@ -32,7 +32,7 @@ module.exports = class DetailNodePathView extends View
     _x = $('#path-attribute-x').val() or 0
     _y = $('#path-attribute-y').val() or 0
     _rotate = $('#path-attribute-rotate').val() or 0
-    _scale = $('#path-attribute-scale').val() or 1
+    _scale = ($('#path-attribute-scale').val()/100) or 1
     _fill = $('#path-attribute-fill').val() or 'none'
     _fill_opacity = $('#path-attribute-fill-opacity').val()
 

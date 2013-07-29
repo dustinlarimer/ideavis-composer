@@ -16,7 +16,6 @@ exports.config =
           'vendor/scripts/lodash.underscore.js',
           'vendor/scripts/backbone-1.0.0.js'
           'vendor/scripts/keymaster.js'
-          'vendor/scripts/backbone.shortcuts.js'
         ]
         after: [
           'test/vendor/scripts/test-helper.js'
