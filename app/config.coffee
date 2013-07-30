@@ -5,13 +5,13 @@ config =
     api:
       base_url: 'http://localhost:3000'
   production:
-    core_url: 'http://ideavis-alpha-core.herokuapp.com'
+    core_url: 'http://alpha.ideavis.co'
     image_url: 'http://ideavis-alpha-client.herokuapp.com/images/'
     api:
-      base_url: 'http://ideavis-alpha-core.herokuapp.com'
+      base_url: 'http://alpha.ideavis.co'
 
 switch window.location.hostname
-  when 'ideavis-alpha-client.herokuapp.com', 'ideavis-alpha-core.herokuapp.com'
+  when 'alpha.ideavis.co', 'ideavis-alpha-core.herokuapp.com', 'ideavis-alpha-client.herokuapp.com'
     env = "production"
   else env = "development"
 
