@@ -20,7 +20,7 @@ module.exports = class EditorView extends CanvasView
   initialize: ->
     super
     console.log 'Initializing EditorView'
-    console.log @model
+    #console.log @model
     
     @delegate 'click', '#tool-pointer',    @activate_pointer
     @delegate 'click', '#tool-node',       @activate_node
