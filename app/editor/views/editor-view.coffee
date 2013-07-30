@@ -55,7 +55,8 @@ module.exports = class EditorView extends CanvasView
   render: ->
     super
     console.log 'Rendering EditorView [...]'
-    mediator.stage.selectAll('g.axis').attr('visibility', 'visible')
+    #mediator.stage.selectAll('g.axis').attr('visibility', 'visible')
+    #mediator.stage.selectAll('g.axis').attr('style', 'visibility: visible')
     @subview 'header_view', new HeaderView model: mediator.canvas
     @subview 'detail_view', new DetailView
     @subview 'tool_view', @toolbar_view = null
@@ -156,14 +157,23 @@ module.exports = class EditorView extends CanvasView
 
 
   refresh_preview: =>
-    _html = mediator.outer.node().parentNode.innerHTML
-    _wrapper = $('svg g:eq(0)')[0].getBBox()
-    _elements = $('#canvas_elements')[0].getBBox()
-    if _elements.x < 0 then _x = Math.abs(_elements.x) else _x = 0
-    if _elements.y < 0 then _y = Math.abs(_elements.y) else _y = 0
+    _wrapper = mediator.vis[0][0].getBBox()
+    _square = Math.min(_wrapper.height, _wrapper.width)
+
+    serializer = new XMLSerializer()
+    _svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="' + _square + '" width="' + _square + '">'
+    _svg += serializer.serializeToString(mediator.defs[0][0])
+    _svg += '<rect fill="#ffffff" height="' + _square + '" width="' + _square + '"></rect>'
+    _svg += '<g>'
+    _.each(mediator.vis[0][0].childNodes, (d,i)->
+      _svg += serializer.serializeToString(d)
+    )
+    _svg += '</g>'
+    _svg += '</svg>'
+
     data=
-      source: window.btoa(unescape(encodeURIComponent( _html )))
-      height: _wrapper.height + _y
-      width: _wrapper.width + _x
+      source: window.btoa(unescape(encodeURIComponent( _svg )))
+      height: _square
+      width: _square
     @model.save preview_data: data
     console.log '[-Refresh Preview-]'
