@@ -5,13 +5,13 @@ config =
     api:
       base_url: 'http://localhost:3000'
   production:
-    core_url: 'http://larimer-canvas-demo.herokuapp.com'
-    image_url: 'http://larimer-canvas-client.herokuapp.com/images/'
+    core_url: 'http://ideavis-alpha-core.herokuapp.com'
+    image_url: 'http://ideavis-alpha-client.herokuapp.com/images/'
     api:
-      base_url: 'http://larimer-canvas-demo.herokuapp.com'
+      base_url: 'http://ideavis-alpha-core.herokuapp.com'
 
 switch window.location.hostname
-  when 'larimer-canvas-client.herokuapp.com', 'larimer-canvas-demo.herokuapp.com'
+  when 'ideavis-alpha-client.herokuapp.com', 'ideavis-alpha-core.herokuapp.com'
     env = "production"
   else env = "development"
 
