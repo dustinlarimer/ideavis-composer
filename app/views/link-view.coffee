@@ -492,8 +492,8 @@ module.exports = class LinkView extends View
     
     switch type
       when 'none'
-        d.markerHeight = 0
-        d.markerWidth = 0
+        d.markerHeight = 1
+        d.markerWidth = 1
         d.path = 'M 0,0'
         d.viewbox = '0 0 0 0'
         break
