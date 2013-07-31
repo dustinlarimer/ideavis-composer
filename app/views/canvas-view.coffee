@@ -362,10 +362,15 @@ module.exports = class CanvasView extends View
       .gravity(0)
       .linkStrength(0)
       .size([bounds.width, bounds.height])
-    
+
     @subscribeEvent 'refresh_canvas', @refresh
     @subscribeEvent 'refresh_zoom', @reset_zoom
     @init_artifacts()
+
+    if $('#detail').length is 0
+      vis_offset = ($('#canvas_elements')[0].getBoundingClientRect().width - bounds.width)/2
+      @zoom.scale(1).translate([vis_offset,0])
+      mediator.vis.attr('transform', 'translate(' + vis_offset + ',' + 0 + ')')
 
 
   # ----------------------------------
@@ -384,8 +389,6 @@ module.exports = class CanvasView extends View
     else
       bounds.height = window.innerHeight-40
       bounds.width = window.innerWidth
-      vis_offset = (bounds.width - canvas_elements.width)/2
-      mediator.vis.attr('transform', 'translate(' + vis_offset + ',' + 0 + ')')
     
     #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)
     
