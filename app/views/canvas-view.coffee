@@ -378,11 +378,14 @@ module.exports = class CanvasView extends View
 
     bounds.x = canvas_elements.width + editor_offset
     bounds.y = Math.max(canvas_elements.bottom-50, canvas_elements.height) + 50
-    bounds.height = window.innerHeight-50
     if editor_offset > 0
+      bounds.height = window.innerHeight-50
       bounds.width = window.innerWidth-50
     else
+      bounds.height = window.innerHeight-40
       bounds.width = window.innerWidth
+      vis_offset = (bounds.width - canvas_elements.width)/2
+      mediator.vis.attr('transform', 'translate(' + vis_offset + ',' + 0 + ')')
     
     #console.log '⟲ Refreshed Bounds:\n' + JSON.stringify(bounds, null, 4)
     
