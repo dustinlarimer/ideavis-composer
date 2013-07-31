@@ -367,14 +367,6 @@ module.exports = class CanvasView extends View
     @subscribeEvent 'refresh_zoom', @reset_zoom
     @init_artifacts()
 
-    if $('#detail').length is 0
-      _canvas = $('#canvas_elements')[0].getBoundingClientRect().width
-      window_center = bounds.width / 2
-      canvas_center = _canvas / 2
-      visual_offset = (canvas_center - window_center) / 2
-      @zoom.scale(1).translate([visual_offset,0])
-      mediator.vis.attr('transform', 'translate(' + visual_offset + ',' + 0 + ')')
-
 
   # ----------------------------------
   # REFRESH CANVAS
