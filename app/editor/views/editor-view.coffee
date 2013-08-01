@@ -166,13 +166,9 @@ module.exports = class EditorView extends CanvasView
 
   refresh_preview: =>
     if @refresh_timeout?
-      console.log 'reseting timer...'
       clearTimeout @refresh_timeout 
       @refresh_timeout = null
-    @refresh_timeout = setTimeout @fire, 3000
-
-  fire: =>
-    console.log 'sending source'
+    @refresh_timeout = setTimeout @send_source, 2000
 
   send_source: =>
     _wrapper = mediator.vis[0][0].getBBox()
