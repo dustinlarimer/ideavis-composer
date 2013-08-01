@@ -69,7 +69,7 @@ module.exports = class EditorView extends CanvasView
 
     @subscribeEvent 'axis_created', @refresh_preview
     @subscribeEvent 'axis_updated', @refresh_preview
-    @subscribeEvent 'aix_removed', @refresh_preview
+    @subscribeEvent 'axis_removed', @refresh_preview
 
 
   # ----------------------------------
@@ -165,6 +165,16 @@ module.exports = class EditorView extends CanvasView
 
 
   refresh_preview: =>
+    if @refresh_timeout?
+      console.log 'reseting timer...'
+      clearTimeout @refresh_timeout 
+      @refresh_timeout = null
+    @refresh_timeout = setTimeout @fire, 3000
+
+  fire: =>
+    console.log 'sending source'
+
+  send_source: =>
     _wrapper = mediator.vis[0][0].getBBox()
     _square = Math.min(_wrapper.height, _wrapper.width)
     _longedge = Math.max(_wrapper.height, _wrapper.width)
