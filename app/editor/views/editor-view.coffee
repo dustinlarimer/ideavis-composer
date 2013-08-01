@@ -171,16 +171,15 @@ module.exports = class EditorView extends CanvasView
     @refresh_timeout = setTimeout @send_source, 2000
 
   send_source: =>
-    _wrapper = mediator.vis[0][0].getBBox()
-    _square = Math.min(_wrapper.height, _wrapper.width)
-    _longedge = Math.max(_wrapper.height, _wrapper.width)
+    #_wrapper = mediator.vis[0][0].getBBox()
+    #_square = Math.min(_wrapper.height, _wrapper.width)
+    #_longedge = Math.max(_wrapper.height, _wrapper.width)
 
     serializer = new XMLSerializer()
-    _svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="' + _square + '" width="' + _square + '">'
+    _svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="618" width="1000">'
     _svg += serializer.serializeToString(mediator.defs[0][0])
-    _svg += '<rect fill="#ffffff" height="' + _square + '" width="' + _square + '"></rect>'
-    #_svg += '<g transform="translate(' + '0,0'  + ')">'
-    _svg += '<g>'
+    _svg += '<rect fill="#ffffff" height="618" width="1000"></rect>'
+    _svg += '<g transform="translate(' + '0,-25'  + ')">'
     _.each(mediator.vis[0][0].childNodes, (d,i)->
       _svg += serializer.serializeToString(d)
     )
@@ -189,7 +188,7 @@ module.exports = class EditorView extends CanvasView
 
     data=
       source: window.btoa(unescape(encodeURIComponent( _svg )))
-      height: _square
-      width: _square
+      #height: _square
+      #width: _square
     @model.save preview_data: data
     console.log '[-Refresh Preview-]'
