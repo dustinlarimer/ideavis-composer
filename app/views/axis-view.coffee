@@ -7,7 +7,7 @@ module.exports = class AxisView extends View
   initialize: (data={}) ->
     super
     @view      = d3.select(@el)
-    @baseline  = @view.selectAll('path.baseline')
+    #@baseline  = @view.selectAll('path.baseline')
     @tickline  = @view.selectAll('path.tickline')
     @label     = @view.selectAll('text')
     @textline = mediator.defs
@@ -21,7 +21,6 @@ module.exports = class AxisView extends View
 
   render: ->
     super
-    #console.log '[AxisView Rendered]'
     @build()
 
   activate: ->
@@ -42,8 +41,8 @@ module.exports = class AxisView extends View
     @build_points()
 
   build: =>
-    @baseline = @baseline.data([@model])
-    @baseline
+    baseline = @view.selectAll('path.baseline').data([@model])
+    baseline
       .enter()
       .append('svg:path')
       .attr('class', 'baseline')
@@ -59,7 +58,7 @@ module.exports = class AxisView extends View
           'L ' + d.get('endpoints')[1][0] + ', ' + d.get('endpoints')[1][1]
       )
 
-    @baseline
+    baseline
       .attr('stroke', (d)-> d.get('stroke'))
       .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray'))
       .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
@@ -71,12 +70,12 @@ module.exports = class AxisView extends View
           'M ' + d.get('endpoints')[0][0] + ', ' + d.get('endpoints')[0][1] +
           'L ' + d.get('endpoints')[1][0] + ', ' + d.get('endpoints')[1][1]
       )
-    @baseline
+    baseline
       .exit()
       .remove()
 
-    @tickline = @tickline.data([@model])
-    @tickline
+    tickline = @view.selectAll('path.tickline').data([@model])
+    tickline
       .enter()
       .insert('path', 'path.baseline')
       .attr('class', 'tickline')
@@ -96,7 +95,7 @@ module.exports = class AxisView extends View
       )
       .attr('visibility', 'hidden')
 
-    @tickline
+    tickline
       .attr('stroke', (d)-> d.get('stroke'))
       .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray'))
       .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
@@ -111,7 +110,7 @@ module.exports = class AxisView extends View
           'M ' + d.get('endpoints')[0][0] + ', ' + d.get('endpoints')[0][1] +
           'L ' + d.get('endpoints')[1][0] + ', ' + d.get('endpoints')[1][1]
       )
-    @tickline
+    tickline
       .exit()
       .remove()
 

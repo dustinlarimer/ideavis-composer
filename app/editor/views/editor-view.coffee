@@ -59,18 +59,17 @@ module.exports = class EditorView extends CanvasView
     @activate_pointer()
     @$('button').tooltip({placement: 'right'})
 
-    @listenTo mediator.nodes, 'add', @refresh_preview
-    @listenTo mediator.links, 'add', @refresh_preview
-    @listenTo mediator.axes,  'add', @refresh_preview
+    @subscribeEvent 'node_created', @refresh_preview
+    @subscribeEvent 'node_updated', @refresh_preview
+    @subscribeEvent 'node_removed', @refresh_preview
 
-    @listenTo mediator.nodes, 'change', @refresh_preview
-    @listenTo mediator.links, 'change', @refresh_preview
-    @listenTo mediator.axes,  'change', @refresh_preview
+    @subscribeEvent 'link_created', @refresh_preview
+    @subscribeEvent 'link_updated', @refresh_preview
+    @subscribeEvent 'link_removed', @refresh_preview
 
-    @listenTo mediator.nodes, 'remove', @refresh_preview
-    @listenTo mediator.links, 'remove', @refresh_preview
-    @listenTo mediator.axes,  'remove', @refresh_preview
-
+    @subscribeEvent 'axis_created', @refresh_preview
+    @subscribeEvent 'axis_updated', @refresh_preview
+    @subscribeEvent 'aix_removed', @refresh_preview
 
 
   # ----------------------------------
@@ -166,7 +165,6 @@ module.exports = class EditorView extends CanvasView
 
 
   refresh_preview: =>
-    console.log 'refreshing preview!'
     _wrapper = mediator.vis[0][0].getBBox()
     _square = Math.min(_wrapper.height, _wrapper.width)
     _longedge = Math.max(_wrapper.height, _wrapper.width)
