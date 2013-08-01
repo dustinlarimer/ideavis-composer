@@ -48,10 +48,6 @@ module.exports = class EditorView extends CanvasView
       else
         return !(tagName == 'SELECT' || tagName == 'TEXTAREA')
 
-    @listenTo mediator.nodes,  'change', @refresh_preview
-    @listenTo mediator.links,  'change', @refresh_preview
-    @listenTo mediator.axes,   'change', @refresh_preview
-
   render: ->
     super
     console.log 'Rendering EditorView [...]'
@@ -62,6 +58,19 @@ module.exports = class EditorView extends CanvasView
     @subview 'tool_view', @toolbar_view = null
     @activate_pointer()
     @$('button').tooltip({placement: 'right'})
+
+    @listenTo mediator.nodes, 'add', @refresh_preview
+    @listenTo mediator.links, 'add', @refresh_preview
+    @listenTo mediator.axes,  'add', @refresh_preview
+
+    @listenTo mediator.nodes, 'change', @refresh_preview
+    @listenTo mediator.links, 'change', @refresh_preview
+    @listenTo mediator.axes,  'change', @refresh_preview
+
+    @listenTo mediator.nodes, 'remove', @refresh_preview
+    @listenTo mediator.links, 'remove', @refresh_preview
+    @listenTo mediator.axes,  'remove', @refresh_preview
+
 
 
   # ----------------------------------
@@ -157,13 +166,16 @@ module.exports = class EditorView extends CanvasView
 
 
   refresh_preview: =>
+    console.log 'refreshing preview!'
     _wrapper = mediator.vis[0][0].getBBox()
     _square = Math.min(_wrapper.height, _wrapper.width)
+    _longedge = Math.max(_wrapper.height, _wrapper.width)
 
     serializer = new XMLSerializer()
     _svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="' + _square + '" width="' + _square + '">'
     _svg += serializer.serializeToString(mediator.defs[0][0])
     _svg += '<rect fill="#ffffff" height="' + _square + '" width="' + _square + '"></rect>'
+    #_svg += '<g transform="translate(' + '0,0'  + ')">'
     _svg += '<g>'
     _.each(mediator.vis[0][0].childNodes, (d,i)->
       _svg += serializer.serializeToString(d)
