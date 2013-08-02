@@ -317,7 +317,7 @@ module.exports = class CanvasView extends View
     @zoom = d3.behavior.zoom()
       .x(x)
       .y(y)
-      .scaleExtent([1, 5])
+      .scaleExtent([0.5, 5])
       .on('zoom', @canvas_zoom)
 
     mediator.outer = d3.select('#stage')
