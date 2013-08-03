@@ -1,6 +1,8 @@
 mediator = require 'mediator'
 View = require 'views/base/view'
 
+zoom_helpers = require '/editor/lib/zoom-helpers'
+
 module.exports = class ToolLinkView extends View
   
   initialize: ->
@@ -43,7 +45,8 @@ module.exports = class ToolLinkView extends View
 
 
   set_source_node: (d,i) =>
-    d3.event.sourceEvent.stopPropagation()
+    e = d3.event.sourceEvent
+    e.stopPropagation()
     @source_node = d
     _x = d.x
     _y = d.y
@@ -70,13 +73,15 @@ module.exports = class ToolLinkView extends View
         .attr('fill', '#e5e5e5')
 
   stretch_link: (d,i) =>
-    d3.event.sourceEvent.stopPropagation()
+    e = d3.event.sourceEvent
+    e.stopPropagation()
+    coordinates = zoom_helpers.get_coordinates(e)
     @placeholder.select('#ghost_line')
-      .attr('x2', d3.event.x)
-      .attr('y2', d3.event.y)
+      .attr('x2', coordinates.x)
+      .attr('y2', coordinates.y)
     @placeholder.select('#ghost_node')
-      .attr('cx', d3.event.x)
-      .attr('cy', d3.event.y)
+      .attr('cx', coordinates.x)
+      .attr('cy', coordinates.y)
 
   detect_target_node: (d,i) =>
     if @source_node?

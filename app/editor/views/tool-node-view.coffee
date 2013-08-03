@@ -1,6 +1,8 @@
 mediator = require 'mediator'
 View = require 'views/base/view'
 
+zoom_helpers = require '/editor/lib/zoom-helpers'
+
 module.exports = class ToolNodeView extends View
   
   initialize: ->
@@ -36,51 +38,7 @@ module.exports = class ToolNodeView extends View
     super
 
   create_node: =>
-    d3.event.sourceEvent.stopPropagation()
     e = d3.event.sourceEvent
-    
-    _offset = $('#canvas_elements')[0].getBBox()
-    _parent = $('#canvas_elements')[0].getBoundingClientRect()
-    _x = null
-    _y = null
-    _scale = mediator.offset[1] or 1
-
-    #console.log $('#canvas_elements').offset().top
-    #console.log '--'
-
-    #console.log _offset
-    #console.log _parent
-    #console.log e.clientX-50
-    #console.log e.clientY
-    #console.log e
-    #console.log d3.event
-    
-    #_parent.left-50 == _offset.x
-    #_parent.top-50  == _offset.y
-
-    if _parent.left > 50
-      if _offset.x > 0
-        console.log 'special case1!'
-      _x = (_offset.x*_scale) - (_parent.left-50) + (e.clientX-50)
-    else
-      if _offset.x > 0
-        #console.log 'special case2!'
-        _x = Math.abs(_parent.left-50) + (e.clientX-50) + Math.abs(_offset.x*_scale)
-      else
-        _x = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
-    
-    if _parent.top > 50
-      _y = (_offset.y*_scale) - (_parent.top-50) + (e.clientY-50)
-    else
-      if _offset.y > 0
-        _y = Math.abs(_parent.top-50) + (e.clientY-50) + Math.abs(_offset.y*_scale)
-      else
-        _y = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
-    
-    point=
-      x: _x / _scale
-      y: _y / _scale
-
-
-    mediator.nodes.create {x: point.x, y: point.y}, {wait: true}
-    #mediator.nodes.create {x: e.pageX-50, y: e.pageY-50}, {wait: true}
+    e.stopPropagation()
+    coordinates = zoom_helpers.get_coordinates(e)
+    mediator.nodes.create {x: coordinates.x, y: coordinates.y}, {wait: true}

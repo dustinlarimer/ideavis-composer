@@ -7,6 +7,12 @@ module.exports = class LinkView extends View
   initialize: (data={}) ->
     super
 
+    try
+      @zoom_helpers = require '/editor/lib/zoom-helpers'
+      @mode = 'private'
+    catch error
+      @mode = 'public'
+    
     @source = data.source
     @target = data.target
     
@@ -36,6 +42,7 @@ module.exports = class LinkView extends View
     console.log '[LinkView Rendered]'
 
   remove: ->
+    @zoom_helpers = null
     @baseline?.remove()
     @tickline?.remove()
     @textline?.remove()
@@ -131,6 +138,10 @@ module.exports = class LinkView extends View
         .attr('stroke-linejoin', (d)=> return @baseline.attr('stroke-linejoin'))
         .attr('stroke-opacity', (d)=> return @baseline.attr('stroke-opacity'))
         .attr('stroke-width', (d)=> return @baseline.attr('stroke-width'))
+        #.attr('stroke-width', (d)=> 
+        #  _sw = @baseline.attr('stroke-width')
+        #  if _sw < 8 then return 8 else return _sw
+        #)
         .attr('fill', (d)=> return @baseline.attr('fill'))
         .attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
         .attr('marker-end',   (d)-> 'url(#' + 'link_' + d.id + '_marker_end)')
@@ -388,25 +399,11 @@ module.exports = class LinkView extends View
   # ----------------------------------
 
   create_midpoint: (d,i) =>
-    #console.log mediator.offset
-    #console.log d3.event.sourceEvent.pageX-50
-    #console.log d3.event.sourceEvent.pageY-50
+    e = d3.event.sourceEvent
+    e.stopPropagation()
+    coordinates = @zoom_helpers.get_coordinates(e)
     
-    if mediator.offset.length > 0
-      if mediator.offset[1] > 1
-        _x = ((-1 * mediator.offset[0][0]) / mediator.offset[1]) + ((d3.event.sourceEvent.clientX - 50) / mediator.offset[1])
-        _y = ((-1 * mediator.offset[0][1]) / mediator.offset[1]) + ((d3.event.sourceEvent.clientY - 50) / mediator.offset[1])
-      else
-        _x = (-1 * mediator.offset[0][0]) + (d3.event.sourceEvent.clientX - 50)
-        _y = (-1 * mediator.offset[0][1]) + (d3.event.sourceEvent.clientY - 50)
-    else
-      _x = d3.event.sourceEvent.clientX - 50
-      _y = d3.event.sourceEvent.clientY - 50
-    
-    #console.log _x
-    #console.log _y
-    
-    _new = [[ _x, _y ]]
+    _new = [[ coordinates.x, coordinates.y ]]
     _endpoints = d.get('endpoints')
     _endpoint_source = [ (@source.x+_endpoints[0][0]), (@source.y+_endpoints[0][1]) ]
     _endpoint_target = [ (@target.x+_endpoints[1][0]), (@target.y+_endpoints[1][1]) ]

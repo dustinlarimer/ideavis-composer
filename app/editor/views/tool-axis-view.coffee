@@ -1,6 +1,8 @@
 mediator = require 'mediator'
 View = require 'views/base/view'
 
+zoom_helpers = require '/editor/lib/zoom-helpers'
+
 module.exports = class ToolAxisView extends View
   
   initialize: ->
@@ -49,37 +51,14 @@ module.exports = class ToolAxisView extends View
     @end_point = null
 
   start_line: =>
-    d3.event.sourceEvent.stopPropagation()
     e = d3.event.sourceEvent
+    e.stopPropagation()
+    coordinates = zoom_helpers.get_coordinates(e)
     @reset()
-    
-    _offset = $('#canvas_elements')[0].getBBox()
-    _parent = $('#canvas_elements')[0].getBoundingClientRect()
-    _x = null
-    _y = null
-    _scale = mediator.offset[1] or 1
 
-    if _parent.left > 50
-      _x = (_offset.x*_scale) - (_parent.left-50) + (e.clientX-50)
-    else
-      if _offset.x > 0
-        #console.log 'special case2!'
-        _x = Math.abs(_parent.left-50) + (e.clientX-50) + Math.abs(_offset.x*_scale)
-      else
-        _x = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
-    
-    if _parent.top > 50
-      _y = (_offset.y*_scale) - (_parent.top-50) + (e.clientY-50)
-    else
-      #_y = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
-      if _offset.y > 0
-        _y = Math.abs(_parent.top-50) + (e.clientY-50) + Math.abs(_offset.y*_scale)
-      else
-        _y = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
-    
     @start_point=
-      x: _x / _scale
-      y: _y / _scale
+      x: coordinates.x
+      y: coordinates.y
     
     @ghost_line = mediator.controls.selectAll('g#newAxis')
       .data([@start_point])
@@ -101,35 +80,14 @@ module.exports = class ToolAxisView extends View
 
   draw_line: =>
     e = d3.event.sourceEvent
+    e.stopPropagation()
     if @start_point?
-      _offset = $('#canvas_elements')[0].getBBox()
-      _parent = $('#canvas_elements')[0].getBoundingClientRect()
-      _x2 = null
-      _y2 = null
-      _scale = mediator.offset[1] or 1
-      
-      if _parent.left > 50
-        _x2 = (_offset.x*_scale) - (_parent.left-50) + (e.clientX-50)
-      else
-        if _offset.x > 0
-          #console.log 'special case2!'
-          _x2 = Math.abs(_parent.left-50) + (e.clientX-50) + Math.abs(_offset.x*_scale)
-        else
-          _x2 = Math.abs(_parent.left-50) + (e.clientX-50) - Math.abs(_offset.x*_scale)
-      if _parent.top > 50
-        _y2 = (_offset.y*_scale) - (_parent.top-50) + (e.clientY-50)
-        #_y2 = (e.clientY-50) - (_parent.top-50) + Math.abs(_offset.y*_scale)
-      else
-        #_y2 = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
-        if _offset.y > 0
-          _y2 = Math.abs(_parent.top-50) + (e.clientY-50) + Math.abs(_offset.y*_scale)
-        else
-          _y2 = Math.abs(_parent.top-50) + (e.clientY-50) - Math.abs(_offset.y*_scale)
+      coordinates = zoom_helpers.get_coordinates(e)
+      @drag_point=
+        x: coordinates.x
+        y: coordinates.y
 
-      _x2 = _x2 / _scale
-      _y2 = _y2 / _scale
-
-      _pair = [_x2 - @start_point.x, _y2 - @start_point.y]
+      _pair = [@drag_point.x - @start_point.x, @drag_point.y - @start_point.y]
       #theta = Math.atan2(-_pair[1], _pair[0])
       #if (theta < 0)
       #  theta += 2 * Math.PI
@@ -138,16 +96,16 @@ module.exports = class ToolAxisView extends View
       #  _x2 = @start_point.x + Math.abs(_pair[0])
       #  _y2 = @start_point.y - Math.abs(_pair[0])
       
-      if Math.abs(@start_point.x - _x2) > Math.abs(@start_point.y - _y2)
-        _y2 = @start_point.y
+      if Math.abs(@start_point.x - @drag_point.x) > Math.abs(@start_point.y - @drag_point.y)
+        @drag_point.y = @start_point.y
         @rotation = (if (_pair[0] < 0) then 180 else 0)
       else
-        _x2 = @start_point.x
+        @drag_point.x = @start_point.x
         @rotation = (if (_pair[1] < 0) then 270 else 90)
 
       @end_point=
-        x: _x2
-        y: _y2
+        x: @drag_point.x
+        y: @drag_point.y
 
       @ghost_line.select('#ghost_line')
         .attr('x2', @end_point.x)
