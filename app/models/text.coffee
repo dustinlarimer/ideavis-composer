@@ -5,8 +5,8 @@ module.exports = class Text extends Model
     type: 'text'
     text: 'Label'
     
-    font_size: 14
-    fill: '#000000'
+    font_size: 18
+    fill: '#333'
     fill_opacity: 100
     #font_family: 'Helvetica Neue'
     

@@ -12,7 +12,6 @@ module.exports = class Node extends Model
     y: 0
     rotate: 0
     opacity: 100
-    #scale: 1
     weight: 1
     nested: [ (new Path).toJSON(), (new Text).toJSON() ]
 

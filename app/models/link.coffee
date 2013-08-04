@@ -8,12 +8,12 @@ module.exports = class Link extends Model
     target: null
     endpoints: [[0,0],[0,0]]
     midpoints: []
-    markers: [ (new Marker type:'sharp-arrow-start').toJSON(), (new Marker type:'sharp-arrow-end').toJSON() ]
+    markers: [ (new Marker).toJSON(), (new Marker).toJSON() ]
     interpolation: 'basis'
-    stroke: 'lightblue'
+    stroke: '#3498db'
     stroke_dasharray: []
     stroke_linecap: 'round'
-    stroke_opacity: 100
+    stroke_opacity: 50
     stroke_width: 5
     fill: 'none'
     
@@ -25,13 +25,11 @@ module.exports = class Link extends Model
     
     label_bold: false
     label_italic: false
-    label_align: 'start'
+    label_align: 'middle'
     label_spacing: 0
 
-    label_offset_x: 10
+    label_offset_x: 25
     label_offset_y: 5
-
-  #interpolation_types: ['basis', 'linear', 'step-before', 'step-after']
 
   initialize: (data={}) ->
     super

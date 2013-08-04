@@ -7,12 +7,12 @@ module.exports = class Path extends Model
     shape: 'circle'
     
     scale: 1
-    fill: '#FBFBFB'
+    fill: '#fbfbfb'
     fill_opacity: 100
     
-    stroke_width: 1
-    stroke: '#E5E5E5'
-    stroke_opacity: 100
+    stroke_width: 5
+    stroke: '#000'
+    stroke_opacity: 20
     
     stroke_dasharray: []
     stroke_linecap: 'square'
