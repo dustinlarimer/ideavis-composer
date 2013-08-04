@@ -12,6 +12,8 @@ module.exports = class ToolPointerView extends View
     $('#toolbar button.active').removeClass('active')
     $('#toolbar button#tool-pointer').addClass('active')
 
+    @snap = 25
+
     @nodes = null
     @links = null
     @axes = null
@@ -186,8 +188,12 @@ module.exports = class ToolPointerView extends View
   node_drag_move: (d, i) =>
     d3.event.sourceEvent.stopPropagation()
     @node_motion = true
-    d.x = d3.event.x
-    d.y = d3.event.y
+    if key.shift
+      d.x = Math.round(d3.event.x / @snap) * @snap
+      d.y = Math.round(d3.event.y / @snap) * @snap
+    else
+      d.x = Math.round(d3.event.x)
+      d.y = Math.round(d3.event.y)
     d.px = d.x
     d.py = d.y
     d.scale = d.model.get('scale') or 1
@@ -197,7 +203,7 @@ module.exports = class ToolPointerView extends View
   
   node_drag_stop: (d, i) =>
     if @node_motion
-      d.model.save x: Math.round(d.x), y: Math.round(d.y)
+      d.model.save x: d.x, y: d.y
     @reset() # Ensure keybindings for Copy, Paste, Delete
     d.view.activate()
     mediator.publish 'activate_detail', d.model
@@ -254,15 +260,19 @@ module.exports = class ToolPointerView extends View
   axis_drag_move: (d, i) =>
     d3.event.sourceEvent.stopPropagation()
     @axis_motion = true
-    d.x = d3.event.x
-    d.y = d3.event.y
+    if key.shift
+      d.x = Math.round(d3.event.x / @snap) * @snap
+      d.y = Math.round(d3.event.y / @snap) * @snap
+    else
+      d.x = Math.round(d3.event.x)
+      d.y = Math.round(d3.event.y)
     d.rotate = d.get('rotate')
     d3.select(@axes[0][i]).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
     #d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
 
   axis_drag_end: (d, i) =>
     if @axis_motion
-      d.save x: Math.round(d.x), y: Math.round(d.y)
+      d.save x: d.x, y: d.y
     @reset()
     d.view.activate()
     mediator.publish 'activate_detail', d
