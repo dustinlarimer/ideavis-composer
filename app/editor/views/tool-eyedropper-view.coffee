@@ -13,10 +13,16 @@ module.exports = class ToolEyedropperView extends View
     
     @nodes = d3.selectAll('g.nodeGroup')
     @links = d3.selectAll('g.linkGroup')
+    @axes = d3.selectAll('g.axisGroup')
     @activate()
 
   remove: ->
     @deactivate()
+    
+    @nodes = null
+    @links = null
+    @axes = null
+    
     @setElement('')
     super
 
@@ -32,6 +38,11 @@ module.exports = class ToolEyedropperView extends View
     else
       @links.attr('cursor', 'pointer')
     
+    if mediator.selected_axis?
+      @axes.attr('cursor', 'crosshair')
+    else
+      @axes.attr('cursor', 'pointer')
+
     @nodes
       .call(d3.behavior.drag()
         .on('dragstart', @node_drag_start)
@@ -42,6 +53,11 @@ module.exports = class ToolEyedropperView extends View
         .on('dragstart', @link_drag_start)
         .on('dragend', @link_drag_stop))
 
+    @axes
+      .call(d3.behavior.drag()
+        .on('dragstart', @axis_drag_start)
+        .on('dragend', @axis_drag_stop))
+
   deactivate: =>
     @nodes
       .attr('cursor', 'default')
@@ -49,6 +65,11 @@ module.exports = class ToolEyedropperView extends View
         .on('dragstart', null)
         .on('dragend', null))
     @links
+      .attr('cursor', 'default')
+      .call(d3.behavior.drag()
+        .on('dragstart', null)
+        .on('dragend', null))
+    @axes
       .attr('cursor', 'default')
       .call(d3.behavior.drag()
         .on('dragstart', null)
@@ -63,6 +84,7 @@ module.exports = class ToolEyedropperView extends View
     d3.event.sourceEvent.stopPropagation()
     @nodes.attr('cursor', 'default')
     @links.attr('cursor', 'pointer')
+    @axes.attr('cursor', 'pointer')
     
     if mediator.selected_node and mediator.selected_node.id isnt d.id
       _model = _.pick(d.model.toJSON(), 'opacity', 'rotate', 'nested')
@@ -71,8 +93,9 @@ module.exports = class ToolEyedropperView extends View
       mediator.selected_node.model.save _model
       mediator.selected_node.model.build_nested()
     else
-      mediator.selected_link = null
       mediator.selected_node = d
+      mediator.selected_link = null
+      mediator.selected_axis = null
       mediator.publish 'clear_active'
       d.view.activate()
     
@@ -92,6 +115,7 @@ module.exports = class ToolEyedropperView extends View
     d3.event.sourceEvent.stopPropagation()
     @nodes.attr('cursor', 'pointer')
     @links.attr('cursor', 'default')
+    @axes.attr('cursor', 'pointer')
     #mediator.selected_node = null
 
     if mediator.selected_link and mediator.selected_link.id isnt d.id
@@ -101,14 +125,48 @@ module.exports = class ToolEyedropperView extends View
     else
       mediator.selected_node = null
       mediator.selected_link = d
+      mediator.selected_axis = null
       mediator.publish 'clear_active'
-      d.view.activate()
+      #d.view.activate()
 
     mediator.publish 'activate_detail', mediator.selected_link.model
     @links.attr('cursor', 'crosshair')
 
   link_drag_stop: (d,i) =>
     console.log 'link_drag_stop'
+
+
+
+  # ----------------------------------
+  # NODE METHODS
+  # ----------------------------------
+
+  axis_drag_start: (d, i) =>
+    d3.event.sourceEvent.stopPropagation()
+    @nodes.attr('cursor', 'pointer')
+    @links.attr('cursor', 'pointer')
+    @axes.attr('cursor', 'default')
+    
+    if mediator.selected_axis and mediator.selected_axis.id isnt d.id
+      _model = _.omit(d.attributes, 'label_text', 'rotate', 'x', 'y', 'endpoints', 'composition_id', '_id', '__v')
+      #_label = _.where(mediator.selected_axis.model.get('nested'), {type: 'text'})[0].text
+      #_.where(_model.nested, {type:'text'})[0].text = _label
+      mediator.selected_axis.save _model
+      #mediator.selected_axis.model.build_nested()
+    else
+      mediator.selected_node = null
+      mediator.selected_link = null
+      mediator.selected_axis = d
+      mediator.publish 'clear_active'
+      d.view.activate()
+    
+    mediator.publish 'activate_detail', mediator.selected_axis.model
+    @nodes.attr('cursor', 'crosshair')
+  
+  axis_drag_stop: (d, i) =>
+    console.log 'axis_drag_stop'
+
+
 
 
   # ----------------------------------

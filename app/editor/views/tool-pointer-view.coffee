@@ -34,15 +34,15 @@ module.exports = class ToolPointerView extends View
   remove: ->
     @$el.off 'click', '#canvas_elements_background'
     @deactivate()
+    
     @nodes = null
     @links = null
     @axes = null
-    @active_node = null
-    @active_link = null
-    @active_axis = null
+    
     @copied_node = undefined
     @copied_axis = undefined
     #@deselect_all()
+    
     @setElement('')
     super
 
@@ -87,6 +87,10 @@ module.exports = class ToolPointerView extends View
     key.unbind 'command+v', 'editor'
     key.unbind 'control+v', 'editor'
     #key.setScope('')
+
+    @node_motion = null
+    @link_motion = null
+    @axis_motion = null
 
     @nodes
       .attr('cursor', 'default')
@@ -193,7 +197,7 @@ module.exports = class ToolPointerView extends View
   
   node_drag_stop: (d, i) =>
     if @node_motion
-      d.model.save x: d.x, y: d.y
+      d.model.save x: Math.round(d.x), y: Math.round(d.y)
     @reset() # Ensure keybindings for Copy, Paste, Delete
     d.view.activate()
     mediator.publish 'activate_detail', d.model
@@ -258,7 +262,7 @@ module.exports = class ToolPointerView extends View
 
   axis_drag_end: (d, i) =>
     if @axis_motion
-      d.save x: d.x, y: d.y
+      d.save x: Math.round(d.x), y: Math.round(d.y)
     @reset()
     d.view.activate()
     mediator.publish 'activate_detail', d

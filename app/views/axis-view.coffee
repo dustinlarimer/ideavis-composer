@@ -8,7 +8,7 @@ module.exports = class AxisView extends View
     super
     @view      = d3.select(@el)
     #@baseline  = @view.selectAll('path.baseline')
-    @tickline  = @view.selectAll('path.tickline')
+    #@tickline  = @view.selectAll('path.tickline')
     @label     = @view.selectAll('text')
     @textline = mediator.defs
       .append('svg:path')
@@ -25,6 +25,7 @@ module.exports = class AxisView extends View
 
   activate: ->
     @view.classed 'active', true
+    console.log 'active!'
     @build_points()
 
   deactivate: ->
@@ -32,15 +33,17 @@ module.exports = class AxisView extends View
     @view.selectAll('circle.endpoint').remove()
     @render()
 
+  reset: =>
+    @render()
+    @build_points()
+
   clear: ->
     @view.classed 'active', false
     @deactivate()
 
-  reset: =>
-    @build()
-    @build_points()
 
   build: =>
+    @view.selectAll('path.baseline').remove()
     baseline = @view.selectAll('path.baseline').data([@model])
     baseline
       .enter()
@@ -74,6 +77,7 @@ module.exports = class AxisView extends View
       .exit()
       .remove()
 
+    @view.selectAll('path.tickline').remove()
     tickline = @view.selectAll('path.tickline').data([@model])
     tickline
       .enter()

@@ -277,10 +277,6 @@ module.exports = class CanvasView extends View
     @refresh()
 
   build_axes: =>
-    axis_drag_events = d3.behavior.drag()
-      .on('dragstart', @drag_axis_start)
-      .on('drag', @drag_axis_move)
-      .on('dragend', @drag_axis_end)
 
     mediator.axis = mediator.vis_axes
       .selectAll('g.axisGroup')
@@ -291,6 +287,9 @@ module.exports = class CanvasView extends View
       .append('svg:g')
       .attr('class', 'axisGroup')
       .attr('pointer-events', 'all')
+      .attr('transform', (d)->
+        return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')'
+      )
       .each((d,i)-> d.view = new AxisView({model: d, el: @}))
 
     mediator.axis
