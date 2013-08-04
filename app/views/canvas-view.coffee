@@ -202,6 +202,7 @@ module.exports = class CanvasView extends View
       .enter()
       .append('svg:g')
       .attr('class', 'nodeGroup')
+      .attr('cursor', 'pointer')
       .attr('opacity', (d)-> d.model.get('opacity')/100)
       .attr('transform', (d)->
         return 'translate('+ d.x + ',' + d.y + ') rotate(' + d.model.get('rotate') + ')'
