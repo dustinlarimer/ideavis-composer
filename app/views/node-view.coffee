@@ -65,7 +65,7 @@ module.exports = class NodeView extends View
         .append('svg:path')
           .attr('class', 'artifact')
           .attr('shape-rendering', 'geometricPrecision')
-          .attr('d', (d)-> d.get('path'))
+          #.attr('d', (d)-> d.path)
           .attr('fill', (d)-> d.get('fill'))
           .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
           .attr('stroke', (d)-> d.get('stroke'))
@@ -83,6 +83,7 @@ module.exports = class NodeView extends View
         .ease('linear')
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
         .selectAll('path.artifact')
+          #.attr('d', (d)-> d.path)
           .attr('fill', (d)-> d.get('fill'))
           .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
           .attr('stroke', (d)-> d.get('stroke'))
@@ -96,7 +97,8 @@ module.exports = class NodeView extends View
     
     path
       .selectAll('path.artifact')
-        .attr('d', (d)-> d.get('path'))
+        .each((d,i)=> @generate_shape(d))
+        .attr('d', (d)-> d.path)
         .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray').join())
     
     path
@@ -268,4 +270,69 @@ module.exports = class NodeView extends View
     unless d.px is d.get("x")
       d.set x: d.px, y: d.py
       @build_bounding_boxes()
+
+
+
+
+
+
+
+
+  # ----------------------------------
+  # GENERATE Shapes
+  # ----------------------------------
+  generate_shape: (d) =>
+    shape  = d.get('shape')
+    height = d.get('height')
+    width  = d.get('width')
+    
+    switch shape
+      when 'none'
+        d.path = 'M 0,0 L 0,0 Z'
+        break
+      when 'circle'
+        d.path = '' + 
+          'M 0,0 ' + 
+          'm ' + (-width/2) + ', 0 ' + 
+          'a ' + (width/2) + ',' + (height/2) + ' 0 1,0 ' + (width) + ',0 ' + 
+          'a ' + (width/2) + ',' + (height/2) + ' 0 1,0 ' + (-width) + ',0'
+        break
+      when 'square'
+        d.path = '' + 
+          'M ' + (-width/2) + ',' + (-height/2) + ' ' + 
+          'L ' + (width/2) + ',' + (-height/2) + ' ' + 
+          'L ' + (width/2) + ',' + (height/2) + ' ' + 
+          'L ' + (-width/2) + ',' + (height/2) + ' Z'
+        break
+      when 'hexagon'
+        d.path = '' + 
+          'M 0,' + (-height/2) + ' ' + 
+          'L ' + (width/2) + ',' + (-height/4) + ' ' + 
+          'L ' + (width/2) + ',' + (height/4) + ' ' + 
+          'L 0,' + (height/2) + ' ' + 
+          'L ' + (-width/2) + ',' + (height/4) + ' ' + 
+          'L ' + (-width/2) + ',' + (-height/4) + ' Z'
+        break
+      when 'triangle'
+        d.path = '' + 
+          'M 0,' + (-height/2) + ' ' + 
+          'L ' + (width/2) + ',' + (height/2) + ' ' + 
+          'L ' + (-width/2) + ',' + (height/2) + ' Z'
+        break
+      when 'plus'
+        d.path = '' + 
+          'M ' + (-width*.5) + ',' + (-height*.2) + ' ' + 
+          'L ' + (-width*.2) + ',' + (-height*.2) + ' ' +
+          'L ' + (-width*.2) + ',' + (-height*.5) + ' ' + 
+          'L ' + (width*.2)  + ',' + (-height*.5) + ' ' + 
+          'L ' + (width*.2)  + ',' + (-height*.2) + ' ' + 
+          'L ' + (width*.5)  + ',' + (-height*.2) + ' ' + 
+          'L ' + (width*.5)  + ',' + (height*.2)  + ' ' + 
+          'L ' + (width*.2)  + ',' + (height*.2)  + ' ' + 
+          'L ' + (width*.2)  + ',' + (height*.5)  + ' ' + 
+          'L ' + (-width*.2) + ',' + (height*.5)  + ' ' +
+          'L ' + (-width*.2) + ',' + (height*.2)  + ' ' +
+          'L ' + (-width*.5) + ',' + (height*.2)  + ' Z'
+        break
+
 

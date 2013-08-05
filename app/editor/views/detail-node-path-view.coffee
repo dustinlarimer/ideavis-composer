@@ -28,29 +28,22 @@ module.exports = class DetailNodePathView extends View
     @$('#path-attribute-stroke-linecap button[value="' + @model.get('stroke_linecap') + '"]').addClass('active')
 
   update_attributes: =>
-    #console.log 'path:update_attributes'
-    _x = $('#path-attribute-x').val() or 0
-    _y = $('#path-attribute-y').val() or 0
-    _rotate = $('#path-attribute-rotate').val() or 0
-    _scale = ($('#path-attribute-scale').val()/100) or 1
-    _fill = $('#path-attribute-fill').val() or 'none'
-    _fill_opacity = $('#path-attribute-fill-opacity').val()
-
-    _stroke = $('#path-attribute-stroke').val() or 'none'
-    _stroke_width = $('#path-attribute-stroke-width').val() or 0
-    _stroke_opacity = $('#path-attribute-stroke-opacity').val()
-
-    _stroke_dash = []
+    _path=
+      height: $('#path-attribute-height').val() or 100
+      width:  $('#path-attribute-width').val() or 100
+      rotate: $('#path-attribute-rotate').val() or 0
+      fill:   $('#path-attribute-fill').val() or 'none'
+      fill_opacity: $('#path-attribute-fill-opacity').val() or 100
+      stroke: $('#path-attribute-stroke').val() or 'none'
+      stroke_width: $('#path-attribute-stroke-width').val() or 0
+      stroke_opacity: $('#path-attribute-stroke-opacity').val() or 100
+      stroke_dash: []
+    
     _.each($('#path-attribute-stroke-dasharray input'), (d,i)->
-      _stroke_dash.push parseInt($(d).val()) or 0
-      #console.log _stroke_dash
+      _path.stroke_dash.push parseInt($(d).val()) or 0
     )
 
-    @model.set x: _x, y: _y, rotate: _rotate, scale: _scale, fill: _fill, fill_opacity: _fill_opacity, stroke: _stroke, stroke_width: _stroke_width, stroke_opacity: _stroke_opacity, stroke_dasharray: _stroke_dash
-
-  update_form: =>
-    $('#path-attribute-x').val(@model.get('x'))
-    $('#path-attribute-y').val(@model.get('y'))
+    @model.set _path
 
   update_shape: (e) =>
     _shape = $(e.currentTarget).val()
@@ -58,7 +51,7 @@ module.exports = class DetailNodePathView extends View
       @$('div.shape-controls:gt(0)').hide()
     else
       @$('div.shape-controls:gt(0)').show()
-    @model.setPath(_shape)
+    @model.set shape: _shape
 
   update_linecap: (e) =>
     _linecap = $(e.currentTarget).val()
