@@ -98,19 +98,20 @@ module.exports = class LinkView extends View
       .enter()
       .append('svg:path')
       .attr('class', 'baseline')
-        .attr('visibility', 'visible')
+      .attr('visibility', 'visible')
+      .attr('opacity', (d)-> d.get('stroke_opacity')/100)
       .attr('shape-rendering', 'geometricPrecision')
       .attr('stroke', (d)-> d.get('stroke'))
       .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray'))
       .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
       .attr('stroke-linejoin', (d)-> d.get('stroke_linecap'))
-      .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
       .attr('stroke-width', (d)-> d.get('stroke_width'))
       .attr('fill', (d)-> d.get('fill'))
       .attr('marker-start', (d)-> 'url(#' + 'link_' + d.id + '_marker_start)')
       .attr('marker-end',   (d)-> 'url(#' + 'link_' + d.id + '_marker_end)')
 
     @baseline
+      .attr('opacity', (d)-> d.get('stroke_opacity')/100)
       .attr('stroke', (d)-> d.get('stroke'))
       .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray'))
       .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
@@ -118,7 +119,6 @@ module.exports = class LinkView extends View
         _linecap = d.get('stroke_linecap')
         if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
       )
-      .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
       .attr('stroke-width', (d)-> d.get('stroke_width'))
       .attr('fill', (d)-> d.get('fill'))
 
@@ -131,12 +131,12 @@ module.exports = class LinkView extends View
       .append('svg:path')
         .attr('class', 'tickline')
         .attr('visibility', 'hidden')
+        .attr('opacity', (d)-> d.get('stroke_opacity')/100)
         .attr('shape-rendering', 'geometricPrecision')
         .attr('stroke', (d)=> return @baseline.attr('stroke'))
         .attr('stroke-dasharray', (d)=> return @baseline.attr('stroke-dasharray'))
         .attr('stroke-linecap', (d)=> return @baseline.attr('stroke-linecap'))
         .attr('stroke-linejoin', (d)=> return @baseline.attr('stroke-linejoin'))
-        .attr('stroke-opacity', (d)=> return @baseline.attr('stroke-opacity'))
         .attr('stroke-width', (d)=> return @baseline.attr('stroke-width'))
         #.attr('stroke-width', (d)=> 
         #  _sw = @baseline.attr('stroke-width')
@@ -147,11 +147,11 @@ module.exports = class LinkView extends View
         .attr('marker-end',   (d)-> 'url(#' + 'link_' + d.id + '_marker_end)')
 
     @tickline
+      .attr('opacity', (d)=> return @baseline.attr('opacity'))
       .attr('stroke', (d)=> return @baseline.attr('stroke'))
       .attr('stroke-dasharray', (d)=> return @baseline.attr('stroke-dasharray'))
       .attr('stroke-linecap', (d)=> return @baseline.attr('stroke-linecap'))
       .attr('stroke-linejoin', (d)=> return @baseline.attr('stroke-linejoin'))
-      .attr('stroke-opacity', (d)=> return @baseline.attr('stroke-opacity'))
       .attr('stroke-width', (d)=> return @baseline.attr('stroke-width'))
       .attr('fill', (d)=> return @baseline.attr('fill'))
 
@@ -233,11 +233,6 @@ module.exports = class LinkView extends View
             else
               return d.get('fill')
           )
-          .attr('fill-opacity', (d)-> return d.get('fill_opacity')/100)
-          #.attr('stroke', (d)-> return d.get('stroke'))
-          #.attr('stroke-opacity', (d)-> return d.get('stroke_opacity')/100)
-          #.attr('stroke-width', (d)-> return d.get('stroke_width'))
-
 
     @marker_end = @marker_end.data([@model.marker_end])
     @marker_end
@@ -264,10 +259,6 @@ module.exports = class LinkView extends View
             else
               return d.get('fill')
           )
-          .attr('fill-opacity', (d)-> return d.get('fill_opacity')/100)
-          #.attr('stroke', (d)-> return d.get('stroke'))
-          #.attr('stroke-opacity', (d)-> return d.get('stroke_opacity')/100)
-          #.attr('stroke-width', (d)-> return d.get('stroke_width'))
 
     @marker_start.exit().remove()
     @marker_end.exit().remove()

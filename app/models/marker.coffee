@@ -5,7 +5,6 @@ module.exports = class Marker extends Model
   defaults:
     type: 'none'
     fill: 'none'
-    fill_opacity: 100
     offset_x: 0
     width: 20
 

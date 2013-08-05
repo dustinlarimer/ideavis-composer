@@ -218,30 +218,36 @@ body
 
 
     #detail-tray
-      //padding 0 10px
 
-      .accordion
-        margin 0
-
-      .accordion-heading
-        margin 0
-
-      .accordion-toggle
+      h2
         background #353535
-        //box-shadow inset 0 1px 0 rgba(255,255,255,.7), 0 1px 1px rgba(0,0,0,.25)
         box-shadow inset 0 1px 0 rgba(0,0,0,.4), 0 1px 1px rgba(0,0,0,.25)
         color #fff
-        margin 0
+        margin 0 -1px
         padding 8px 10px
         &.collapsed
           //background #fff
         &:hover, &:focus
           text-decoration none
       
-      .accordion-inner
+      .detail-inner
         border medium none
         padding 10px
 
+      a.detail-toggle
+        color #757575
+        display block
+        font-size 11px
+        margin 7px 0 0
+        text-decoration none
+        text-transform uppercase
+        i
+          margin -1px 0 0
+          opacity .5
+        &:hover, &:focus
+          color #4d4d4d
+          i
+            opacity 1
 
     .detail-panel-bucket
       padding 0 10px 5px
@@ -483,7 +489,12 @@ body
       overflow visible
       padding-top 10px
 
-    #detail-markers
+    .hidden-fields 
+      padding-top 5px
+
+    #marker-start,
+    #marker-end,
+    #baseline-curve
       .btn
         padding 4px 0
       span.selection-icon
@@ -491,6 +502,18 @@ body
       a.dropdown-toggle
         span.selection-icon
           background-size 48px
+
+      #baseline-attribute-curve
+        span.selection-icon
+          background-position 50% 50%
+          &#icon-curve-basis
+            background-image url('/images/detail-curve-basis.png')
+          &#icon-curve-linear
+            background-image url('/images/detail-curve-linear.png')
+          &#icon-curve-step-before
+            background-image url('/images/detail-curve-step-before.png')
+          &#icon-curve-step-after
+            background-image url('/images/detail-curve-step-after.png')
 
       #marker-start-attribute-type
         span.selection-icon

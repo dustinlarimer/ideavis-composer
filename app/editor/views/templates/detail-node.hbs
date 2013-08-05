@@ -1,7 +1,7 @@
-<hr/>
-<div class="detail-panel-bucket" id="node-attributes">
-	<h2>Selection Attributes</h2>
-	<form>
+
+<div class="detail-section" id="node-attributes">
+	<h2>Node Attributes</h2>
+	<div class="detail-inner">
 		<div class="row-fluid">
 			<div class="span3">
 				<label><strong>X</strong></label>
@@ -32,31 +32,20 @@
 				</div>
 			</div>
 		</div>
-	</form>
+	</div>
 </div>
 
-<div class="accordion" id="detail-node-accordian">
-	
-  <div class="accordian-section">
-    <h2 class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#detail-node-accordian" href="#detail-shapes">
-        Shape
-      </a>
-    </h2>
-    <div id="detail-shapes" class="accordion-body collapse in">
-      <div class="accordion-inner" id="node-paths"></div>
-    </div>
-  </div>
 
-  <div class="accordian-section">
-    <h2 class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#detail-node-accordian" href="#detail-texts">
-        Label
-      </a>
-    </h2>
-    <div id="detail-texts" class="accordion-body collapse in">
-      <div class="accordion-inner" id="node-texts"></div>
-    </div>
+<div class="detail-section">
+  <h2>Shape</h2>
+  <div id="detail-shapes">
+    <div class="detail-inner" id="node-paths"></div>
   </div>
+</div>
 
+<div class="accordian-section">
+  <h2>Label</h2>
+  <div id="detail-texts">
+    <div class="detail-inner" id="node-texts"></div>
+  </div>
 </div>
