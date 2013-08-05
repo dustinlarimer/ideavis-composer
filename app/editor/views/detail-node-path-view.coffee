@@ -29,7 +29,7 @@ module.exports = class DetailNodePathView extends View
       @$('#path-attribute-stroke-dasharray input:eq(' + i + ')').val(d) unless d is 0
     )
     @$('#path-attribute-stroke-linecap button[value="' + @model.get('stroke_linecap') + '"]').addClass('active')
-    @$('a.fill-image').tooltip({placement: 'top'})
+    @$('a.fill-image').tooltip({placement: 'right'})
 
   update_attributes: =>
     _path=

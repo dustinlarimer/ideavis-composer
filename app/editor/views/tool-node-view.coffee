@@ -60,8 +60,8 @@ module.exports = class ToolNodeView extends View
     e.stopPropagation()
     coordinates = zoom_helpers.get_coordinates(e)
     @start_point=
-      x: coordinates.x
-      y: coordinates.y
+      x: Math.round(coordinates.x)
+      y: Math.round(coordinates.y)
     @ghost_node = mediator.controls.selectAll('g#newNode')
       .data([@start_point])
     @ghost_node
@@ -90,15 +90,15 @@ module.exports = class ToolNodeView extends View
     coordinates = zoom_helpers.get_coordinates(e)
 
     @end_point=
-      x: coordinates.x
-      y: coordinates.y
+      x: Math.round(coordinates.x)
+      y: Math.round(coordinates.y)
 
     delta_x = Math.pow(@end_point.x - @start_point.x, 2)
     delta_y = Math.pow(@end_point.y - @start_point.y, 2)
     _radius = Math.sqrt(delta_x + delta_y)
 
     @ghost_node.select('#ghost_node')
-      .attr('r', _radius)
+      .attr('r', Math.round(_radius))
 
 
 
@@ -114,10 +114,12 @@ module.exports = class ToolNodeView extends View
     else
       _radius = 50
 
+    _length = Math.round(_radius*2)
+
     _node=
       x: @start_point.x
       y: @start_point.y
-      nested: [ (new Path { height: (_radius*2), width: (_radius*2) }).toJSON(), (new Text).toJSON() ]
+      nested: [ (new Path { height: _length, width: _length }).toJSON(), (new Text).toJSON() ]
     mediator.nodes.create _node, {wait: true}
     @reset()
 

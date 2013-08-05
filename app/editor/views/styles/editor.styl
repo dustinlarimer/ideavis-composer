@@ -72,7 +72,7 @@ body
 #controls
   position absolute
   top 0
- 	z-index 1
+  z-index 1
 
   #toolbar
     background rgba(215,215,215,.96)
@@ -337,6 +337,7 @@ body
         background-image url('/images/detail-shape-none.png')
 
 
+
     .dropdown
       a.dropdown-toggle
         background #eee
@@ -355,7 +356,7 @@ body
           padding 0
           position relative
           text-indent -99999px
-          width 65px
+          max-width 64px
         b.caret
           opacity .5
           position absolute
@@ -364,8 +365,10 @@ body
       div.dropdown-menu
         border medium none
         border-radius 0
-        margin 0
-        min-width 65px
+        margin 0 0 0 1px
+        min-width 64px
+        max-width 64px
+        width 64px
         padding 0
         ul
           margin 0
@@ -381,14 +384,13 @@ body
         &.active
           background #b4e6fa
           box-shadow none
-        span
-          padding-left 20px
      
       &.open
         a.dropdown-toggle
-          border-radius 4px 4px 0 0
+          border-radius 4px 4px 4px 0
           span.selection-icon
             border-radius 4px 0 0 0
+
 
 
     #baseline-attribute-interpolation
@@ -481,8 +483,58 @@ body
       overflow visible
       padding-top 10px
 
-	#text-attribute-style
-	  .btn
+    #detail-markers
+      .btn
+        padding 4px 0
+      span.selection-icon
+        background-size 50px
+      a.dropdown-toggle
+        span.selection-icon
+          background-size 48px
+
+      #marker-start-attribute-type
+        span.selection-icon
+          background-position right 50%
+          &#icon-marker-none
+            background-image url('/images/detail-marker-none-start.png')
+          &#icon-marker-circle
+            background-image url('/images/detail-marker-circle-start.png')
+          &#icon-marker-square
+            background-image url('/images/detail-marker-square-start.png')
+          &#icon-marker-stem
+            background-image url('/images/detail-marker-stem-start.png')
+          &#icon-marker-equal-arrow-start
+            background-image url('/images/detail-marker-equal-arrow-start.png')
+          &#icon-marker-right-arrow-start
+            background-image url('/images/detail-marker-right-arrow-start.png')
+          &#icon-marker-sharp-arrow-start
+            background-image url('/images/detail-marker-sharp-arrow-start.png')
+          &#icon-marker-reverse-start
+            background-image url('/images/detail-marker-reverse-start.png')
+
+      #marker-end-attribute-type
+        span.selection-icon
+          background-position left 50%
+          &#icon-marker-none
+            background-image url('/images/detail-marker-none-end.png')
+          &#icon-marker-circle
+            background-image url('/images/detail-marker-circle-end.png')
+          &#icon-marker-square
+            background-image url('/images/detail-marker-square-end.png')
+          &#icon-marker-stem
+            background-image url('/images/detail-marker-stem-end.png')
+          &#icon-marker-equal-arrow-end
+            background-image url('/images/detail-marker-equal-arrow-end.png')
+          &#icon-marker-right-arrow-end
+            background-image url('/images/detail-marker-right-arrow-end.png')
+          &#icon-marker-sharp-arrow-end
+            background-image url('/images/detail-marker-sharp-arrow-end.png')
+          &#icon-marker-reverse-end
+            background-image url('/images/detail-marker-reverse-end.png')
+
+
+  #text-attribute-style
+    .btn
       width 25%
   #label-attribute-style
     .btn
@@ -532,7 +584,7 @@ path.domain
 
 
 /*
- *	Demo styles
+ *  Demo styles
 
 svg *
   transform-style preserve-3d
@@ -541,7 +593,7 @@ svg *
 
 g.nodeGroup,
 g.linkGroup {
-	cursor: pointer;
+  cursor: pointer;
 } 
 */
 

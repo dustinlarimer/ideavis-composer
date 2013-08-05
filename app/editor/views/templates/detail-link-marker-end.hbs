@@ -1,32 +1,38 @@
 <div class="row-fluid">
-	<div class="span8">
+	<div class="span4">
 		<label>Marker</label>
-		<select class="span12" id="marker-end-attribute-type">
-			<option value="none">None</option>
-			<option value="circle">Circle</option>
-			<option value="square">Square</option>
-			<option value="stem">Stem</option>
-			<option value="equal-arrow-end">Equilateral Arrow</option>
-			<option value="right-arrow-end">Right-angle Arrow</option>
-			<option value="sharp-arrow-end">Sharp Arrow</option>
-			<option value="reverse-end">Reverse Arrow</option>
-		</select>
-	</div>
-	<div class="span4">
-		<label>Inset</label>
-		<div class="input-append">
-			<input class="span9" id="marker-end-attribute-offset-x" type="text" value="{{offset_x}}">
-			<span class="add-on">px</span>
-		</div>
-	</div>
-</div>
-
-<div class="row-fluid">
-	<div class="span4">
-		<label>Width</label>
-		<div class="input-append">
-			<input class="span9" id="marker-end-attribute-width" type="text" value="{{width}}">
-			<span class="add-on">px</span>
+		<div class="dropdown" id="marker-end-attribute-type">
+			<a class="dropdown-toggle" data-toggle="dropdown" id="select_02" href="#">
+				<span class="selection-icon" id="icon-marker-circle"></span> <b class="caret"></b>
+			</a>
+			<div id="menu1" class="dropdown-menu" role="menu" aria-labelledby="select_02">
+			<ul data-toggle="buttons-radio">
+				<li role="presentation">
+					<button type="button" class="btn" value="none"><span class="selection-icon" id="icon-marker-none">None</span></button>
+				</li>
+				<li role="presentation">
+					<button type="button" class="btn" value="circle"><span class="selection-icon" id="icon-marker-circle">Circle</span></button>
+				</li>
+				<li role="presentation">
+					<button type="button" class="btn" value="square"><span class="selection-icon" id="icon-marker-square">Square</span></button>
+				</li>
+				<li role="presentation">
+					<button type="button" class="btn" value="stem"><span class="selection-icon" id="icon-marker-stem">Hexagon</span></button>
+				</li>
+				<li role="presentation">
+					<button type="button" class="btn" value="equal-arrow-end"><span class="selection-icon" id="icon-marker-equal-arrow-end">Equilateral Arrow</span></button>
+				</li>
+				<li role="presentation">
+					<button type="button" class="btn" value="right-arrow-end"><span class="selection-icon" id="icon-marker-right-arrow-end">Right-angle Arrow</span></button>
+				</li>
+				<li role="presentation">
+					<button type="button" class="btn" value="sharp-arrow-end"><span class="selection-icon" id="icon-marker-sharp-arrow-end">Sharp Arrow</span></button>
+				</li>
+				<li role="presentation">
+					<button type="button" class="btn" value="reverse-end"><span class="selection-icon" id="icon-marker-reverse-end">Reverse Arrow</span></button>
+				</li>
+			</ul>
+			</div>
 		</div>
 	</div>
 	<div class="span4">
@@ -59,6 +65,23 @@
 		<div class="input-append">
 			<input class="span9" id="marker-end-attribute-stroke-opacity" type="text" value="{{stroke_opacity}}">
 			<span class="add-on">%</span>
+		</div>
+	</div>
+</div>
+
+<div class="row-fluid">
+	<div class="span4">
+		<label>Inset</label>
+		<div class="input-append">
+			<input class="span9" id="marker-end-attribute-offset-x" type="text" value="{{offset_x}}">
+			<span class="add-on">px</span>
+		</div>
+	</div>
+	<div class="span4">
+		<label>Width</label>
+		<div class="input-append">
+			<input class="span9" id="marker-end-attribute-width" type="text" value="{{width}}">
+			<span class="add-on">px</span>
 		</div>
 	</div>
 </div>

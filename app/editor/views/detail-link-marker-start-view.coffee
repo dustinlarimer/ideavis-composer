@@ -10,15 +10,17 @@ module.exports = class DetailLinkMarkerStartView extends View
     super
     @delegate 'change', 'input', @update_attributes
     @delegate 'change', 'select', @update_attributes
+    @delegate 'click', '#marker-start-attribute-type button', @update_type
 
   render: ->
     super
-    @$('#marker-start-attribute-type').val(@model.get('type'))
+    #@$('#marker-start-attribute-type').val(@model.get('type'))
+    @$('a > span[id^="icon-marker-"]').attr('id', 'icon-marker-' + @model.get('type'))
 
   update_attributes: ->
-    console.log 'updating marker'
+    #console.log 'updating marker'
     _marker=
-      type: $('#marker-start-attribute-type').val()
+      #type: $('#marker-start-attribute-type').val()
       offset_x: $('#marker-start-attribute-offset-x').val() or 0
       width: $('#marker-start-attribute-width').val() or 0
       fill: $('#marker-start-attribute-fill').val() or 'none'
@@ -27,3 +29,9 @@ module.exports = class DetailLinkMarkerStartView extends View
       stroke: $('#marker-start-attribute-stroke').val() or 'none'
       stroke_opacity: $('#marker-start-attribute-stroke-opacity').val() or 100
     @model.set _marker
+
+  update_type: (e) =>
+    _type = $(e.currentTarget).val()
+    @$('a > span[id^="icon-marker-"]').attr('id', 'icon-marker-' + _type)
+    @$('.dropdown').removeClass('open')
+    @model.set type: _type

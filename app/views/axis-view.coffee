@@ -22,6 +22,7 @@ module.exports = class AxisView extends View
   render: ->
     super
     @build()
+    console.log '[AxisView Rendered]'
 
   activate: ->
     @view.classed 'active', true
