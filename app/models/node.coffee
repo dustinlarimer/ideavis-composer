@@ -18,6 +18,7 @@ module.exports = class Node extends Model
   initialize: (data={}) ->
     super
     _.extend({}, data)
+    console.log data
     @build_nested()
 
   destroy: ->
