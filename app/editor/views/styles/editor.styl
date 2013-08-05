@@ -279,10 +279,6 @@ body
         display block
 
     input
-      //background #808080
-      //border-color #555
-      //box-shadow inset 0 0 2px rgba(0,0,0,0.25)
-      //color #fff
       font-size 12px
       font-weight 700
       margin-bottom 5px
@@ -290,6 +286,8 @@ body
       &#text-attribute-text,
       &#label-attribute-text
         text-align left
+      &:disabled
+        color #999
 
     .input-append,
     .input-prepend
@@ -317,30 +315,81 @@ body
           color #fff
           text-shadow 1px 1px 1px rgba(0,0,0,.35)
 
-    #path-attribute-shape
-      .btn
-        position relative
-        width 17%
-        span
-          background-position 50% 50%
-          background-repeat no-repeat
-          background-size 15px
-          float left
-          height 18px
+
+    span.selection-icon
+      background-position 50% 50%
+      background-repeat no-repeat
+      background-size 15px
+      display block
+      height 18px
+      width 100%
+      &#icon-shape-circle
+        background-image url('/images/detail-shape-circle.png')
+      &#icon-shape-square
+        background-image url('/images/detail-shape-square.png')
+      &#icon-shape-hexagon
+        background-image url('/images/detail-shape-hexagon.png')
+      &#icon-shape-triangle
+        background-image url('/images/detail-shape-triangle.png')
+      &#icon-shape-plus
+        background-image url('/images/detail-shape-plus.png')
+      &#icon-shape-none
+        background-image url('/images/detail-shape-none.png')
+
+
+    .dropdown
+      a.dropdown-toggle
+        background #eee
+        border 1px solid #ccc
+        border-radius 4px
+        color #555
+        display block
+        padding 0
+        span.selection-icon
+          background-color #fff
+          background-size 18px
+          border-right 1px solid #dccc
+          border-radius 4px 0 0 4px
+          display block
+          height 28px
+          padding 0
+          position relative
           text-indent -99999px
-          width 100%
-        #icon-shape-circle
-          background-image url('/images/detail-shape-circle.png')
-        #icon-shape-square
-          background-image url('/images/detail-shape-square.png')
-        #icon-shape-hexagon
-          background-image url('/images/detail-shape-hexagon.png')
-        #icon-shape-triangle
-          background-image url('/images/detail-shape-triangle.png')
-        #icon-shape-plus
-          background-image url('/images/detail-shape-plus.png')
-        #icon-shape-none
-          background-image url('/images/detail-shape-none.png')
+          width 65px
+        b.caret
+          opacity .5
+          position absolute
+          right 8px
+          top 5px
+      div.dropdown-menu
+        border medium none
+        border-radius 0
+        margin 0
+        min-width 65px
+        padding 0
+        ul
+          margin 0
+      button.btn
+        background #fbfbfb
+        border medium none
+        border-bottom 1px solid #d7d7d7
+        border-radius 0
+        display block
+        position relative
+        text-indent -99999px
+        width 100%
+        &.active
+          background #b4e6fa
+          box-shadow none
+        span
+          padding-left 20px
+     
+      &.open
+        a.dropdown-toggle
+          border-radius 4px 4px 0 0
+          span.selection-icon
+            border-radius 4px 0 0 0
+
 
     #baseline-attribute-interpolation
       .btn
@@ -445,6 +494,12 @@ body
     border-radius 50%
     height 10px
     width 10px
+
+  a.fill-image
+    margin 2px 4px 0 0
+    opacity .6
+    i
+      display block
 
 
 #detail .detail-panel-bucket table { margin: 0; }

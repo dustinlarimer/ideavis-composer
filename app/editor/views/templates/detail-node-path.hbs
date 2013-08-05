@@ -1,4 +1,4 @@
-<div class="row-fluid shape-controls">
+<div class="row-fluid shape-controls" style="display: none;">
 	<div class="span12">
 		<div class="btn-group" id="path-attribute-shape" data-toggle="buttons-radio">
 			<button type="button" class="btn btn-inverse" value="circle">
@@ -15,14 +15,47 @@
 
 <div class="row-fluid shape-controls">
 	<div class="span4">
-		<label>Area</label>
-		<div class="input-append">
+		<label>Shape</label>
+		<div class="dropdown">
+			<a class="dropdown-toggle" data-toggle="dropdown" id="select_01" href="#">
+				<span class="selection-icon" id="icon-shape-hexagon">Hexagon</span> <b class="caret"></b>
+			</a>
+			<div id="menu1" class="dropdown-menu" role="menu" aria-labelledby="select_01">
+			<ul id="path-attribute-shape" data-toggle="buttons-radio">
+				<li role="presentation">
+					<button type="button" class="btn" value="circle"><span class="selection-icon" id="icon-shape-circle">Circle</span></button>
+				</li>
+				<li role="presentation">
+					<button type="button" class="btn" value="square"><span class="selection-icon" id="icon-shape-square">Square</span></button>
+				</li>
+				<li role="presentation">
+					<button type="button" class="btn" value="hexagon"><span class="selection-icon" id="icon-shape-hexagon">Hexagon</span></button>
+				</li>
+				<li role="presentation">
+					<button type="button" class="btn" value="triangle"><span class="selection-icon" id="icon-shape-triangle">Triangle</span></button>
+				</li>
+				<li role="presentation">
+					<button type="button" class="btn" value="plus"><span class="selection-icon" id="icon-shape-plus">Plus</span></button>
+				</li>
+				<li role="presentation">
+					<button type="button" class="btn" value="none"><span class="selection-icon" id="icon-shape-none">None</span></button>
+				</li>
+			</ul>
+			</div>
+		</div>
+		
+		<div class="input-append" style="display: none;">
   		<input class="span9" id="path-attribute-scale" type="text" value="">
   		<span class="add-on">px</span>
 		</div>
 	</div>
 	<div class="span4">
-		<label><canvas class="fill-preview" style="background-color: {{fill}}"></canvas> Fill</label>
+		<label>
+			<canvas class="fill-preview" style="background-color: {{fill}}"></canvas> Fill 
+			<a class="fill-image pull-right" title="Coming soon!" href="#">
+				<i class="icon-picture"></i>
+			</a>
+		</label>
 		<input class="span12" id="path-attribute-fill" type="text" value="{{fill}}" placeholder="none">
 	</div>
 	<div class="span4">
