@@ -234,9 +234,9 @@ module.exports = class LinkView extends View
               return d.get('fill')
           )
           .attr('fill-opacity', (d)-> return d.get('fill_opacity')/100)
-          .attr('stroke', (d)-> return d.get('stroke'))
-          .attr('stroke-opacity', (d)-> return d.get('stroke_opacity')/100)
-          .attr('stroke-width', (d)-> return d.get('stroke_width'))
+          #.attr('stroke', (d)-> return d.get('stroke'))
+          #.attr('stroke-opacity', (d)-> return d.get('stroke_opacity')/100)
+          #.attr('stroke-width', (d)-> return d.get('stroke_width'))
 
 
     @marker_end = @marker_end.data([@model.marker_end])
@@ -265,9 +265,9 @@ module.exports = class LinkView extends View
               return d.get('fill')
           )
           .attr('fill-opacity', (d)-> return d.get('fill_opacity')/100)
-          .attr('stroke', (d)-> return d.get('stroke'))
-          .attr('stroke-opacity', (d)-> return d.get('stroke_opacity')/100)
-          .attr('stroke-width', (d)-> return d.get('stroke_width'))
+          #.attr('stroke', (d)-> return d.get('stroke'))
+          #.attr('stroke-opacity', (d)-> return d.get('stroke_opacity')/100)
+          #.attr('stroke-width', (d)-> return d.get('stroke_width'))
 
     @marker_start.exit().remove()
     @marker_end.exit().remove()

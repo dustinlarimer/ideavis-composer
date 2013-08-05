@@ -4,16 +4,10 @@ module.exports = class Marker extends Model
 
   defaults:
     type: 'none'
-    offset_x: 0
-    
-    width: 20
     fill: 'none'
     fill_opacity: 100
-    
-    stroke_width: 0
-    stroke: 'none'
-    stroke_opacity: 100
-
+    offset_x: 0
+    width: 20
 
   initialize: (data={}) ->
     super

@@ -14,7 +14,8 @@ module.exports = class DetailLinkView extends View
 
   initialize: (data={}) ->
     super
-    @delegate 'change', '#baseline-attributes input', @update_attributes
+    @delegate 'change', '#link-baseline input', @update_attributes
+    @delegate 'change', '#link-label input', @update_attributes
     @delegate 'click', 'input', (e)-> @$(e.target).select()
     @delegate 'click', '#baseline-attribute-interpolation button', @update_interpolation
     @delegate 'click', '#baseline-attribute-stroke-linecap button', @update_linecap
