@@ -120,7 +120,7 @@ module.exports = class CanvasView extends View
 
   init_artifacts: ->
     _.each(mediator.nodes.models, (node,i) => 
-      force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), scale: node.get('scale'), model: node }
+      force.nodes().push { id: node.id, x: node.get('x'), y: node.get('y'), opacity: node.get('opacity')/100, rotate: node.get('rotate'), model: node }
     ) #if mediator.nodes?
     @subscribeEvent 'node_created', @add_node
     @subscribeEvent 'node_updated', @update_node
@@ -175,7 +175,6 @@ module.exports = class CanvasView extends View
         d.y = node.get('y') 
         d.opacity = node.get('opacity')/100
         d.rotate = node.get('rotate')
-        #d.scale = node.get('scale') or 1
         d.px = d.x
         d.py = d.y
     )

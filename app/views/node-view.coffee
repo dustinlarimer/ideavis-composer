@@ -61,7 +61,7 @@ module.exports = class NodeView extends View
       .enter()
       .append('svg:g')
         .attr('class', 'nodePath')
-        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
+        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
         .append('svg:path')
           .attr('class', 'artifact')
           .attr('shape-rendering', 'geometricPrecision')
@@ -81,7 +81,7 @@ module.exports = class NodeView extends View
     path
       .transition()
         .ease('linear')
-        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') scale(' + d.get('scale') + ') rotate(' + d.get('rotate') + ')' )
+        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
         .selectAll('path.artifact')
           #.attr('d', (d)-> d.path)
           .attr('fill', (d)-> d.get('fill'))
