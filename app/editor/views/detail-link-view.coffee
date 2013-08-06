@@ -16,13 +16,12 @@ module.exports = class DetailLinkView extends View
   initialize: (data={}) ->
     super
     @delegate 'click', 'input', (e)-> @$(e.target).select()
-    @delegate 'change', '#link-baseline input', @update_attributes
-    @delegate 'change', '#link-label input', @update_attributes
+    @delegate 'change', '.baseline-controls input', @update_attributes
+    @delegate 'change', '.label-controls input', @update_attributes
     @delegate 'click', '#baseline-attribute-curve button', @update_curve
     @delegate 'click', '#baseline-attribute-stroke-linecap button', @update_linecap
     @delegate 'click', '#label-attribute-style button', @update_style
     @delegate 'click', '#label-attribute-align button', @update_align
-    @delegate 'click', '.detail-toggle', @toggle
 
   render: ->
     super
@@ -44,11 +43,11 @@ module.exports = class DetailLinkView extends View
     else
       @$('div.label-controls:gt(0)').show()
 
-  toggle: (e) =>
-    #@$(e.currentTarget)
 
-
-  update_attributes: =>
+  update_attributes: (e) =>
+    #if @$(e.currentTarget).parent('#marker-start, #marker-end').length is 0
+    #  console.log 'marker input'
+    #  return false
     _link=
       stroke_width:       parseInt($('#baseline-attribute-stroke-width').val()) or 0
       stroke:             $('#baseline-attribute-stroke').val()
