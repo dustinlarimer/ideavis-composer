@@ -45,9 +45,6 @@ module.exports = class DetailLinkView extends View
 
 
   update_attributes: (e) =>
-    #if @$(e.currentTarget).parent('#marker-start, #marker-end').length is 0
-    #  console.log 'marker input'
-    #  return false
     _link=
       stroke_width:       parseInt($('#baseline-attribute-stroke-width').val()) or 0
       stroke:             $('#baseline-attribute-stroke').val()

@@ -180,6 +180,7 @@ module.exports = class ToolPointerView extends View
   node_drag_start: (d, i) ->
     d3.event.sourceEvent.stopPropagation()
     mediator.publish 'refresh_canvas'
+    #mediator.publish 'pause_canvas'
     mediator.publish 'clear_active'
     mediator.selected_node = d
     mediator.selected_link = null
@@ -207,6 +208,7 @@ module.exports = class ToolPointerView extends View
     @reset() # Ensure keybindings for Copy, Paste, Delete
     d.view.activate()
     mediator.publish 'activate_detail', d.model
+    #mediator.publish 'refresh_canvas'
 
   destroy_node_group: (node_group) ->
     node_group.view.dispose()

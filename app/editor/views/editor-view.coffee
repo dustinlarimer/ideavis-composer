@@ -20,7 +20,6 @@ module.exports = class EditorView extends CanvasView
   initialize: ->
     super
     console.log 'Initializing EditorView'
-    #console.log @model
     
     @delegate 'click', '#tool-pointer',    @activate_pointer
     @delegate 'click', '#tool-node',       @activate_node
@@ -43,7 +42,6 @@ module.exports = class EditorView extends CanvasView
       scope = key.getScope()
       tagName = (e.target || e.srcElement).tagName
       if scope is 'all' or scope is 'editor'
-        console.log scope
         return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA')
       else
         return !(tagName == 'SELECT' || tagName == 'TEXTAREA')
@@ -68,6 +66,7 @@ module.exports = class EditorView extends CanvasView
     @subscribeEvent 'axis_created', @refresh_preview
     @subscribeEvent 'axis_updated', @refresh_preview
     @subscribeEvent 'axis_removed', @refresh_preview
+
 
 
   # ----------------------------------

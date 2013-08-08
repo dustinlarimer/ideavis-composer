@@ -21,6 +21,7 @@ module.exports = class NodeView extends View
     @build_texts()
     @build_bounding_boxes()
     console.log '[NodeView Rendered]'
+    #@publishEvent 'node_updated', @model
 
   remove: ->
     console.log '[NodeView Removed]'

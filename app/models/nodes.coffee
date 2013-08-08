@@ -11,6 +11,7 @@ module.exports = class Nodes extends Collection
     @url = '/compositions/' + mediator.canvas.id + '/nodes/'
     @fetch()
     @on 'add', @node_created
+    #@on 'sync', @poll
 
   fetch: (options = {}) ->
     @beginSync()
@@ -23,3 +24,11 @@ module.exports = class Nodes extends Collection
   node_created: (node) =>
     console.log '[pub] node_created'
     @publishEvent 'node_created', node
+
+  poll: (updated_object) =>
+    if @poll_timeout?
+      clearTimeout @poll_timeout
+      @poll_timeout = null
+    @poll_timeout = setInterval(=>
+      mediator.nodes.fetch()
+    , 1500)

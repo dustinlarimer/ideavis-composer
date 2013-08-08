@@ -68,6 +68,9 @@ module.exports = class CanvasView extends View
 
   force = d3.layout.force()
 
+  #pause_canvas: =>
+  #  force.stop()
+
   force.on 'tick', ->
     if mediator.node?
       mediator.node
@@ -364,6 +367,8 @@ module.exports = class CanvasView extends View
 
     @subscribeEvent 'refresh_canvas', @refresh
     @subscribeEvent 'refresh_zoom', @reset_zoom
+    #@subscribeEvent 'pause_canvas', @pause_canvas
+
     @init_artifacts()
 
     if $('#detail').length is 0
@@ -372,6 +377,8 @@ module.exports = class CanvasView extends View
       if canvas_width < bounds.width
         @zoom.scale(1).translate([visual_offset,0])
         mediator.vis.attr('transform', 'translate(' + visual_offset + ',' + 0 + ')')
+
+
 
 
   # ----------------------------------
