@@ -19,16 +19,14 @@ module.exports = class NodeView extends View
     @subscribeEvent 'clear_active', @clear
     
     @listenTo @model, 'change', @render
-    #@listenTo @model.paths, 'change', @build_paths
-    #@listenTo @model.texts, 'change', @build_texts
-    #@listenTo @model.paths, 'change', @build_bounding_boxes
-    #@listenTo @model.texts, 'change', @build_bounding_boxes
 
   render: ->
     super
     @build_paths()
     @build_texts()
-    #@build_bounding_boxes()
+    @build_controls() if @view.classed 'active'
+
+    @build_bounding_boxes()
     console.log '[NodeView Rendered]'
     #@publishEvent 'node_updated', @model
 
@@ -79,30 +77,36 @@ module.exports = class NodeView extends View
       .enter()
       .append('svg:g')
         .attr('class', 'node_text_controls')
-        .attr('transform', (d)=> return 'translate('+ @model.get('x') + ',' + @model.get('y') + ')')
+        .attr('transform', (d)=> return 'translate('+ @model.get('x') + ',' + @model.get('y') + ') rotate(' + (parseInt(d.get('rotate')) + parseInt(@model.get('rotate'))) + ')')
         .each((d)=> @build_handles(d))
 
 
   build_handles: (text_model) =>
-
+    _height = text_model.get('height')
+    _width = text_model.get('width')
+    _x = parseInt(text_model.get('x'))
+    _y = parseInt(text_model.get('y'))
     _handle = []
     _handle[0]=
-      x: -(text_model.get('width')/2), y: -(text_model.get('height')/2)
+      x: (_x-_width/2), y: (_y-_height/2)
     _handle[1]=
-      x: text_model.get('width')/2, y: -(text_model.get('height')/2)
+      x: (_x+_width/2), y: (_y-_height/2)
     _handle[2]=
-      x: text_model.get('width')/2, y: text_model.get('height')/2
+      x: (_x+_width/2), y: (_y+_height/2)
     _handle[3]=
-      x: -(text_model.get('width')/2), y: text_model.get('height')/2
+      x: (_x-_width/2), y: (_y+_height/2)
 
-    console.log text_model
+    #console.log text_model
+    console.log 'building handles'
+
+    @text_controls.selectAll('rect.bounding_box').remove()
     @text_bounding_box = @text_controls.selectAll('rect.bounding_box').data([text_model])
     @text_bounding_box
       .enter()
       .append('svg:rect')
         .attr('class', 'bounding_box')
-        .attr('x', (d)-> -(d.get('width')/2))
-        .attr('y', (d)-> -(d.get('height')/2))
+        .attr('x', (d)-> d.get('x') - (d.get('width')/2))
+        .attr('y', (d)-> d.get('y') - (d.get('height')/2))
         .attr('height', (d)-> d.get('height'))
         .attr('width', (d)-> d.get('width'))
         .attr('fill', 'none')
@@ -136,12 +140,14 @@ module.exports = class NodeView extends View
     coordinates = @zoom_helpers.get_coordinates(e)
 
     @resizing_text = true
+    _x = parseInt(@text_controls.data()[0].get('x'))
+    _y = parseInt(@text_controls.data()[0].get('y'))
+
     _min_height = @text_controls.data()[0].get('font_size')
-    _drag_height = Math.abs(coordinates.y - @model.get('y')) * 2
+    _drag_height = Math.abs(coordinates.y - @model.get('y') - _y) * 2
 
     _min_width = 50
-    _drag_width = Math.abs(coordinates.x - @model.get('x')) * 2
-
+    _drag_width = Math.abs(coordinates.x - @model.get('x') - _x) * 2
 
     _height = Math.max(_drag_height, _min_height)
     _width  = Math.max(_drag_width, _min_width)
@@ -151,32 +157,34 @@ module.exports = class NodeView extends View
     @text_bounding_box
       .attr('height', _height)
       .attr('width', _width)
-      .attr('x', (d)-> -(_width/2))
-      .attr('y', (d)-> -(_height/2))
+      .attr('x', (d)-> _x - (_width/2))
+      .attr('y', (d)-> _y - (_height/2))
 
     d3.select(@text_handles[0][0])
-      .attr('cx', -(_width/2))
-      .attr('cy', -(_height/2))
+      .attr('cx', _x - (_width/2))
+      .attr('cy', _y - (_height/2))
 
     d3.select(@text_handles[0][1])
-      .attr('cx', (_width/2))
-      .attr('cy', -(_height/2))
+      .attr('cx', _x + (_width/2))
+      .attr('cy', _y - (_height/2))
 
     d3.select(@text_handles[0][2])
-      .attr('cx', (_width/2))
-      .attr('cy', (_height/2))
+      .attr('cx', _x + (_width/2))
+      .attr('cy', _y + (_height/2))
 
     d3.select(@text_handles[0][3])
-      .attr('cx', -(_width/2))
-      .attr('cy', (_height/2))
+      .attr('cx', _x - (_width/2))
+      .attr('cy', _y + (_height/2))
 
   drag_text_handle_end: (d,i) =>
     e = d3.event.sourceEvent
     e.stopPropagation()
     coordinates = @zoom_helpers.get_coordinates(e)
-    
-    _width = Math.abs(coordinates.x - @model.get('x')) * 2
-    _height = Math.abs(coordinates.y - @model.get('y')) * 2
+
+    _x = parseInt(@text_controls.data()[0].get('x'))
+    _y = parseInt(@text_controls.data()[0].get('y'))
+    _width = Math.abs(coordinates.x - @model.get('x') - _x) * 2
+    _height = Math.abs(coordinates.y - @model.get('y') - _y) * 2
     
     if @resizing_text
       @text_controls.data()[0].set height: Math.round(_height), width: Math.round(_width)
