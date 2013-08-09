@@ -6,7 +6,16 @@ module.exports = class NodeView extends View
   
   initialize: (data={}) ->
     super
-    
+
+    try
+      @zoom_helpers = require '/editor/lib/zoom-helpers'
+      @mode = 'private'
+    catch error
+      @mode = 'public'
+
+    @view = d3.select(@el)
+    @resizing_text = false
+
     @subscribeEvent 'clear_active', @clear
     
     @listenTo @model, 'change', @render
@@ -19,34 +28,158 @@ module.exports = class NodeView extends View
     super
     @build_paths()
     @build_texts()
-    @build_bounding_boxes()
+    #@build_bounding_boxes()
     console.log '[NodeView Rendered]'
     #@publishEvent 'node_updated', @model
 
   remove: ->
+    @deactivate()
     console.log '[NodeView Removed]'
     super
 
   activate: ->
-    d3.select(@el)
-      .classed('active', true)
+    console.log 'Activating...'
+    @view.classed('active', true)
       #.selectAll('g.nodeText')
       #.attr('cursor', 'move')
       #.call(d3.behavior.drag()
       #  .on('dragstart', @drag_text_start)
       #  .on('drag', @drag_text_move)
       #  .on('dragend', @drag_text_end))
-    @build_origin()
+    @build_controls()
+    
 
-  #deactivate: ->
+  deactivate: =>
+    console.log 'Deactivating...'
+    @controls?.remove()
+    @resizing_text = false
   #  d3.select(@el).select('path.origin').remove()
   #  d3.select(@el).selectAll('g.nodePath').remove()
   #  d3.select(@el).selectAll('g.nodeText').remove()
   #  @clear()
   #  @render()
 
+
   clear: ->
-    d3.select(@el).classed 'active', false
+    @view.classed 'active', false
+    @deactivate()
+
+
+  build_controls: =>
+    console.log 'Building node controls'
+    @build_origin()
+    
+    mediator.controls.selectAll('g#node_controls').remove()
+    @controls = mediator.controls
+      .append('svg:g')
+        .attr('id', 'node_controls')
+
+    @text_controls = @controls.selectAll('g.node_text_controls').data(@model.texts.models)
+    @text_controls
+      .enter()
+      .append('svg:g')
+        .attr('class', 'node_text_controls')
+        .attr('transform', (d)=> return 'translate('+ @model.get('x') + ',' + @model.get('y') + ')')
+        .each((d)=> @build_handles(d))
+
+
+  build_handles: (text_model) =>
+
+    _handle = []
+    _handle[0]=
+      x: -(text_model.get('width')/2), y: -(text_model.get('height')/2)
+    _handle[1]=
+      x: text_model.get('width')/2, y: -(text_model.get('height')/2)
+    _handle[2]=
+      x: text_model.get('width')/2, y: text_model.get('height')/2
+    _handle[3]=
+      x: -(text_model.get('width')/2), y: text_model.get('height')/2
+
+    console.log text_model
+    @text_bounding_box = @text_controls.selectAll('rect.bounding_box').data([text_model])
+    @text_bounding_box
+      .enter()
+      .append('svg:rect')
+        .attr('class', 'bounding_box')
+        .attr('x', (d)-> -(d.get('width')/2))
+        .attr('y', (d)-> -(d.get('height')/2))
+        .attr('height', (d)-> d.get('height'))
+        .attr('width', (d)-> d.get('width'))
+        .attr('fill', 'none')
+        .attr('stroke', '#000')
+        .attr('stroke-dasharray', '5,3')
+        .attr('stroke-opacity', .35)
+
+    @text_handles = @text_controls.selectAll('circle.handle').data(_handle)
+    @text_handles
+      .enter()
+      .append('svg:circle')
+        .attr('class', 'handle')
+        .attr('cx', (d,i)-> d.x)
+        .attr('cy', (d,i)-> d.y)
+        .attr('r', 5)
+        .attr('fill', '#757575')   
+        .attr('cursor', 'move') 
+        .call(d3.behavior.drag()
+          .on('dragstart', @drag_text_handle_start)
+          .on('drag', @drag_text_handle_move)
+          .on('dragend', @drag_text_handle_end))
+
+
+  drag_text_handle_start: (d,i) =>
+    d3.event.sourceEvent.stopPropagation()
+    console.log 'startz!'
+
+  drag_text_handle_move: (d,i) =>
+    e = d3.event.sourceEvent
+    e.stopPropagation()
+    coordinates = @zoom_helpers.get_coordinates(e)
+
+    @resizing_text = true
+    _min_height = @text_controls.data()[0].get('font_size')
+    _drag_height = Math.abs(coordinates.y - @model.get('y')) * 2
+
+    _min_width = 50
+    _drag_width = Math.abs(coordinates.x - @model.get('x')) * 2
+
+
+    _height = Math.max(_drag_height, _min_height)
+    _width  = Math.max(_drag_width, _min_width)
+
+    #console.log Math.round(_height) + 'px by ' + Math.round(_width) + 'px'
+
+    @text_bounding_box
+      .attr('height', _height)
+      .attr('width', _width)
+      .attr('x', (d)-> -(_width/2))
+      .attr('y', (d)-> -(_height/2))
+
+    d3.select(@text_handles[0][0])
+      .attr('cx', -(_width/2))
+      .attr('cy', -(_height/2))
+
+    d3.select(@text_handles[0][1])
+      .attr('cx', (_width/2))
+      .attr('cy', -(_height/2))
+
+    d3.select(@text_handles[0][2])
+      .attr('cx', (_width/2))
+      .attr('cy', (_height/2))
+
+    d3.select(@text_handles[0][3])
+      .attr('cx', -(_width/2))
+      .attr('cy', (_height/2))
+
+  drag_text_handle_end: (d,i) =>
+    e = d3.event.sourceEvent
+    e.stopPropagation()
+    coordinates = @zoom_helpers.get_coordinates(e)
+    
+    _width = Math.abs(coordinates.x - @model.get('x')) * 2
+    _height = Math.abs(coordinates.y - @model.get('y')) * 2
+    
+    if @resizing_text
+      @text_controls.data()[0].set height: Math.round(_height), width: Math.round(_width)
 
 
   # ----------------------------------
@@ -111,25 +244,26 @@ module.exports = class NodeView extends View
   # BUILD @Texts
   # ----------------------------------
   build_texts: ->
-    d3.select(@el).selectAll('g.nodeText').remove()
-    text = d3.select(@el)
+
+    @view.selectAll('g.nodeText').remove()
+    @text = d3.select(@el)
       .selectAll('g.nodeText')
       .data(@model.texts.models)
 
-    text
+    @text
       .enter()
       .append('svg:g')
         .attr('class', 'nodeText')
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
         .append('svg:text')
           .attr('class', 'artifact')
-          .attr('dx', 0)
+          .each((d,i)=> d.text_align = 'middle')
+          .attr('text-anchor', (d)=> d.text_align)
           .attr('dy', (d)-> d.get('font_size')/3)
           .attr('fill', (d)-> d.get('fill'))
           .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
-          .attr('text-anchor', 'middle')
           .attr('text-rendering', 'optimizeLegibility')
           .attr('font-family', 'Helvetica, sans-serif')
           #.attr('font-family', (d)-> d.get('font_family'))
@@ -144,15 +278,15 @@ module.exports = class NodeView extends View
           )
           .attr('letter-spacing', (d)-> d.get('spacing'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
-          .text((d)-> d.get('text'))
-
-    
-    text
+          .each((d,i)=>@set_text(d,i))
+          #.text((d)-> d.get('text'))
+        
+    @text
       .transition()
         .ease('linear')
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
         .selectAll('text.artifact')
-          .text((d)-> d.get('text'))
+          #.text((d)-> d.get('text'))
           .attr('dy', (d)-> d.get('font_size')/3)
           .attr('font-size', (d)-> d.get('font_size'))
           .attr('fill', (d)-> d.get('fill'))
@@ -170,9 +304,93 @@ module.exports = class NodeView extends View
           )
           .attr('letter-spacing', (d)-> d.get('spacing'))
    
-    text
+    @text
       .exit()
       .remove()
+
+
+  set_text: (d,i) =>
+    words = d.get('text').split(' ')
+    return unless words.length > 0
+
+    text_artifact = d3.select(@text[0][i]).selectAll('text.artifact')
+    width = d.get('width')
+    height = d.get('height')
+    font_size = d.get('font_size')
+    line_height = d.get('line_height')
+    sub_strings = [''] #['This', 'is', 'so', 'cool']
+    new_strings = ['']
+
+    @build_line_breaks(text_artifact, d, sub_strings)
+
+    temp = ''
+    line = 0
+    _.each(words, (word,index)=>
+      new_strings[line] = _.clone(sub_strings[line])
+      new_strings[line] += String(word + ' ')
+      #breaks.data(new_strings).text((d)-> String(d).trim())
+      @build_line_breaks(text_artifact, d, new_strings)
+
+      if text_artifact[0][0].getBBox().width < width
+        #console.log 'keep going...'
+        sub_strings[line] += String(word + ' ')
+      
+      else
+        #console.log '--------------------------- time to wrap -|'
+        #console.log text_artifact[0][0].getBBox().width
+        #console.log width
+
+        #breaks.data(sub_strings).text((d)-> String(d).trim())
+        @build_line_breaks(text_artifact, d, sub_strings)
+
+        sub_strings.push ''
+        new_strings[line] = sub_strings[line]
+        line = line + 1
+        sub_strings[line] += String(word + ' ')
+
+      #console.log sub_strings
+      #console.log new_strings
+    )
+
+
+  build_line_breaks: (text_artifact, d, lines) =>
+    text_align = d.text_align
+    width = d.get('width')
+    height = d.get('height')
+    font_size = d.get('font_size')
+    line_height = d.get('line_height')
+
+    text_artifact.selectAll('tspan.text_substring').remove()
+    breaks = text_artifact.selectAll('tspan.text_substring').data(lines)
+    breaks
+      .enter()
+      .append('svg:tspan')
+        #.each((d)=> console.log lines.length)
+        .attr('class', 'text_substring')
+        .attr('x', 0)
+        .attr('dx', (d)->
+          if text_align is 'start' then return -(width/2)
+          else if text_align is 'end' then return (width/2)
+          else return 0
+        )
+        .attr('y', (d,i)->
+          -(height/2) + (font_size) * (i+1)
+        )
+        #.attr('y', (font_size/3))
+        .attr('dy', (d,i)=> i * (line_height - font_size))
+        .text((d)-> String(d).trim())
+
+    breaks
+      .text((d)-> String(d).trim())    
+
+    breaks.exit().remove()
+    
+    #if text_artifact[0][0].getBBox().height > height
+    #  @text_controls?.selectAll('circle.handle').each((d,i)=> console.log i)
+    
+
+
+
 
   # ----------------------------------
   # BUILD Bounding Boxes
@@ -182,7 +400,7 @@ module.exports = class NodeView extends View
     d3.select(@el).select('rect.parent_bounds').remove()
     
     setTimeout =>
-      @build_artifact_bounding_boxes()
+      #@build_artifact_bounding_boxes()
       _parent = d3.select(@el)[0][0].getBBox()
       
       d3.select(@el)

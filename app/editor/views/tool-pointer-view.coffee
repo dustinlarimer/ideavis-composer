@@ -289,8 +289,6 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   deselect_all: ->
-    # (e)
-    # console.log $(e.target)[0]
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null

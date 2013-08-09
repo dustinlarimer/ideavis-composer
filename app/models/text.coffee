@@ -20,6 +20,9 @@ module.exports = class Text extends Model
     overline: false
     spacing: 0
     
+    height: 40
+    width: 80
+    line_height: 24
     x: 0
     y: 0
     rotate: 0
