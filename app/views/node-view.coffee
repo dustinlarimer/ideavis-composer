@@ -5,14 +5,7 @@ module.exports = class NodeView extends View
   autoRender: true
   
   initialize: (data={}) ->
-    super
-
-    try
-      @zoom_helpers = require '/editor/lib/zoom-helpers'
-      @mode = 'private'
-    catch error
-      @mode = 'public'
-    
+    super    
     @view = d3.select(@el)
 
     @selected_text = null
@@ -92,14 +85,17 @@ module.exports = class NodeView extends View
     @controls = mediator.controls
       .append('svg:g')
         .attr('id', 'node_controls')
+        .attr('transform', (d)=> return 'translate('+ @model.get('x') + ',' + @model.get('y') + ') rotate(' + @model.get('rotate') + ')')
     
     @text_controls = @controls.selectAll('g.node_text_controls').data(@model.texts.models)
     @text_controls
       .enter()
       .append('svg:g')
         .attr('class', 'node_text_controls')
-        .attr('transform', (d)=> return 'translate('+ @model.get('x') + ',' + @model.get('y') + ') rotate(' + (parseInt(d.get('rotate')) + parseInt(@model.get('rotate'))) + ')')
+        .each((d)=> console.log d)
+        #.attr('transform', (d)=> return 'translate('+ @model.get('x') + ',' + @model.get('y') + ') rotate(' + @model.get('rotate') + ')')
         .each((d,i)=> @build_text_bounds(d,i))
+    # (parseInt(d.get('rotate')) + parseInt(@model.get('rotate')))
 
 
   deactivate_controls: =>
@@ -167,7 +163,7 @@ module.exports = class NodeView extends View
   build_text_bounds: (text_model, index) =>
     console.log 'build_text_bounds'
     _height = d3.select(@text[0][index])[0][0].getBBox().height + 20
-    _width = text_model.get('width')
+    _width = text_model.get('width') + 20
     _x = parseInt(text_model.get('x'))
     _y = parseInt(text_model.get('y'))
 
@@ -195,9 +191,8 @@ module.exports = class NodeView extends View
 
   build_text_handles: (text_model, index) =>
     console.log 'build_text_handles'
-    #_height = text_model.get('height')
     _height = d3.select(@text[0][index])[0][0].getBBox().height + 20 
-    _width = text_model.get('width')
+    _width = text_model.get('width') + 20
     _x = parseInt(text_model.get('x'))
     _y = parseInt(text_model.get('y'))
     _handle = []
@@ -205,10 +200,6 @@ module.exports = class NodeView extends View
       x: (_x-_width/2), y: (_y-_height/2)
     _handle[1]=
       x: (_x+_width/2), y: (_y-_height/2)
-    #_handle[2]=
-    #  x: (_x+_width/2), y: (_y+_height/2)
-    #_handle[3]=
-    #  x: (_x-_width/2), y: (_y+_height/2)
 
     @text_handles = @text_controls.selectAll('circle.handle').data(_handle)
     @text_handles
@@ -216,73 +207,35 @@ module.exports = class NodeView extends View
       .append('svg:circle')
         .attr('class', 'handle')
         .attr('cx', (d,i)-> d.x)
-        .attr('cy', (d,i)-> 0)
+        .attr('cy', (d,i)-> _y)
         .attr('r', 5)
         .call(d3.behavior.drag()
           .on('dragstart', @drag_text_handle_start)
           .on('drag', @drag_text_handle_move)
           .on('dragend', @drag_text_handle_end))
 
-
   drag_text_handle_start: (d,i) =>
     d3.event.sourceEvent.stopPropagation()
-    console.log 'startz!'
 
   drag_text_handle_move: (d,i) =>
-    e = d3.event.sourceEvent
-    e.stopPropagation()
-    coordinates = @zoom_helpers.get_coordinates(e)
-
+    d3.event.sourceEvent.stopPropagation()
     @resizing_text = true
     _x = parseInt(@text_controls.data()[0].get('x'))
-    _y = parseInt(@text_controls.data()[0].get('y'))
-
-    _min_height = @text_controls.data()[0].get('font_size')
-    _drag_height = Math.abs(coordinates.y - @model.get('y') - _y) * 2
-
     _min_width = 50
-    _drag_width = Math.abs(coordinates.x - @model.get('x') - _x) * 2
-
-    _height = Math.max(_drag_height, _min_height)
-    _width  = Math.max(_drag_width, _min_width)
-
-    #console.log Math.round(_height) + 'px by ' + Math.round(_width) + 'px'
-
+    _new_width = Math.abs(d3.event.x) * 2 
+    _width  = Math.max(_new_width, _min_width)
     @text_bounding_box
-      #.attr('height', _height)
       .attr('width', _width)
       .attr('x', (d)-> _x - (_width/2))
-      #.attr('y', (d)-> _y - (_height/2))
-
-    d3.select(@text_handles[0][0])
-      .attr('cx', _x - (_width/2))
-      #.attr('cy', _y - (_height/2))
-
-    d3.select(@text_handles[0][1])
-      .attr('cx', _x + (_width/2))
-      #.attr('cy', _y - (_height/2))
-
-    #d3.select(@text_handles[0][2])
-    #  .attr('cx', _x + (_width/2))
-    #  .attr('cy', _y + (_height/2))
-
-    #d3.select(@text_handles[0][3])
-    #  .attr('cx', _x - (_width/2))
-    #  .attr('cy', _y + (_height/2))
+    d3.select(@text_handles[0][0]).attr('cx', _x - (_width/2))
+    d3.select(@text_handles[0][1]).attr('cx', _x + (_width/2))
 
   drag_text_handle_end: (d,i) =>
-    e = d3.event.sourceEvent
-    e.stopPropagation()
-    coordinates = @zoom_helpers.get_coordinates(e)
-
+    d3.event.sourceEvent.stopPropagation()
     _x = parseInt(@text_controls.data()[0].get('x'))
-    _y = parseInt(@text_controls.data()[0].get('y'))
-    _width = Math.abs(coordinates.x - @model.get('x') - _x) * 2
-    _height = Math.abs(coordinates.y - @model.get('y') - _y) * 2
-    
+    _width = @text_bounding_box.attr('width')
     if @resizing_text
       @text_controls.data()[0].set width: Math.round(_width)
-      #height: Math.round(_height), 
 
 
 
@@ -308,10 +261,12 @@ module.exports = class NodeView extends View
       d.px = Math.round(d3.event.x)
       d.py = Math.round(d3.event.y)
       d3.select(@text[0][i]).attr('transform', 'translate('+ d.px + ',' + d.py + ') rotate(' + d.get('rotate') + ')' )
-      _x = @model.get('x') + d.px - d.get('x')
-      _y = @model.get('y') + d.py - d.get('y')
-      _rotate = parseInt(d.get('rotate')) + parseInt(@model.get('rotate'))
+      _x = d.px - d.get('x') #@model.get('x') + 
+      _y = d.py - d.get('y') #@model.get('y') + 
+      _rotate = 0 #@model.get('rotate')
+      #parseInt(d.get('rotate')) + parseInt(@model.get('rotate'))
       d3.select(@text_controls[0][0]).attr('transform', 'translate('+ _x + ',' + _y + ') rotate(' + _rotate + ')')
+      #d3.select(@text_controls[0][0]).attr('transform', 'translate('+ d.px + ',' + d.py + ')')
 
   text_dragend: (d,i) =>
     d3.event.sourceEvent.stopPropagation()
