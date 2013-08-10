@@ -181,7 +181,12 @@ module.exports = class ToolPointerView extends View
     d3.event.sourceEvent.stopPropagation()
     mediator.publish 'refresh_canvas'
     #mediator.publish 'pause_canvas'
-    mediator.publish 'clear_active'
+    
+    if mediator.selected_node?.id is d.id
+      d.view.deactivate()
+    else
+      mediator.publish 'clear_active'
+    
     mediator.selected_node = d
     mediator.selected_link = null
     mediator.selected_axis = null

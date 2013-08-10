@@ -12,76 +12,208 @@ module.exports = class NodeView extends View
       @mode = 'private'
     catch error
       @mode = 'public'
-
+    
     @view = d3.select(@el)
+
+    @selected_text = null
+    @active_text = null
     @resizing_text = false
 
-    @subscribeEvent 'clear_active', @clear
-    
-    @listenTo @model, 'change', @render
+    @subscribeEvent 'clear_active', @deactivate
+    @listenTo @model, 'sync', @refresh
 
   render: ->
     super
     @build_paths()
     @build_texts()
-    @build_controls() if @view.classed 'active'
-
     @build_bounding_boxes()
     console.log '[NodeView Rendered]'
-    #@publishEvent 'node_updated', @model
 
   remove: ->
     @deactivate()
     console.log '[NodeView Removed]'
     super
 
+  refresh: =>
+    console.log 'Model changed.. refreshing'
+    @deactivate_controls()
+    @render()
+    @build_controls()
+    @build_text_handles(@active_text) if @active_text?
+
   activate: ->
-    console.log 'Activating...'
+    console.log 'Activating node...'
     @view.classed('active', true)
-      #.selectAll('g.nodeText')
-      #.attr('cursor', 'move')
-      #.call(d3.behavior.drag()
-      #  .on('dragstart', @drag_text_start)
-      #  .on('drag', @drag_text_move)
-      #  .on('dragend', @drag_text_end))
     @build_controls()
     
+    #@text
+    #  .attr('pointer-events', 'all')
+    #  .attr('class', 'needsclick')
+    #  .call(d3.behavior.drag()
+    #    .on('dragstart', @text_dragstart)
+    #    .on('drag', @text_drag)
+    #    .on('dragend', @text_dragend))
 
   deactivate: =>
-    console.log 'Deactivating...'
-    @controls?.remove()
+    console.log 'Deactivating node...'
+    @view.classed('active', false)
+    
+    #@text
+    #  .attr('pointer-events', 'none')
+    #  .attr('class', null)
+    #  .call(d3.behavior.drag()
+    #    .on('dragstart', null)
+    #    .on('drag', null)
+    #    .on('dragend', null))
+
+    @deactivate_controls()
+
+    @selected_text = null
+    @active_text = null
     @resizing_text = false
-  #  d3.select(@el).select('path.origin').remove()
-  #  d3.select(@el).selectAll('g.nodePath').remove()
-  #  d3.select(@el).selectAll('g.nodeText').remove()
-  #  @clear()
-  #  @render()
 
 
-  clear: ->
-    @view.classed 'active', false
-    @deactivate()
 
+  # ----------------------------------
+  # NODE CONTROLS
+  # ----------------------------------
 
   build_controls: =>
     console.log 'Building node controls'
-    @build_origin()
+
+    # SET @TEXT EVENT LISTENERS
+    @text
+      .attr('pointer-events', 'all')
+      #.attr('class', 'needsclick')
+      .call(d3.behavior.drag()
+        .on('dragstart', @text_dragstart)
+        .on('drag', @text_drag)
+        .on('dragend', @text_dragend))
+
+    @view.select('path.origin').remove()
+    @origin = @view.selectAll('path.origin').data([{}])
+    @origin
+      .enter()
+      .insert('path', 'g.nodeText')
+        .attr('class', 'origin')
+        .attr('shape-rendering', 'crispEdges')
+        .attr('fill', 'none')
+        .attr('d', 'M 0,-12 L 0,12 M -12,0 L 12,0')
+        .style('stroke-dasharray', '4,1')
     
     mediator.controls.selectAll('g#node_controls').remove()
     @controls = mediator.controls
       .append('svg:g')
         .attr('id', 'node_controls')
-
+    
     @text_controls = @controls.selectAll('g.node_text_controls').data(@model.texts.models)
     @text_controls
       .enter()
       .append('svg:g')
         .attr('class', 'node_text_controls')
         .attr('transform', (d)=> return 'translate('+ @model.get('x') + ',' + @model.get('y') + ') rotate(' + (parseInt(d.get('rotate')) + parseInt(@model.get('rotate'))) + ')')
-        .each((d)=> @build_handles(d))
+        .each((d)=> @build_text_bounds(d))
 
 
-  build_handles: (text_model) =>
+  deactivate_controls: =>
+    console.log 'Deactivating node controls'
+
+    # CLEAR @TEXT EVENT LISTENERS
+    @text
+      .attr('pointer-events', 'none')
+      #.attr('class', null)
+      .call(d3.behavior.drag()
+        .on('dragstart', null)
+        .on('drag', null)
+        .on('dragend', null))
+
+    @origin?.remove()
+    @text_bounding_box?.transition().duration(250).attr('stroke-opacity', 0).remove()
+    @text_handles?.call(
+       d3.behavior.drag()
+        .on('dragstart', null)
+        .on('drag', null)
+        .on('dragend', null))
+      .transition().duration(250).attr('fill-opacity', 0).remove()
+    @text_controls?.transition().duration(250).remove()
+    @controls?.transition().duration(250).remove()
+
+
+
+  # ----------------------------------
+  # @TEXT CONTROLS
+  # ----------------------------------
+
+  text_dragstart: (d,i) =>
+    d3.event.sourceEvent.stopPropagation()
+    console.log 'text_dragstart'
+    @selected_text = d
+    if @active_text?
+      d.px = d.get('x')
+      d.py = d.get('y')
+
+  text_drag: (d,i) =>
+    d3.event.sourceEvent.stopPropagation()
+    console.log 'text_drag'
+    @selected_text = null
+    if @active_text?
+      d.px = Math.round(d3.event.x)
+      d.py = Math.round(d3.event.y)
+      d3.select(@text[0][i]).attr('transform', 'translate('+ d.px + ',' + d.py + ') rotate(' + d.get('rotate') + ')' )
+      _x = @model.get('x') + d.px - d.get('x')
+      _y = @model.get('y') + d.py - d.get('y')
+      _rotate = parseInt(d.get('rotate')) + parseInt(@model.get('rotate'))
+      d3.select(@text_controls[0][0]).attr('transform', 'translate('+ _x + ',' + _y + ') rotate(' + _rotate + ')')
+
+
+  text_dragend: (d,i) =>
+    d3.event.sourceEvent.stopPropagation()
+    console.log 'text_dragend'
+    if @selected_text
+      @activate_text(d)
+    else if @active_text? and d.px isnt d.get('x')
+      #console.log 'active text dragged'
+      d.set x: d.px, y: d.py
+      @build_bounding_boxes()
+
+  activate_text: (text) =>
+    console.log text
+    @active_text = text
+    @text_controls.each((text)=> @build_text_handles(text))
+
+
+
+
+  # ----------------------------------
+  # BUILD @TEXT HANDLES
+  # ----------------------------------
+
+  build_text_bounds: (text_model) =>
+    console.log 'build_text_bounds'
+    _height = text_model.get('height')
+    _width = text_model.get('width')
+    _x = parseInt(text_model.get('x'))
+    _y = parseInt(text_model.get('y'))
+
+    @text_controls.selectAll('rect.bounding_box').remove()
+    @text_bounding_box = @text_controls.selectAll('rect.bounding_box').data([text_model])
+    @text_bounding_box
+      .enter()
+      .append('svg:rect')
+        .attr('class', 'bounding_box')
+        .attr('pointer-events', 'none')
+        .attr('x', (d)-> d.get('x') - (d.get('width')/2))
+        .attr('y', (d)-> d.get('y') - (d.get('height')/2))
+        .attr('height', (d)-> d.get('height'))
+        .attr('width', (d)-> d.get('width'))
+        .attr('fill', 'none')
+        .attr('stroke', '#000')
+        .attr('stroke-dasharray', '5,3')
+        .attr('stroke-opacity', .2)
+
+
+  build_text_handles: (text_model) =>
+    console.log 'build_text_handles'
     _height = text_model.get('height')
     _width = text_model.get('width')
     _x = parseInt(text_model.get('x'))
@@ -96,24 +228,6 @@ module.exports = class NodeView extends View
     _handle[3]=
       x: (_x-_width/2), y: (_y+_height/2)
 
-    #console.log text_model
-    console.log 'building handles'
-
-    @text_controls.selectAll('rect.bounding_box').remove()
-    @text_bounding_box = @text_controls.selectAll('rect.bounding_box').data([text_model])
-    @text_bounding_box
-      .enter()
-      .append('svg:rect')
-        .attr('class', 'bounding_box')
-        .attr('x', (d)-> d.get('x') - (d.get('width')/2))
-        .attr('y', (d)-> d.get('y') - (d.get('height')/2))
-        .attr('height', (d)-> d.get('height'))
-        .attr('width', (d)-> d.get('width'))
-        .attr('fill', 'none')
-        .attr('stroke', '#000')
-        .attr('stroke-dasharray', '5,3')
-        .attr('stroke-opacity', .35)
-
     @text_handles = @text_controls.selectAll('circle.handle').data(_handle)
     @text_handles
       .enter()
@@ -123,11 +237,16 @@ module.exports = class NodeView extends View
         .attr('cy', (d,i)-> d.y)
         .attr('r', 5)
         .attr('fill', '#757575')   
+        .attr('fill-opacity', .5)
         .attr('cursor', 'move') 
         .call(d3.behavior.drag()
           .on('dragstart', @drag_text_handle_start)
           .on('drag', @drag_text_handle_move)
           .on('dragend', @drag_text_handle_end))
+        #.transition()
+        #  .ease('linear')
+        #  .duration(250)
+        #  .attr('fill-opacity', .5)
 
 
   drag_text_handle_start: (d,i) =>
@@ -191,64 +310,6 @@ module.exports = class NodeView extends View
 
 
   # ----------------------------------
-  # BUILD @Paths
-  # ----------------------------------
-  build_paths: =>
-    d3.select(@el).selectAll('g.nodePath').remove()
-    path = d3.select(@el)
-      .selectAll('g.nodePath')
-      .data(@model.paths.models)
-    
-    path
-      .enter()
-      .append('svg:g')
-        .attr('class', 'nodePath')
-        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
-        .append('svg:path')
-          .attr('class', 'artifact')
-          .attr('shape-rendering', 'geometricPrecision')
-          #.attr('d', (d)-> d.path)
-          .attr('fill', (d)-> d.get('fill'))
-          .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
-          .attr('stroke', (d)-> d.get('stroke'))
-          .attr('stroke-width', (d)-> d.get('stroke_width'))
-          .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
-          .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
-          .attr('stroke-linejoin', (d)-> 
-            _linecap = d.get('stroke_linecap')
-            if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
-          )
-          .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray').join())
-    
-    path
-      .transition()
-        .ease('linear')
-        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
-        .selectAll('path.artifact')
-          #.attr('d', (d)-> d.path)
-          .attr('fill', (d)-> d.get('fill'))
-          .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
-          .attr('stroke', (d)-> d.get('stroke'))
-          .attr('stroke-width', (d)-> d.get('stroke_width'))
-          .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
-          .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
-          .attr('stroke-linejoin', (d)-> 
-            _linecap = d.get('stroke_linecap')
-            if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
-          )
-    
-    path
-      .selectAll('path.artifact')
-        .each((d,i)=> @generate_shape(d))
-        .attr('d', (d)-> d.path)
-        .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray').join())
-    
-    path
-      .exit()
-      .remove()
-
-
-  # ----------------------------------
   # BUILD @Texts
   # ----------------------------------
   build_texts: ->
@@ -262,6 +323,7 @@ module.exports = class NodeView extends View
       .enter()
       .append('svg:g')
         .attr('class', 'nodeText')
+        #.attr('pointer-events', 'none')
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
         .append('svg:text')
           .attr('class', 'artifact')
@@ -400,6 +462,7 @@ module.exports = class NodeView extends View
 
 
 
+
   # ----------------------------------
   # BUILD Bounding Boxes
   # ----------------------------------
@@ -430,79 +493,78 @@ module.exports = class NodeView extends View
     , 250
 
 
-  # ----------------------------------
-  # BUILD Artifact Bounding Boxes
-  # ----------------------------------
 
-  build_artifact_bounding_boxes: ->
-    # TEXT
-    d3.select(@el).selectAll('g.nodeText rect.bounds').remove()
-    d3.select(@el)
-      .selectAll('g.nodeText')
-      #.selectAll('rect.text_bounds')
-      #.data([{}])
-      #.enter()
-      .insert('rect', 'text.artifact')
-        .attr('class', 'bounds')
-        .attr('shape-rendering', 'crispEdges')
-        .attr('fill', 'none')
-        .each((d,i)->
-          this.ref = $(this).next('text')[0].getBoundingClientRect()
-          d.width = this.ref.width
-        )
-        .attr('height', (d)=> return d.get('font_size') - d.get('font_size')/4 + 10.5)
-        .attr('width', (d)-> return d.width + 10)
-        .attr('x', (d)-> return -1 * (d.width/2) - 5.25)
-        .attr('y', (d)-> return -1 * d.get('font_size')/2 - d.get('font_size')/4 - 5 + d.get('font_size')/3)
-        .style('stroke-dasharray', '4,4')
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   # ----------------------------------
-  # BUILD Center Origin
+  # BUILD @Paths
   # ----------------------------------
-
-  build_origin: ->
-    d3.select(@el).select('path.origin').remove()
-    d3.select(@el)
-      .selectAll('path.origin')
-      .data([{}])
+  build_paths: =>
+    d3.select(@el).selectAll('g.nodePath').remove()
+    path = d3.select(@el)
+      .selectAll('g.nodePath')
+      .data(@model.paths.models)
+    
+    path
       .enter()
-      .insert('path', 'g.nodeText')
-        .attr('class', 'origin')
-        .attr('shape-rendering', 'crispEdges')
-        .attr('fill', 'none')
-        .attr('d', 'M 0,-12 L 0,12 M -12,0 L 12,0')
-        .style('stroke-dasharray', '4,1')
-
-
-  # ----------------------------------
-  # DRAG Methods
-  # ----------------------------------
-
-  drag_text_start: (d,i) =>
-    d3.event.sourceEvent.stopPropagation()
-    console.log 'drag_text_start'
-    d.px = d.get('x')
-    d.py = d.get('y')
-
-  drag_text_move: (d,i) ->
-    d3.event.sourceEvent.stopPropagation()
-    console.log 'drag_text_move'
-    d.px = Math.round(d3.event.x)
-    d.py = Math.round(d3.event.y)
-    d3.select(@).attr('transform', 'translate('+ d.px + ',' + d.py + ') rotate(' + d.get('rotate') + ')' )
-
-  drag_text_end: (d,i) =>
-    console.log 'drag_text_end'
-    unless d.px is d.get("x")
-      d.set x: d.px, y: d.py
-      @build_bounding_boxes()
-
-
-
-
-
-
+      .append('svg:g')
+        .attr('class', 'nodePath')
+        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
+        .append('svg:path')
+          .attr('class', 'artifact')
+          .attr('shape-rendering', 'geometricPrecision')
+          #.attr('d', (d)-> d.path)
+          .attr('fill', (d)-> d.get('fill'))
+          .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
+          .attr('stroke', (d)-> d.get('stroke'))
+          .attr('stroke-width', (d)-> d.get('stroke_width'))
+          .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
+          .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
+          .attr('stroke-linejoin', (d)-> 
+            _linecap = d.get('stroke_linecap')
+            if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
+          )
+          .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray').join())
+    
+    path
+      .transition()
+        .ease('linear')
+        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
+        .selectAll('path.artifact')
+          #.attr('d', (d)-> d.path)
+          .attr('fill', (d)-> d.get('fill'))
+          .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
+          .attr('stroke', (d)-> d.get('stroke'))
+          .attr('stroke-width', (d)-> d.get('stroke_width'))
+          .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
+          .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
+          .attr('stroke-linejoin', (d)-> 
+            _linecap = d.get('stroke_linecap')
+            if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
+          )
+    
+    path
+      .selectAll('path.artifact')
+        .each((d,i)=> @generate_shape(d))
+        .attr('d', (d)-> d.path)
+        .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray').join())
+    
+    path
+      .exit()
+      .remove()
 
 
   # ----------------------------------
@@ -562,4 +624,43 @@ module.exports = class NodeView extends View
           'L ' + (-width*.5) + ',' + (height*.2)  + ' Z'
         break
 
+
+
+
+
+
+
+
+
+
+  # ----------------------------------
+  # SCRAP?
+  # ----------------------------------
+
+
+  # ----------------------------------
+  # BUILD Artifact Bounding Boxes
+  # ----------------------------------
+
+  build_artifact_bounding_boxes: ->
+    # TEXT
+    d3.select(@el).selectAll('g.nodeText rect.bounds').remove()
+    d3.select(@el)
+      .selectAll('g.nodeText')
+      #.selectAll('rect.text_bounds')
+      #.data([{}])
+      #.enter()
+      .insert('rect', 'text.artifact')
+        .attr('class', 'bounds')
+        .attr('shape-rendering', 'crispEdges')
+        .attr('fill', 'none')
+        .each((d,i)->
+          this.ref = $(this).next('text')[0].getBoundingClientRect()
+          d.width = this.ref.width
+        )
+        .attr('height', (d)=> return d.get('font_size') - d.get('font_size')/4 + 10.5)
+        .attr('width', (d)-> return d.width + 10)
+        .attr('x', (d)-> return -1 * (d.width/2) - 5.25)
+        .attr('y', (d)-> return -1 * d.get('font_size')/2 - d.get('font_size')/4 - 5 + d.get('font_size')/3)
+        .style('stroke-dasharray', '4,4')
 
