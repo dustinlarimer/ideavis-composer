@@ -575,11 +575,7 @@ body
     opacity .6
     i
       display block
-
-g.node_text_controls:hover rect.bounding_box
-  cursor pointer
-  stroke-opacity .5
-  transition stroke-opacity .2s linear
+   
 
 #detail .detail-panel-bucket table { margin: 0; }
 
@@ -622,21 +618,63 @@ g.nodeGroup,
 g.linkGroup {
   cursor: pointer;
 } 
+
 */
 
+/*
 rect.bounds, path.origin
   fill none
   stroke #000000
   stroke-width 1
-  opacity 0
-  transition opacity .5s
+  stroke-opacity 0
+  transition stroke-opacity .5s
 
 g.nodeGroup:hover .bounds
-  opacity .15
+  stroke-opacity .15
 
 .nodeGroup.active rect.bounds, .nodeGroup.active:hover rect.bounds,
 .nodeGroup.active path.origin, .nodeGroup.active:hover path.origin
   opacity .25
+*/
+
+g.nodeGroup
+  rect.bounds, path.origin
+    fill none
+    opacity 1
+    shape-rendering crispEdges
+    stroke #000
+    stroke-dasharray 5,3
+    stroke-opacity 0
+    transition stroke-opacity .5s
+  &:hover
+    rect.bounds, path.origin
+      stroke-opacity .2
+  &.active
+    rect.bounds, path.origin
+      stroke-opacity .35
+
+g.node_text_controls
+  rect.bounding_box
+    fill none
+    shape-rendering crispEdges
+    stroke #000
+    stroke-dasharray 5,3
+    stroke-opacity .2
+  &:hover rect.bounding_box
+    cursor pointer
+    stroke-opacity .5
+    transition stroke-opacity .2s linear
+  circle.handle
+    cursor move
+    fill #757575
+    fill-opacity .5
+  &:hover circle.handle
+    fill-opacity .75
+
+
+
+
+
 
 g.linkGroup
   &.active
@@ -652,24 +690,7 @@ g.linkGroup
       stroke #757575
 
 
-.drag_line {
-  stroke: #999;
-  stroke-width: 5;
-  pointer-events: none;
-}
 
-.drag_line_hidden {
-  stroke: #999;
-  stroke-width: 0;
-  pointer-events: none;
-}
 
-.link {
-  stroke: #999;
-  stroke-width: 5;
-  cursor: crosshair;
-}
 
-.link_selected {
-  stroke: #ff7f0e;
-}
+

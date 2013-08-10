@@ -82,6 +82,7 @@ module.exports = class NodeView extends View
     console.log 'Building node controls'
 
     # SET @TEXT EVENT LISTENERS
+    # -------------------------
     @text
       .attr('pointer-events', 'all')
       #.attr('class', 'needsclick')
@@ -90,6 +91,8 @@ module.exports = class NodeView extends View
         .on('drag', @text_drag)
         .on('dragend', @text_dragend))
 
+    # CREATE CONTROL ELEMENTS
+    # -----------------------
     @view.select('path.origin').remove()
     @origin = @view.selectAll('path.origin').data([{}])
     @origin
@@ -119,6 +122,7 @@ module.exports = class NodeView extends View
     console.log 'Deactivating node controls'
 
     # CLEAR @TEXT EVENT LISTENERS
+    # ---------------------------
     @text
       .attr('pointer-events', 'none')
       #.attr('class', null)
@@ -127,6 +131,8 @@ module.exports = class NodeView extends View
         .on('drag', null)
         .on('dragend', null))
 
+    # UNBIND AND REMOVE CONTROL ELEMENTS
+    # ----------------------------------
     @origin?.remove()
     @text_bounding_box?.transition().duration(250).attr('stroke-opacity', 0).remove()
     @text_handles?.call(
@@ -165,7 +171,6 @@ module.exports = class NodeView extends View
       _rotate = parseInt(d.get('rotate')) + parseInt(@model.get('rotate'))
       d3.select(@text_controls[0][0]).attr('transform', 'translate('+ _x + ',' + _y + ') rotate(' + _rotate + ')')
 
-
   text_dragend: (d,i) =>
     d3.event.sourceEvent.stopPropagation()
     console.log 'text_dragend'
@@ -185,7 +190,7 @@ module.exports = class NodeView extends View
 
 
   # ----------------------------------
-  # BUILD @TEXT HANDLES
+  # BUILD @TEXT BOUNDING BOX
   # ----------------------------------
 
   build_text_bounds: (text_model) =>
@@ -206,11 +211,12 @@ module.exports = class NodeView extends View
         .attr('y', (d)-> d.get('y') - (d.get('height')/2))
         .attr('height', (d)-> d.get('height'))
         .attr('width', (d)-> d.get('width'))
-        .attr('fill', 'none')
-        .attr('stroke', '#000')
-        .attr('stroke-dasharray', '5,3')
-        .attr('stroke-opacity', .2)
 
+
+
+  # ----------------------------------
+  # BUILD @TEXT HANDLES
+  # ----------------------------------
 
   build_text_handles: (text_model) =>
     console.log 'build_text_handles'
@@ -236,17 +242,10 @@ module.exports = class NodeView extends View
         .attr('cx', (d,i)-> d.x)
         .attr('cy', (d,i)-> d.y)
         .attr('r', 5)
-        .attr('fill', '#757575')   
-        .attr('fill-opacity', .5)
-        .attr('cursor', 'move') 
         .call(d3.behavior.drag()
           .on('dragstart', @drag_text_handle_start)
           .on('drag', @drag_text_handle_move)
           .on('dragend', @drag_text_handle_end))
-        #.transition()
-        #  .ease('linear')
-        #  .duration(250)
-        #  .attr('fill-opacity', .5)
 
 
   drag_text_handle_start: (d,i) =>
@@ -480,16 +479,10 @@ module.exports = class NodeView extends View
         .enter()
         .insert('rect', 'g.nodePath')
           .attr('class', 'bounds parent_bounds')
-          .attr('shape-rendering', 'crispEdges')
-          .attr('opacity', 0)
-          .attr('fill', 'none')
           .attr('height', (d)-> return _parent.height + 20.5)
           .attr('width', (d)-> return _parent.width + 20.5)
           .attr('x', (d)-> return _parent.x - 10.25)
           .attr('y', (d)-> return _parent.y - 10.25)
-          .style('stroke-dasharray', '4,4')
-          .transition()
-            .ease Math.sqrt
     , 250
 
 
