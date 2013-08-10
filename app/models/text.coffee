@@ -25,7 +25,7 @@ module.exports = class Text extends Model
     line_height: 24
     x: 0
     y: 0
-    rotate: 0
+    #rotate: 0
 
   initialize: (data) ->
     super

@@ -9,7 +9,7 @@ module.exports = class DetailNodeTextView extends View
   initialize: ->
     super
     
-    @delegate 'change', 'input', @update_attributes
+    @delegate 'change', 'input, textarea', @update_attributes
     @delegate 'change', 'select', @update_attributes
     @delegate 'click', '.btn-group .btn', @modify_style_attribute
 
@@ -29,7 +29,7 @@ module.exports = class DetailNodeTextView extends View
     @update_attributes()
 
   update_attributes: =>
-    _text = $('#text-attribute-text').val()
+    _text = $.trim($("#text-attribute-text").val())
     if _text is ''
       @$('div.label-controls:gt(0)').hide()
     else
@@ -51,10 +51,10 @@ module.exports = class DetailNodeTextView extends View
 
     _x = $('#text-attribute-x').val() or 0
     _y = $('#text-attribute-y').val() or 0
-    _rotate = $('#text-attribute-rotate').val() or 0
+    #_rotate = $('#text-attribute-rotate').val() or 0
 
-    @model.set text: _text, x: _x, y: _y, rotate: _rotate, bold: _bold, italic: _italic, underline: _underline, overline: _overline, spacing: _spacing, font_size: _font_size, fill: _fill, fill_opacity: _fill_opacity, stroke: _stroke, stroke_width: _stroke_width, stroke_opacity: _stroke_opacity
-
+    @model.set text: _text, x: _x, y: _y, bold: _bold, italic: _italic, underline: _underline, overline: _overline, spacing: _spacing, font_size: _font_size, fill: _fill, fill_opacity: _fill_opacity, stroke: _stroke, stroke_width: _stroke_width, stroke_opacity: _stroke_opacity
+    #rotate: _rotate, 
   update_form: =>
     $('#text-attribute-x').val(@model.get('x'))
     $('#text-attribute-y').val(@model.get('y'))

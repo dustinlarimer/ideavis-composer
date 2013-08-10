@@ -8,6 +8,8 @@ module.exports = class NodeView extends View
     super    
     @view = d3.select(@el)
 
+    @padding = 20
+
     @selected_text = null
     @active_text = null
     @resizing_text = false
@@ -43,7 +45,7 @@ module.exports = class NodeView extends View
     console.log 'Deactivating node...'
     @view.classed('active', false)
     @deactivate_controls()
-    @selected_text = null
+    #@selected_text = null
     @active_text = null
     @resizing_text = false
 
@@ -62,7 +64,6 @@ module.exports = class NodeView extends View
     # -------------------------
     @text
       .attr('pointer-events', 'all')
-      #.attr('class', 'needsclick')
       .call(d3.behavior.drag()
         .on('dragstart', @text_dragstart)
         .on('drag', @text_drag)
@@ -92,7 +93,7 @@ module.exports = class NodeView extends View
       .enter()
       .append('svg:g')
         .attr('class', 'node_text_controls')
-        .each((d)=> console.log d)
+        #.each((d)=> console.log d)
         #.attr('transform', (d)=> return 'translate('+ @model.get('x') + ',' + @model.get('y') + ') rotate(' + @model.get('rotate') + ')')
         .each((d,i)=> @build_text_bounds(d,i))
     # (parseInt(d.get('rotate')) + parseInt(@model.get('rotate')))
@@ -105,7 +106,6 @@ module.exports = class NodeView extends View
     # ---------------------------
     @text
       .attr('pointer-events', 'none')
-      #.attr('class', null)
       .call(d3.behavior.drag()
         .on('dragstart', null)
         .on('drag', null)
@@ -114,15 +114,15 @@ module.exports = class NodeView extends View
     # UNBIND AND REMOVE CONTROL ELEMENTS
     # ----------------------------------
     @origin?.remove()
-    @text_bounding_box?.transition().duration(250).attr('stroke-opacity', 0).remove()
+    @text_bounding_box?.remove()
     @text_handles?.call(
        d3.behavior.drag()
         .on('dragstart', null)
         .on('drag', null)
         .on('dragend', null))
-      .transition().duration(250).attr('fill-opacity', 0).remove()
-    @text_controls?.transition().duration(250).remove()
-    @controls?.transition().duration(250).remove()
+      .remove()
+    @text_controls?.remove()
+    @controls?.remove()
 
 
 
@@ -146,10 +146,10 @@ module.exports = class NodeView extends View
         .enter()
         .insert('rect', 'g.nodePath')
           .attr('class', 'bounds parent_bounds')
-          .attr('height', (d)-> return _parent.height + 20.5)
-          .attr('width', (d)-> return _parent.width + 20.5)
-          .attr('x', (d)-> return _parent.x - 10.25)
-          .attr('y', (d)-> return _parent.y - 10.25)
+          .attr('height', (d)=> return _parent.height + (@padding*2))
+          .attr('width', (d)=> return _parent.width + (@padding*2))
+          .attr('x', (d)=> return _parent.x - @padding)
+          .attr('y', (d)=> return _parent.y - @padding)
     , 250
 
 
@@ -162,8 +162,8 @@ module.exports = class NodeView extends View
 
   build_text_bounds: (text_model, index) =>
     console.log 'build_text_bounds'
-    _height = d3.select(@text[0][index])[0][0].getBBox().height + 20
-    _width = text_model.get('width') + 20
+    _height = d3.select(@text[0][index])[0][0].getBBox().height + @padding
+    _width = text_model.get('width') + @padding
     _x = parseInt(text_model.get('x'))
     _y = parseInt(text_model.get('y'))
 
@@ -191,8 +191,8 @@ module.exports = class NodeView extends View
 
   build_text_handles: (text_model, index) =>
     console.log 'build_text_handles'
-    _height = d3.select(@text[0][index])[0][0].getBBox().height + 20 
-    _width = text_model.get('width') + 20
+    _height = d3.select(@text[0][index])[0][0].getBBox().height + @padding
+    _width = text_model.get('width') + @padding
     _x = parseInt(text_model.get('x'))
     _y = parseInt(text_model.get('y'))
     _handle = []
@@ -233,7 +233,7 @@ module.exports = class NodeView extends View
   drag_text_handle_end: (d,i) =>
     d3.event.sourceEvent.stopPropagation()
     _x = parseInt(@text_controls.data()[0].get('x'))
-    _width = @text_bounding_box.attr('width')
+    _width = @text_bounding_box.attr('width') - @padding
     if @resizing_text
       @text_controls.data()[0].set width: Math.round(_width)
 
@@ -246,7 +246,8 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   text_dragstart: (d,i) =>
-    d3.event.sourceEvent.stopPropagation()
+    d3.event.sourceEvent.preventDefault()
+    d3.event.sourceEvent.stopPropagation() if @selected_text?
     console.log 'text_dragstart'
     @selected_text = d
     if @active_text?
@@ -254,7 +255,7 @@ module.exports = class NodeView extends View
       d.py = d.get('y')
 
   text_drag: (d,i) =>
-    d3.event.sourceEvent.stopPropagation()
+    #d3.event.sourceEvent.stopPropagation()
     console.log 'text_drag'
     @selected_text = null
     if @active_text?
@@ -267,6 +268,8 @@ module.exports = class NodeView extends View
       #parseInt(d.get('rotate')) + parseInt(@model.get('rotate'))
       d3.select(@text_controls[0][0]).attr('transform', 'translate('+ _x + ',' + _y + ') rotate(' + _rotate + ')')
       #d3.select(@text_controls[0][0]).attr('transform', 'translate('+ d.px + ',' + d.py + ')')
+    else
+      return false
 
   text_dragend: (d,i) =>
     d3.event.sourceEvent.stopPropagation()
@@ -278,12 +281,12 @@ module.exports = class NodeView extends View
       d.set x: d.px, y: d.py
       @build_bounding_box()
 
-  activate_text: (text, index) =>
-    console.log text
+  activate_text: (d, i) =>
+    #console.log d
     @active_text=
-      model: text
-      index: index
-    @text_controls.each((text)=> @build_text_handles(text, index))
+      model: d
+      index: i
+    @text_controls.each(=> @build_text_handles(d, i))
 
 
 
@@ -308,7 +311,7 @@ module.exports = class NodeView extends View
           .attr('class', 'artifact')
 
     @text
-        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
+        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ')')
         .selectAll('text.artifact')
           .each((d,i)=> d.text_align = 'middle')
           .attr('text-anchor', (d)=> d.text_align)
@@ -317,7 +320,7 @@ module.exports = class NodeView extends View
           .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
-          .attr('text-rendering', 'optimizeLegibility')
+          #.attr('text-rendering', 'optimizeLegibility')
           .attr('font-family', 'Helvetica, sans-serif')
           #.attr('font-family', (d)-> d.get('font_family'))
           .attr('font-size', (d)-> d.get('font_size'))
