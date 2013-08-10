@@ -39,7 +39,7 @@ module.exports = class NodeView extends View
     @deactivate_controls()
     @render()
     @build_controls()
-    @build_text_handles(@active_text) if @active_text?
+    @build_text_handles(@active_text.model, @active_text.index) if @active_text?
 
   activate: ->
     console.log 'Activating node...'
@@ -99,7 +99,7 @@ module.exports = class NodeView extends View
       .append('svg:g')
         .attr('class', 'node_text_controls')
         .attr('transform', (d)=> return 'translate('+ @model.get('x') + ',' + @model.get('y') + ') rotate(' + (parseInt(d.get('rotate')) + parseInt(@model.get('rotate'))) + ')')
-        .each((d)=> @build_text_bounds(d))
+        .each((d,i)=> @build_text_bounds(d,i))
 
 
   deactivate_controls: =>
@@ -164,12 +164,14 @@ module.exports = class NodeView extends View
   # ----------------------------------
   # ----------------------------------
 
-  build_text_bounds: (text_model) =>
+  build_text_bounds: (text_model, index) =>
     console.log 'build_text_bounds'
-    _height = text_model.get('height')
+    _height = d3.select(@text[0][index])[0][0].getBBox().height + 20
     _width = text_model.get('width')
     _x = parseInt(text_model.get('x'))
     _y = parseInt(text_model.get('y'))
+
+    console.log 
 
     @text_controls.selectAll('rect.bounding_box').remove()
     @text_bounding_box = @text_controls.selectAll('rect.bounding_box').data([text_model])
@@ -178,10 +180,10 @@ module.exports = class NodeView extends View
       .append('svg:rect')
         .attr('class', 'bounding_box')
         .attr('pointer-events', 'none')
-        .attr('x', (d)-> d.get('x') - (d.get('width')/2))
-        .attr('y', (d)-> d.get('y') - (d.get('height')/2))
-        .attr('height', (d)-> d.get('height'))
-        .attr('width', (d)-> d.get('width'))
+        .attr('x', _x - (_width/2))
+        .attr('y', _y - (_height/2))
+        .attr('height', _height)
+        .attr('width', _width)
 
 
 
@@ -191,9 +193,10 @@ module.exports = class NodeView extends View
   # ----------------------------------
   # ----------------------------------
 
-  build_text_handles: (text_model) =>
+  build_text_handles: (text_model, index) =>
     console.log 'build_text_handles'
-    _height = text_model.get('height')
+    #_height = text_model.get('height')
+    _height = d3.select(@text[0][index])[0][0].getBBox().height + 20 
     _width = text_model.get('width')
     _x = parseInt(text_model.get('x'))
     _y = parseInt(text_model.get('y'))
@@ -202,10 +205,10 @@ module.exports = class NodeView extends View
       x: (_x-_width/2), y: (_y-_height/2)
     _handle[1]=
       x: (_x+_width/2), y: (_y-_height/2)
-    _handle[2]=
-      x: (_x+_width/2), y: (_y+_height/2)
-    _handle[3]=
-      x: (_x-_width/2), y: (_y+_height/2)
+    #_handle[2]=
+    #  x: (_x+_width/2), y: (_y+_height/2)
+    #_handle[3]=
+    #  x: (_x-_width/2), y: (_y+_height/2)
 
     @text_handles = @text_controls.selectAll('circle.handle').data(_handle)
     @text_handles
@@ -213,7 +216,7 @@ module.exports = class NodeView extends View
       .append('svg:circle')
         .attr('class', 'handle')
         .attr('cx', (d,i)-> d.x)
-        .attr('cy', (d,i)-> d.y)
+        .attr('cy', (d,i)-> 0)
         .attr('r', 5)
         .call(d3.behavior.drag()
           .on('dragstart', @drag_text_handle_start)
@@ -246,26 +249,26 @@ module.exports = class NodeView extends View
     #console.log Math.round(_height) + 'px by ' + Math.round(_width) + 'px'
 
     @text_bounding_box
-      .attr('height', _height)
+      #.attr('height', _height)
       .attr('width', _width)
       .attr('x', (d)-> _x - (_width/2))
-      .attr('y', (d)-> _y - (_height/2))
+      #.attr('y', (d)-> _y - (_height/2))
 
     d3.select(@text_handles[0][0])
       .attr('cx', _x - (_width/2))
-      .attr('cy', _y - (_height/2))
+      #.attr('cy', _y - (_height/2))
 
     d3.select(@text_handles[0][1])
       .attr('cx', _x + (_width/2))
-      .attr('cy', _y - (_height/2))
+      #.attr('cy', _y - (_height/2))
 
-    d3.select(@text_handles[0][2])
-      .attr('cx', _x + (_width/2))
-      .attr('cy', _y + (_height/2))
+    #d3.select(@text_handles[0][2])
+    #  .attr('cx', _x + (_width/2))
+    #  .attr('cy', _y + (_height/2))
 
-    d3.select(@text_handles[0][3])
-      .attr('cx', _x - (_width/2))
-      .attr('cy', _y + (_height/2))
+    #d3.select(@text_handles[0][3])
+    #  .attr('cx', _x - (_width/2))
+    #  .attr('cy', _y + (_height/2))
 
   drag_text_handle_end: (d,i) =>
     e = d3.event.sourceEvent
@@ -278,7 +281,8 @@ module.exports = class NodeView extends View
     _height = Math.abs(coordinates.y - @model.get('y') - _y) * 2
     
     if @resizing_text
-      @text_controls.data()[0].set height: Math.round(_height), width: Math.round(_width)
+      @text_controls.data()[0].set width: Math.round(_width)
+      #height: Math.round(_height), 
 
 
 
@@ -313,16 +317,18 @@ module.exports = class NodeView extends View
     d3.event.sourceEvent.stopPropagation()
     console.log 'text_dragend'
     if @selected_text
-      @activate_text(d)
+      @activate_text(d, i)
     else if @active_text? and d.px isnt d.get('x')
       #console.log 'active text dragged'
       d.set x: d.px, y: d.py
       @build_bounding_box()
 
-  activate_text: (text) =>
+  activate_text: (text, index) =>
     console.log text
-    @active_text = text
-    @text_controls.each((text)=> @build_text_handles(text))
+    @active_text=
+      model: text
+      index: index
+    @text_controls.each((text)=> @build_text_handles(text, index))
 
 
 
@@ -351,7 +357,7 @@ module.exports = class NodeView extends View
         .selectAll('text.artifact')
           .each((d,i)=> d.text_align = 'middle')
           .attr('text-anchor', (d)=> d.text_align)
-          .attr('dy', (d)-> d.get('font_size')/3)
+          #.attr('dy', (d)-> d.get('font_size')/3)
           .attr('fill', (d)-> d.get('fill'))
           .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
           .attr('stroke', (d)-> d.get('stroke'))
@@ -430,12 +436,13 @@ module.exports = class NodeView extends View
     font_size = d.get('font_size')
     line_height = d.get('line_height')
 
+    text_artifact.attr('y', -> -1 * (font_size/3) - (line_height * lines.length) / 2)
+
     text_artifact.selectAll('tspan.text_substring').remove()
     breaks = text_artifact.selectAll('tspan.text_substring').data(lines)
     breaks
       .enter()
       .append('svg:tspan')
-        #.each((d)=> console.log lines.length)
         .attr('class', 'text_substring')
         .attr('x', 0)
         .attr('dx', (d)->
@@ -443,11 +450,7 @@ module.exports = class NodeView extends View
           else if text_align is 'end' then return (width/2)
           else return 0
         )
-        .attr('y', (d,i)->
-          -(height/2) + (font_size) * (i+1)
-        )
-        #.attr('y', (font_size/3))
-        .attr('dy', (d,i)=> i * (line_height - font_size))
+        .attr('dy', line_height)
         .text((d)-> String(d).trim())
 
     breaks
