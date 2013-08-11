@@ -2,6 +2,8 @@ mediator = require 'mediator'
 View = require 'views/base/view'
 
 Node = require 'models/node'
+Path = require 'models/path'
+Text = require 'models/text'
 
 module.exports = class ToolEyedropperView extends View
 
@@ -85,13 +87,29 @@ module.exports = class ToolEyedropperView extends View
     @nodes.attr('cursor', 'default')
     @links.attr('cursor', 'pointer')
     @axes.attr('cursor', 'pointer')
-    
+
     if mediator.selected_node and mediator.selected_node.id isnt d.id
-      _model = _.pick(d.model.toJSON(), 'opacity', 'rotate', 'nested')
-      _label = _.where(mediator.selected_node.model.get('nested'), {type: 'text'})[0].text
-      _.where(_model.nested, {type:'text'})[0].text = _label
+      _target_attributes = _.pick(d.model.toJSON(), 'opacity', 'rotate')
+      _target_paths = []
+      _.each(_.where(d.model.toJSON().nested, {type: 'path'}), (d,i)=>
+        _target_paths.push d
+      )
+      _target_texts = []
+      _.each(_.where(d.model.toJSON().nested, {type: 'text'}), (d,i)=>
+        _target_texts.push _.omit(d, 'text')
+      )
+      _original_texts = _.where(mediator.selected_node.model.get('nested'), {type: 'text'})
+      _.each(_original_texts, (d,i)=>
+        _target_texts[i]?.text = d.text or ''
+      )
+      _model=
+        opacity: _target_attributes.opacity
+        rotate:  _target_attributes.rotate
+        nested:  _.union(_target_paths, _target_texts)
+      console.log _model
       mediator.selected_node.model.save _model
       mediator.selected_node.model.build_nested()
+
     else
       mediator.selected_node = d
       mediator.selected_link = null
@@ -138,7 +156,7 @@ module.exports = class ToolEyedropperView extends View
 
 
   # ----------------------------------
-  # NODE METHODS
+  # AXIS METHODS
   # ----------------------------------
 
   axis_drag_start: (d, i) =>
