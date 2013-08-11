@@ -116,6 +116,7 @@ module.exports = class ToolPointerView extends View
         .on('dragend', null))
 
   reset: =>
+    # Ensure keybindings for Copy, Paste, Delete
     @deactivate()
     @activate()
 
@@ -177,11 +178,11 @@ module.exports = class ToolPointerView extends View
   # NODE METHODS
   # ----------------------------------
 
-  node_drag_start: (d, i) ->
+  node_drag_start: (d, i) =>
     d3.event.sourceEvent.stopPropagation()
-    mediator.publish 'refresh_canvas'
-    #mediator.publish 'pause_canvas'
+    mediator.publish 'refresh_canvas' #'pause_canvas'
     
+    @active_node_target = d3.select(d3.event.sourceEvent.target.parentElement).data()[0]
     if mediator.selected_node?.id is d.id
       d.view.deactivate()
     else
@@ -205,13 +206,14 @@ module.exports = class ToolPointerView extends View
     d.scale = d.model.get('scale') or 1
     d.rotate = d.model.get('rotate')
     d3.select(@nodes[0][i]).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
-    #d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
   
   node_drag_stop: (d, i) =>
     if @node_motion
       d.model.save x: d.x, y: d.y
-    @reset() # Ensure keybindings for Copy, Paste, Delete
-    d.view.activate()
+      d.view.activate()
+    else
+      d.view.activate(@active_node_target)
+    @reset()
     mediator.publish 'activate_detail', d.model
     #mediator.publish 'refresh_canvas'
 

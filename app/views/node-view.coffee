@@ -1,13 +1,14 @@
 mediator = require 'mediator'
 View = require 'views/base/view'
 
+Text = require 'models/text'
+
 module.exports = class NodeView extends View
   autoRender: true
   
   initialize: (data={}) ->
     super    
     @view = d3.select(@el)
-
     @padding = 20
 
     @selected_text = null
@@ -30,22 +31,28 @@ module.exports = class NodeView extends View
     super
 
   refresh: =>
-    console.log 'Model changed.. refreshing'
+    console.log ' ⟲ Model changed.. refreshing'
     @deactivate_controls()
     @render()
     @build_controls()
     @build_text_handles(@active_text.model, @active_text.index) if @active_text?
 
-  activate: ->
+  activate: (selected_model) ->
     console.log 'Activating node...'
     @view.classed('active', true)
     @build_controls()
+    if selected_model?
+      if selected_model instanceof Text
+        @selected_text= 
+          model: selected_model 
+          index: @model.texts.indexOf(selected_model)
+        @activate_text(@selected_text.model, @selected_text.index)    
 
   deactivate: =>
     console.log 'Deactivating node...'
     @view.classed('active', false)
     @deactivate_controls()
-    #@selected_text = null
+    @selected_text = null
     @active_text = null
     @resizing_text = false
 
@@ -58,8 +65,7 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   build_controls: =>
-    console.log 'Building node controls'
-
+    #console.log 'Building node controls'
     # SET @TEXT EVENT LISTENERS
     # -------------------------
     @text
@@ -93,15 +99,11 @@ module.exports = class NodeView extends View
       .enter()
       .append('svg:g')
         .attr('class', 'node_text_controls')
-        #.each((d)=> console.log d)
-        #.attr('transform', (d)=> return 'translate('+ @model.get('x') + ',' + @model.get('y') + ') rotate(' + @model.get('rotate') + ')')
         .each((d,i)=> @build_text_bounds(d,i))
-    # (parseInt(d.get('rotate')) + parseInt(@model.get('rotate')))
 
 
   deactivate_controls: =>
-    console.log 'Deactivating node controls'
-
+    #console.log 'Deactivating node controls'
     # CLEAR @TEXT EVENT LISTENERS
     # ---------------------------
     @text
@@ -161,13 +163,11 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   build_text_bounds: (text_model, index) =>
-    console.log 'build_text_bounds'
+    #console.log 'build_text_bounds'
     _height = d3.select(@text[0][index])[0][0].getBBox().height + @padding
     _width = text_model.get('width') + @padding
     _x = parseInt(text_model.get('x'))
     _y = parseInt(text_model.get('y'))
-
-    console.log 
 
     @text_controls.selectAll('rect.bounding_box').remove()
     @text_bounding_box = @text_controls.selectAll('rect.bounding_box').data([text_model])
@@ -190,7 +190,7 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   build_text_handles: (text_model, index) =>
-    console.log 'build_text_handles'
+    #console.log 'build_text_handles'
     _height = d3.select(@text[0][index])[0][0].getBBox().height + @padding
     _width = text_model.get('width') + @padding
     _x = parseInt(text_model.get('x'))
@@ -213,6 +213,14 @@ module.exports = class NodeView extends View
           .on('dragstart', @drag_text_handle_start)
           .on('drag', @drag_text_handle_move)
           .on('dragend', @drag_text_handle_end))
+
+
+
+  # ----------------------------------
+  # ----------------------------------
+  # @TEXT HANDLES METHODS
+  # ----------------------------------
+  # ----------------------------------
 
   drag_text_handle_start: (d,i) =>
     d3.event.sourceEvent.stopPropagation()
@@ -246,43 +254,26 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   text_dragstart: (d,i) =>
-    d3.event.sourceEvent.preventDefault()
     d3.event.sourceEvent.stopPropagation() if @selected_text?
-    console.log 'text_dragstart'
-    @selected_text = d
     if @active_text?
       d.px = d.get('x')
       d.py = d.get('y')
 
   text_drag: (d,i) =>
-    #d3.event.sourceEvent.stopPropagation()
-    console.log 'text_drag'
-    @selected_text = null
+    d3.event.sourceEvent.stopPropagation()
     if @active_text?
       d.px = Math.round(d3.event.x)
       d.py = Math.round(d3.event.y)
       d3.select(@text[0][i]).attr('transform', 'translate('+ d.px + ',' + d.py + ') rotate(' + d.get('rotate') + ')' )
-      _x = d.px - d.get('x') #@model.get('x') + 
-      _y = d.py - d.get('y') #@model.get('y') + 
-      _rotate = 0 #@model.get('rotate')
-      #parseInt(d.get('rotate')) + parseInt(@model.get('rotate'))
-      d3.select(@text_controls[0][0]).attr('transform', 'translate('+ _x + ',' + _y + ') rotate(' + _rotate + ')')
-      #d3.select(@text_controls[0][0]).attr('transform', 'translate('+ d.px + ',' + d.py + ')')
-    else
-      return false
+      d3.select(@text_controls[0][0]).attr('transform', 'translate('+ (d.px - d.get('x')) + ',' + (d.py - d.get('y')) + ')')
 
   text_dragend: (d,i) =>
     d3.event.sourceEvent.stopPropagation()
-    console.log 'text_dragend'
-    if @selected_text
-      @activate_text(d, i)
-    else if @active_text? and d.px isnt d.get('x')
-      #console.log 'active text dragged'
+    if @active_text?
       d.set x: d.px, y: d.py
       @build_bounding_box()
 
   activate_text: (d, i) =>
-    #console.log d
     @active_text=
       model: d
       index: i
