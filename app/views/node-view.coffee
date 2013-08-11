@@ -363,11 +363,11 @@ module.exports = class NodeView extends View
       if text_artifact[0][0].getBBox().width < width
         sub_strings[line] += String(word + ' ')
       else
-        @build_line_breaks(text_artifact, d, sub_strings)
         sub_strings.push ''
         new_strings[line] = sub_strings[line]
         line = line + 1
         sub_strings[line] += String(word + ' ')
+        @build_line_breaks(text_artifact, d, sub_strings)
     )
 
 
