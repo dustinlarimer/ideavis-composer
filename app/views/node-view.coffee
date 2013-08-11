@@ -230,7 +230,7 @@ module.exports = class NodeView extends View
     @resizing_text = true
     _x = parseInt(@text_controls.data()[0].get('x'))
     _min_width = 50
-    _new_width = Math.abs(d3.event.x) * 2 
+    _new_width = Math.abs(_x - d3.event.x) * 2 
     _width  = Math.max(_new_width, _min_width)
     @text_bounding_box
       .attr('width', _width)
