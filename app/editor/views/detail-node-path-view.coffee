@@ -46,11 +46,12 @@ module.exports = class DetailNodePathView extends View
       stroke: $('#path-attribute-stroke').val() or 'none'
       stroke_width: $('#path-attribute-stroke-width').val() or 0
       stroke_opacity: $('#path-attribute-stroke-opacity').val() or 100
-      stroke_dash: []
+      stroke_dasharray: []
     
     _.each($('#path-attribute-stroke-dasharray input'), (d,i)->
-      _path.stroke_dash.push parseInt($(d).val()) or 0
+      _path.stroke_dasharray.push parseInt($(d).val()) or 0
     )
+    console.log _path
 
     @model.set _path
 
