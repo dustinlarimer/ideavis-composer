@@ -139,9 +139,7 @@ module.exports = class NodeView extends View
     d3.select(@el).select('rect.parent_bounds').remove()
     
     setTimeout =>
-      #@build_artifact_bounding_boxes()
       _parent = d3.select(@el)[0][0].getBBox()
-      
       d3.select(@el)
         .selectAll('rect.parent_bounds')
         .data([{}])
@@ -262,9 +260,10 @@ module.exports = class NodeView extends View
   text_drag: (d,i) =>
     d3.event.sourceEvent.stopPropagation()
     if @active_text?
+      console.log Math.round(d3.event.x)
       d.px = Math.round(d3.event.x)
       d.py = Math.round(d3.event.y)
-      d3.select(@text[0][i]).attr('transform', 'translate('+ d.px + ',' + d.py + ') rotate(' + d.get('rotate') + ')' )
+      d3.select(@text[0][i]).attr('transform', 'translate('+ d.px + ',' + d.py + ')')
       d3.select(@text_controls[0][0]).attr('transform', 'translate('+ (d.px - d.get('x')) + ',' + (d.py - d.get('y')) + ')')
 
   text_dragend: (d,i) =>
@@ -325,8 +324,7 @@ module.exports = class NodeView extends View
           )
           .attr('letter-spacing', (d)-> d.get('spacing'))
           .attr('stroke-width', (d)-> d.get('stroke_width'))
-          .each((d,i)=>@set_text(d,i))
-          #.text((d)-> d.get('text'))
+          .each((d,i)=> @set_text(d,i))
    
     @text
       .exit()
@@ -346,12 +344,15 @@ module.exports = class NodeView extends View
 
     text_artifact = d3.select(@text[0][i]).selectAll('text.artifact')
     width = d.get('width')
-    height = d.get('height')
+    height = d3.select(@text[0][i])[0][0].getBBox().height
+    x = parseInt(d.get('x'))
+    y = parseInt(d.get('y'))
+    
     font_size = d.get('font_size')
     line_height = d.get('line_height')
     sub_strings = [''] #['This', 'is', 'so', 'cool']
     new_strings = ['']
-
+    
     @build_line_breaks(text_artifact, d, sub_strings)
 
     temp = ''
@@ -369,6 +370,19 @@ module.exports = class NodeView extends View
         sub_strings[line] += String(word + ' ')
         @build_line_breaks(text_artifact, d, sub_strings)
     )
+
+    text_background = d3.select(@text[0][i]).selectAll('rect.background').data([d])
+    text_background
+      .enter()
+      .insert('rect', 'text')
+        .attr('class', 'background')
+        .attr('pointer-events', 'none')
+        .attr('fill', 'none')
+        .attr('height', height + @padding)
+        .attr('width', width + @padding)
+        .attr('x', x - (width/2) - (@padding/2))
+        .attr('y', y - (height/2) - (@padding/2))
+    text_background.exit().remove()
 
 
 
@@ -568,8 +582,8 @@ module.exports = class NodeView extends View
           d.width = this.ref.width
         )
         .attr('height', (d)=> return d.get('font_size') - d.get('font_size')/4 + 10.5)
-        .attr('width', (d)-> return d.width + 10)
-        .attr('x', (d)-> return -1 * (d.width/2) - 5.25)
+        .attr('width', (d)-> return d.width + (@padding*2))
+        .attr('x', (d)-> return -1 * (d.width/2) - @padding)
         .attr('y', (d)-> return -1 * d.get('font_size')/2 - d.get('font_size')/4 - 5 + d.get('font_size')/3)
         .style('stroke-dasharray', '4,4')
 
