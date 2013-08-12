@@ -20,12 +20,12 @@ module.exports = class Text extends Model
     overline: false
     spacing: 0
     
-    #height: 40
-    width: 80
     line_height: 24
+    align: 'middle'
+    width: 80
+    
     x: 0
     y: 0
-    #rotate: 0
 
   initialize: (data) ->
     super

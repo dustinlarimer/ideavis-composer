@@ -39,6 +39,8 @@ module.exports = class DetailNodePathView extends View
       height: $('#path-attribute-height').val() or 100
       width:  $('#path-attribute-width').val() or 100
       rotate: $('#path-attribute-rotate').val() or 0
+      x:      $('#path-attribute-x').val() or 0
+      y:      $('#path-attribute-y').val() or 0
       fill:   $('#path-attribute-fill').val() or 'none'
       fill_opacity: $('#path-attribute-fill-opacity').val() or 100
       stroke: $('#path-attribute-stroke').val() or 'none'
@@ -70,5 +72,7 @@ module.exports = class DetailNodePathView extends View
   update_form: =>
     $('#path-attribute-height').val(@model.get('height'))
     $('#path-attribute-width').val(@model.get('width'))
+    $('#path-attribute-x').val(@model.get('x'))
+    $('#path-attribute-y').val(@model.get('y'))
 
 

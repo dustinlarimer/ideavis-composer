@@ -214,7 +214,7 @@ module.exports = class NodeView extends View
   build_text_bounds: (text_model, index) =>
     #console.log 'build_text_bounds'
     _height = d3.select(@text[0][index])[0][0].getBBox().height + @padding
-    _width = text_model.get('width') + @padding
+    _width = parseInt(text_model.get('width')) + @padding
     _x = parseInt(text_model.get('x'))
     _y = parseInt(text_model.get('y'))
 
@@ -242,7 +242,7 @@ module.exports = class NodeView extends View
   build_text_handles: (text_model, index) =>
     #console.log 'build_text_handles'
     _height = d3.select(@text[0][index])[0][0].getBBox().height + @padding
-    _width = text_model.get('width') + @padding
+    _width = parseInt(text_model.get('width')) + @padding
     _x = parseInt(text_model.get('x'))
     _y = parseInt(text_model.get('y'))
     _handle = []
@@ -355,16 +355,12 @@ module.exports = class NodeView extends View
     @text
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ')')
         .selectAll('text.artifact')
-          .each((d,i)=> d.text_align = 'middle')
-          .attr('text-anchor', (d)=> d.text_align)
-          #.attr('dy', (d)-> d.get('font_size')/3)
+          .attr('text-anchor', (d)=> d.get('align'))
           .attr('fill', (d)-> d.get('fill'))
           .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
           .attr('stroke', (d)-> d.get('stroke'))
           .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
-          #.attr('text-rendering', 'optimizeLegibility')
           .attr('font-family', 'Helvetica, sans-serif')
-          #.attr('font-family', (d)-> d.get('font_family'))
           .attr('font-size', (d)-> d.get('font_size'))
           .attr('font-style', (d)-> if d.get('italic') then return 'italic' else return 'normal')
           .attr('font-weight', (d)-> if d.get('bold') then return 'bold' else return 'normal')
@@ -395,8 +391,8 @@ module.exports = class NodeView extends View
     return unless words.length > 0
 
     text_artifact = d3.select(@text[0][i]).selectAll('text.artifact')
-    width = d.get('width')
-    height = d3.select(@text[0][i])[0][0].getBBox().height
+    width = parseInt(d.get('width'))
+    height = parseInt(d3.select(@text[0][i])[0][0].getBBox().height)
     x = parseInt(d.get('x'))
     y = parseInt(d.get('y'))
     
@@ -445,8 +441,7 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   build_line_breaks: (text_artifact, d, lines) =>
-    #console.log lines
-    text_align = d.text_align
+    text_align = d.get('align')
     width = d.get('width')
     font_size = d.get('font_size')
     line_height = d.get('line_height')
