@@ -111,7 +111,6 @@ module.exports = class NodeView extends View
       .enter()
       .insert('path', 'g.nodeText')
         .attr('class', 'origin')
-        .attr('shape-rendering', 'crispEdges')
         .attr('fill', 'none')
         .attr('d', 'M 0,-12 L 0,12 M -12,0 L 12,0')
         .style('stroke-dasharray', '4,1')
@@ -196,7 +195,7 @@ module.exports = class NodeView extends View
         .data([{}])
         .enter()
         .insert('rect', 'g.nodePath')
-          .attr('class', 'bounds parent_bounds')
+          .attr('class', 'parent_bounds')
           .attr('fill', 'none')
           .attr('height', (d)=> return _parent.height + (@padding*2))
           .attr('width', (d)=> return _parent.width + (@padding*2))
@@ -252,6 +251,7 @@ module.exports = class NodeView extends View
     _handle[1]=
       x: (_x+_width/2), y: (_y-_height/2)
 
+    @text_controls.select('rect').attr('class', 'bounding_box active')
     @text_handles = @text_controls.selectAll('circle.handle').data(_handle)
     @text_handles
       .enter()
@@ -536,6 +536,7 @@ module.exports = class NodeView extends View
     _handle[3]=
       x: (_x-_width/2), y: (_y+_height/2)
 
+    @path_controls.select('rect').attr('class', 'bounding_box active')
     @path_handles = @path_controls.selectAll('circle.handle').data(_handle)
     @path_handles
       .enter()

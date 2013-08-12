@@ -645,43 +645,25 @@ g.nodeGroup:hover .bounds
 g.nodeGroup
   text.artifact
     text-rendering optimizeLegibility
-  rect.bounds, path.origin
+  rect.parent_bounds, path.origin
     fill none
     opacity 1
-    //shape-rendering crispEdges
-    stroke #000
+    shape-rendering crispEdges
+    stroke #3498db
     stroke-dasharray 5,3
     stroke-opacity 0
+    stroke-width 2
     transition stroke-opacity .5s
-  &:hover
-    rect.bounds, path.origin
-      stroke-opacity .2
-  &.active
-    rect.bounds, path.origin
-      stroke-opacity .35
-
-g#node_controls
-  rect.bounding_box
-    fill none
-    //shape-rendering crispEdges
+  path.origin
     stroke #000
-    stroke-dasharray 5,3
-    stroke-opacity .2
-  &:hover rect.bounding_box
-    cursor pointer
-    stroke-opacity .5
-    transition stroke-opacity .2s linear
-  circle.handle
-    cursor move
-    fill #757575
-    fill-opacity .5
-  &:hover circle.handle
-    fill-opacity .75
-
-
-
-
-
+  &:hover
+    rect.parent_bounds
+      stroke-opacity .5
+  &.active
+    rect.parent_bounds
+      stroke-opacity .1
+    path.origin
+      stroke-opacity .2
 
 g.linkGroup
   &.active
@@ -690,11 +672,35 @@ g.linkGroup
     circle
       cursor pointer
 
-#link_controls
-  circle
+
+
+g#node_controls
+  rect.bounding_box
+    fill none
+    shape-rendering crispEdges
+    stroke #000
+    stroke-dasharray 5,3
+    stroke-opacity .15
+    stroke-width 2
+    transition stroke-opacity .2s linear
     &.active
-      fill #fff
-      stroke #757575
+      stroke-opacity .35
+    &:hover
+      cursor pointer
+  circle.handle
+    cursor move
+    fill #fff
+    stroke #4d4d4d
+    stroke-width 2
+
+g#link_controls
+  circle.point
+    cursor move
+    fill #fff
+    stroke #4d4d4d
+    stroke-width 2
+    &.active
+      fill #4d4d4d
 
 
 
