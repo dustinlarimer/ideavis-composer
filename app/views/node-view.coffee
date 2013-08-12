@@ -146,6 +146,7 @@ module.exports = class NodeView extends View
         .enter()
         .insert('rect', 'g.nodePath')
           .attr('class', 'bounds parent_bounds')
+          .attr('fill', 'none')
           .attr('height', (d)=> return _parent.height + (@padding*2))
           .attr('width', (d)=> return _parent.width + (@padding*2))
           .attr('x', (d)=> return _parent.x - @padding)
@@ -260,7 +261,6 @@ module.exports = class NodeView extends View
   text_drag: (d,i) =>
     d3.event.sourceEvent.stopPropagation()
     if @active_text?
-      console.log Math.round(d3.event.x)
       d.px = Math.round(d3.event.x)
       d.py = Math.round(d3.event.y)
       d3.select(@text[0][i]).attr('transform', 'translate('+ d.px + ',' + d.py + ')')
@@ -353,7 +353,7 @@ module.exports = class NodeView extends View
     sub_strings = [''] #['This', 'is', 'so', 'cool']
     new_strings = ['']
     
-    @build_line_breaks(text_artifact, d, sub_strings)
+    #@build_line_breaks(text_artifact, d, sub_strings)
 
     temp = ''
     line = 0
@@ -380,8 +380,8 @@ module.exports = class NodeView extends View
         .attr('fill', 'none')
         .attr('height', height + @padding)
         .attr('width', width + @padding)
-        .attr('x', x - (width/2) - (@padding/2))
-        .attr('y', y - (height/2) - (@padding/2))
+        .attr('x', -(width/2) - (@padding/2))
+        .attr('y', -(height/2) - (@padding/2))
     text_background.exit().remove()
 
 
@@ -393,12 +393,11 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   build_line_breaks: (text_artifact, d, lines) =>
+    #console.log lines
     text_align = d.text_align
     width = d.get('width')
-    height = d.get('height')
     font_size = d.get('font_size')
     line_height = d.get('line_height')
-    #text_artifact.attr('y', -> -1 * (font_size/3) - (line_height * lines.length) / 2)
 
     text_artifact.selectAll('tspan.text_substring').remove()
     breaks = text_artifact.selectAll('tspan.text_substring').data(lines)
@@ -407,7 +406,7 @@ module.exports = class NodeView extends View
       .append('svg:tspan')
         .attr('class', 'text_substring')
         .attr('x', 0)
-        .attr('dx', (d)->
+        .attr('dx', (d)=>
           if text_align is 'start' then return -(width/2)
           else if text_align is 'end' then return (width/2)
           else return 0
@@ -417,14 +416,13 @@ module.exports = class NodeView extends View
         .text((d)-> String(d).trim())
 
     breaks
+      .attr('dy', line_height)
       .text((d)-> String(d).trim())    
 
     breaks.exit().remove()    
 
     build_height = d3.select(text_artifact[0][0])[0][0].getBBox().height
     text_artifact.attr('y', => (-line_height + (font_size/3)) - (build_height/2 - (font_size*.6)))
-
-
 
 
 
