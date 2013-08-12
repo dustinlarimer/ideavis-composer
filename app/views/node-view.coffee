@@ -452,8 +452,8 @@ module.exports = class NodeView extends View
       .enter()
       .append('svg:tspan')
         .attr('class', 'text_substring')
-        .attr('x', 0)
-        .attr('dx', (d)=>
+        #.attr('x', 0)
+        .attr('x', =>
           if text_align is 'start' then return -(width/2)
           else if text_align is 'end' then return (width/2)
           else return 0

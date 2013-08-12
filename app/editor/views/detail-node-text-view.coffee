@@ -42,8 +42,10 @@ module.exports = class DetailNodeTextView extends View
       spacing:        $('#text-attribute-spacing').val().replace(/\D/g,'') or 0
       line_height:    $('#text-attribute-line-height').val().replace(/\D/g,'') or 24
       width:          $('#text-attribute-width').val().replace(/\D/g,'') or 50
-      x:              $('#text-attribute-x').val().replace(/\D/g,'') or 0
-      y:              $('#text-attribute-y').val().replace(/\D/g,'') or 0
+      x:              $('#text-attribute-x').val() or 0
+      y:              $('#text-attribute-y').val() or 0
+
+    console.log _node_text.x
 
     if _node_text.text is ''
       @$('div.label-controls:gt(0)').hide()
