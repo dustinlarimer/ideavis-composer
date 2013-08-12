@@ -1,7 +1,7 @@
 mediator = require 'mediator'
 View = require 'views/base/view'
-
 Node = require 'models/node'
+zoom_helpers = require '/editor/lib/zoom-helpers'
 
 module.exports = class ToolPointerView extends View
 
@@ -43,7 +43,6 @@ module.exports = class ToolPointerView extends View
     
     @copied_node = undefined
     @copied_axis = undefined
-    #@deselect_all()
     
     @setElement('')
     super
@@ -90,6 +89,7 @@ module.exports = class ToolPointerView extends View
     key.unbind 'control+v', 'editor'
     #key.setScope('')
 
+    @mousedown_offset = null
     @node_motion = null
     @link_motion = null
     @axis_motion = null
@@ -132,7 +132,6 @@ module.exports = class ToolPointerView extends View
       mediator.selected_node = null
       @deselect_all()
     if mediator.selected_link?
-      #console.log mediator.selected_link.view.selected_midpoint
       if mediator.selected_link.view.selected_midpoint?
         mediator.selected_link.view.destroy_midpoint()
       else
@@ -179,28 +178,35 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   node_drag_start: (d, i) =>
-    d3.event.sourceEvent.stopPropagation()
-    mediator.publish 'refresh_canvas' #'pause_canvas'
-    
+    e = d3.event.sourceEvent
+    e.stopPropagation()
+    coordinates = zoom_helpers.get_coordinates(e)
+
+    mediator.publish 'refresh_canvas' #'pause_canvas'    
     @active_node_target = d3.select(d3.event.sourceEvent.target.parentElement).data()[0]
     if mediator.selected_node?.id is d.id
       d.view.deactivate()
     else
       mediator.publish 'clear_active'
-    
     mediator.selected_node = d
     mediator.selected_link = null
     mediator.selected_axis = null
 
+    @mousedown_offset=
+      x: (d.x - coordinates.x)
+      y: (d.y - coordinates.y)
+
   node_drag_move: (d, i) =>
     d3.event.sourceEvent.stopPropagation()
     @node_motion = true
+    rel_x = d3.event.x + @mousedown_offset.x
+    rel_y = d3.event.y + @mousedown_offset.y
     if key.shift
-      d.x = Math.round(d3.event.x / @snap) * @snap
-      d.y = Math.round(d3.event.y / @snap) * @snap
+      d.x = Math.round(rel_x / @snap) * @snap
+      d.y = Math.round(rel_y / @snap) * @snap
     else
-      d.x = Math.round(d3.event.x)
-      d.y = Math.round(d3.event.y)
+      d.x = Math.round(rel_x)
+      d.y = Math.round(rel_y)
     d.px = d.x
     d.py = d.y
     d.scale = d.model.get('scale') or 1
@@ -258,26 +264,34 @@ module.exports = class ToolPointerView extends View
   # AXIS METHODS
   # ----------------------------------
 
-  axis_drag_start: (d, i) ->
-    d3.event.sourceEvent.stopPropagation()
+  axis_drag_start: (d, i) =>
+    e = d3.event.sourceEvent
+    e.stopPropagation()
+    coordinates = zoom_helpers.get_coordinates(e)
+    
     mediator.publish 'refresh_canvas'
     mediator.publish 'clear_active'
     mediator.selected_axis = d
     mediator.selected_node = null
     mediator.selected_link = null
 
+    @mousedown_offset=
+      x: (d.get('x') - coordinates.x)
+      y: (d.get('y') - coordinates.y)
+
   axis_drag_move: (d, i) =>
     d3.event.sourceEvent.stopPropagation()
     @axis_motion = true
+    rel_x = d3.event.x + @mousedown_offset.x
+    rel_y = d3.event.y + @mousedown_offset.y
     if key.shift
-      d.x = Math.round(d3.event.x / @snap) * @snap
-      d.y = Math.round(d3.event.y / @snap) * @snap
+      d.x = Math.round(rel_x / @snap) * @snap
+      d.y = Math.round(rel_y / @snap) * @snap
     else
-      d.x = Math.round(d3.event.x)
-      d.y = Math.round(d3.event.y)
+      d.x = Math.round(rel_x)
+      d.y = Math.round(rel_y)
     d.rotate = d.get('rotate')
     d3.select(@axes[0][i]).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
-    #d3.select(@).attr('transform', 'translate('+ d.x + ',' + d.y + ') rotate(' + d.rotate + ')')
 
   axis_drag_end: (d, i) =>
     if @axis_motion
