@@ -1,6 +1,7 @@
 mediator = require 'mediator'
 View = require 'views/base/view'
 
+Path = require 'models/path'
 Text = require 'models/text'
 
 module.exports = class NodeView extends View
@@ -10,6 +11,10 @@ module.exports = class NodeView extends View
     super    
     @view = d3.select(@el)
     @padding = 20
+
+    @selected_path = null
+    @active_path = null
+    @resizing_path = false
 
     @selected_text = null
     @active_text = null
@@ -36,22 +41,35 @@ module.exports = class NodeView extends View
     @render()
     @build_controls()
     @build_text_handles(@active_text.model, @active_text.index) if @active_text?
+    @build_path_handles(@active_path.model, @active_path.index) if @active_path?
 
   activate: (selected_model) ->
     console.log 'Activating node...'
     @view.classed('active', true)
     @build_controls()
+
     if selected_model?
+      if selected_model instanceof Path
+        @selected_path=
+          model: selected_model
+          index: @model.paths.indexOf(selected_model)
+        @activate_path(@selected_path.model, @selected_path.index)
+
       if selected_model instanceof Text
         @selected_text= 
           model: selected_model 
           index: @model.texts.indexOf(selected_model)
-        @activate_text(@selected_text.model, @selected_text.index)    
+        @activate_text(@selected_text.model, @selected_text.index)
 
   deactivate: =>
     console.log 'Deactivating node...'
     @view.classed('active', false)
     @deactivate_controls()
+
+    @selected_path = null
+    @active_path = null
+    @resizing_path = false
+
     @selected_text = null
     @active_text = null
     @resizing_text = false
@@ -65,15 +83,23 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   build_controls: =>
-    #console.log 'Building node controls'
+
     # SET @TEXT EVENT LISTENERS
     # -------------------------
     @text
-      .attr('pointer-events', 'all')
       .call(d3.behavior.drag()
         .on('dragstart', @text_dragstart)
         .on('drag', @text_drag)
         .on('dragend', @text_dragend))
+
+    # SET @PATH EVENT LISTENERS
+    # -------------------------
+    @path
+      .call(d3.behavior.drag()
+        .on('dragstart', @path_dragstart)
+        .on('drag', @path_drag)
+        .on('dragend', @path_dragend))
+
 
     # CREATE CONTROL ELEMENTS
     # -----------------------
@@ -101,13 +127,27 @@ module.exports = class NodeView extends View
         .attr('class', 'node_text_controls')
         .each((d,i)=> @build_text_bounds(d,i))
 
+    @path_controls = @controls.selectAll('g.node_path_controls').data(@model.paths.models)
+    @path_controls
+      .enter()
+      .append('svg:g')
+        .attr('class', 'node_path_controls')
+        .each((d,i)=> @build_path_bounds(d,i))
+
 
   deactivate_controls: =>
-    #console.log 'Deactivating node controls'
+
     # CLEAR @TEXT EVENT LISTENERS
     # ---------------------------
     @text
-      .attr('pointer-events', 'none')
+      .call(d3.behavior.drag()
+        .on('dragstart', null)
+        .on('drag', null)
+        .on('dragend', null))
+
+    # CLEAR @PATH EVENT LISTENERS
+    # ---------------------------
+    @path
       .call(d3.behavior.drag()
         .on('dragstart', null)
         .on('drag', null)
@@ -115,7 +155,6 @@ module.exports = class NodeView extends View
 
     # UNBIND AND REMOVE CONTROL ELEMENTS
     # ----------------------------------
-    @origin?.remove()
     @text_bounding_box?.remove()
     @text_handles?.call(
        d3.behavior.drag()
@@ -124,6 +163,17 @@ module.exports = class NodeView extends View
         .on('dragend', null))
       .remove()
     @text_controls?.remove()
+    
+    @path_bounding_box?.remove()
+    @path_handles?.call(
+       d3.behavior.drag()
+        .on('dragstart', null)
+        .on('drag', null)
+        .on('dragend', null))
+      .remove()
+    @path_controls?.remove()
+    
+    @origin?.remove()    
     @controls?.remove()
 
 
@@ -137,7 +187,6 @@ module.exports = class NodeView extends View
   build_bounding_box: ->
     # Remove all existing bounding boxes
     d3.select(@el).select('rect.parent_bounds').remove()
-    
     setTimeout =>
       _parent = d3.select(@el)[0][0].getBBox()
       d3.select(@el)
@@ -175,6 +224,7 @@ module.exports = class NodeView extends View
       .append('svg:rect')
         .attr('class', 'bounding_box')
         .attr('pointer-events', 'none')
+        .attr('fill', 'none')
         .attr('x', _x - (_width/2))
         .attr('y', _y - (_height/2))
         .attr('height', _height)
@@ -430,16 +480,179 @@ module.exports = class NodeView extends View
 
 
 
+
+
+
+
+
+
+
+  # ----------------------------------
+  # ----------------------------------
+  # BUILD @PATH BOUNDING BOX
+  # ----------------------------------
+  # ----------------------------------
+
+  build_path_bounds: (path_model, index) =>
+    _height = parseInt(path_model.get('height')) + @padding
+    _width = parseInt(path_model.get('width')) + @padding
+    _x = parseInt(path_model.get('x'))
+    _y = parseInt(path_model.get('y'))
+
+    @path_controls.selectAll('rect.bounding_box').remove()
+    @path_bounding_box = @path_controls.selectAll('rect.bounding_box').data([path_model])
+    @path_bounding_box
+      .enter()
+      .append('svg:rect')
+        .attr('class', 'bounding_box')
+        .attr('pointer-events', 'none')
+        .attr('fill', 'none')
+        .attr('x', _x - (_width/2))
+        .attr('y', _y - (_height/2))
+        .attr('height', _height)
+        .attr('width', _width)
+
+
+  # ----------------------------------
+  # ----------------------------------
+  # BUILD @PATH HANDLES
+  # ----------------------------------
+  # ----------------------------------
+
+  build_path_handles: (path_model, index) =>
+    _height = parseInt(path_model.get('height')) + @padding
+    _width = parseInt(path_model.get('width')) + @padding
+    _x = parseInt(path_model.get('x'))
+    _y = parseInt(path_model.get('y'))
+    _handle = []
+    _handle[0]=
+      x: (_x-_width/2), y: (_y-_height/2)
+    _handle[1]=
+      x: (_x+_width/2), y: (_y-_height/2)
+    _handle[2]=
+      x: (_x+_width/2), y: (_y+_height/2)
+    _handle[3]=
+      x: (_x-_width/2), y: (_y+_height/2)
+
+    @path_handles = @path_controls.selectAll('circle.handle').data(_handle)
+    @path_handles
+      .enter()
+      .append('svg:circle')
+        .attr('class', 'handle')
+        .attr('cx', (d,i)-> d.x)
+        .attr('cy', (d,i)-> d.y)
+        .attr('r', 5)
+        .call(d3.behavior.drag()
+          .on('dragstart', @drag_path_handle_start)
+          .on('drag', @drag_path_handle_move)
+          .on('dragend', @drag_path_handle_end))
+
+
+
+  # ----------------------------------
+  # ----------------------------------
+  # @PATH HANDLES METHODS
+  # ----------------------------------
+  # ----------------------------------
+
+  drag_path_handle_start: (d,i) =>
+    d3.event.sourceEvent.stopPropagation()
+
+  drag_path_handle_move: (d,i) =>
+    d3.event.sourceEvent.stopPropagation()
+    @resizing_path = true
+
+    _x = parseInt(@path_controls.data()[0].get('x'))
+    _y = parseInt(@path_controls.data()[0].get('y'))
+
+    if key.shift
+      _new_height = Math.abs(_y - d3.event.y) * 2
+      _new_width = _new_height
+    else
+      _new_height = Math.abs(_y - d3.event.y) * 2
+      _new_width = Math.abs(_x - d3.event.x) * 2 
+
+    _height  = Math.max(_new_height, 20)
+    _width  = Math.max(_new_width, 20)
+
+    @path_bounding_box
+      .attr('height', _height)
+      .attr('width', _width)
+      .attr('x', (d)-> (_x-_width/2))
+      .attr('y', (d)-> (_y-_height/2))
+
+    d3.select(@path_handles[0][0])
+      .attr('cx', (_x-_width/2))
+      .attr('cy', (_y-_height/2))
+
+    d3.select(@path_handles[0][1])
+      .attr('cx', (_x+_width/2))
+      .attr('cy', (_y-_height/2))
+
+    d3.select(@path_handles[0][2])
+      .attr('cx', (_x+_width/2))
+      .attr('cy', (_y+_height/2))
+
+    d3.select(@path_handles[0][3])
+      .attr('cx', (_x-_width/2))
+      .attr('cy', (_y+_height/2))
+
+  drag_path_handle_end: (d,i) =>
+    d3.event.sourceEvent.stopPropagation()
+    _x = parseInt(@path_controls.data()[0].get('x'))
+    _y = parseInt(@path_controls.data()[0].get('y'))
+    _height = @path_bounding_box.attr('height') - @padding
+    _width = @path_bounding_box.attr('width') - @padding
+    if @resizing_path
+      @path_controls.data()[0].set height: Math.round(_height), width: Math.round(_width)
+
+
+
+
+  # ----------------------------------
+  # ----------------------------------
+  # @PATH METHODS
+  # ----------------------------------
+  # ----------------------------------
+
+  path_dragstart: (d,i) =>
+    d3.event.sourceEvent.stopPropagation() if @selected_path?
+    if @active_path?
+      d.px = d.get('x')
+      d.py = d.get('y')
+
+  path_drag: (d,i) =>
+    d3.event.sourceEvent.stopPropagation()
+    if @active_path?
+      d.px = Math.round(d3.event.x)
+      d.py = Math.round(d3.event.y)
+      d3.select(@path[0][i]).attr('transform', 'translate('+ d.px + ',' + d.py + ')')
+      d3.select(@path_controls[0][0]).attr('transform', 'translate('+ (d.px - d.get('x')) + ',' + (d.py - d.get('y')) + ')')
+
+  path_dragend: (d,i) =>
+    d3.event.sourceEvent.stopPropagation()
+    if @active_path?
+      d.set x: d.px, y: d.py
+      @build_bounding_box()
+
+  activate_path: (d, i) =>
+    @active_path=
+      model: d
+      index: i
+    @path_controls.each(=> @build_path_handles(d, i))
+
+
+
   # ----------------------------------
   # BUILD @Paths
   # ----------------------------------
   build_paths: =>
     d3.select(@el).selectAll('g.nodePath').remove()
-    path = d3.select(@el)
+    @path = d3.select(@el)
       .selectAll('g.nodePath')
       .data(@model.paths.models)
     
-    path
+    @path
       .enter()
       .append('svg:g')
         .attr('class', 'nodePath')
@@ -460,7 +673,7 @@ module.exports = class NodeView extends View
           )
           .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray').join())
     
-    path
+    @path
       .transition()
         .ease('linear')
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
@@ -477,13 +690,13 @@ module.exports = class NodeView extends View
             if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
           )
     
-    path
+    @path
       .selectAll('path.artifact')
         .each((d,i)=> @generate_shape(d))
         .attr('d', (d)-> d.path)
         .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray').join())
     
-    path
+    @path
       .exit()
       .remove()
 
@@ -544,44 +757,3 @@ module.exports = class NodeView extends View
           'L ' + (-width*.2) + ',' + (height*.2)  + ' ' +
           'L ' + (-width*.5) + ',' + (height*.2)  + ' Z'
         break
-
-
-
-
-
-
-
-
-
-
-  # ----------------------------------
-  # SCRAP?
-  # ----------------------------------
-
-
-  # ----------------------------------
-  # BUILD Artifact Bounding Boxes
-  # ----------------------------------
-
-  build_artifact_bounding_boxes: ->
-    # TEXT
-    d3.select(@el).selectAll('g.nodeText rect.bounds').remove()
-    d3.select(@el)
-      .selectAll('g.nodeText')
-      #.selectAll('rect.text_bounds')
-      #.data([{}])
-      #.enter()
-      .insert('rect', 'text.artifact')
-        .attr('class', 'bounds')
-        .attr('shape-rendering', 'crispEdges')
-        .attr('fill', 'none')
-        .each((d,i)->
-          this.ref = $(this).next('text')[0].getBoundingClientRect()
-          d.width = this.ref.width
-        )
-        .attr('height', (d)=> return d.get('font_size') - d.get('font_size')/4 + 10.5)
-        .attr('width', (d)-> return d.width + (@padding*2))
-        .attr('x', (d)-> return -1 * (d.width/2) - @padding)
-        .attr('y', (d)-> return -1 * d.get('font_size')/2 - d.get('font_size')/4 - 5 + d.get('font_size')/3)
-        .style('stroke-dasharray', '4,4')
-

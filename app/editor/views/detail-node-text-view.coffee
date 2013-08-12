@@ -55,6 +55,7 @@ module.exports = class DetailNodeTextView extends View
 
     @model.set text: _text, x: _x, y: _y, bold: _bold, italic: _italic, underline: _underline, overline: _overline, spacing: _spacing, font_size: _font_size, fill: _fill, fill_opacity: _fill_opacity, stroke: _stroke, stroke_width: _stroke_width, stroke_opacity: _stroke_opacity
     #rotate: _rotate, 
+
   update_form: =>
     $('#text-attribute-x').val(@model.get('x'))
     $('#text-attribute-y').val(@model.get('y'))

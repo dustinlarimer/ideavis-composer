@@ -14,6 +14,9 @@ module.exports = class DetailNodePathView extends View
     @delegate 'click', '#path-attribute-stroke-linecap button', @update_linecap
     @delegate 'click', 'a.fill-image', -> return false
 
+  listen:
+    'change model': 'update_form'
+
   render: ->
     super
     #@$('#path-attribute-scale').val(@model.get('scale')*100)
@@ -63,5 +66,9 @@ module.exports = class DetailNodePathView extends View
   update_linecap: (e) =>
     _linecap = $(e.currentTarget).val()
     @model.set stroke_linecap: _linecap
+
+  update_form: =>
+    $('#path-attribute-height').val(@model.get('height'))
+    $('#path-attribute-width').val(@model.get('width'))
 
 

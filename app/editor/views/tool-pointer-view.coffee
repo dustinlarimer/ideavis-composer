@@ -44,6 +44,7 @@ module.exports = class ToolPointerView extends View
     @copied_node = undefined
     @copied_axis = undefined
     
+    mediator.publish 'clear_active'
     @setElement('')
     super
 
@@ -90,6 +91,7 @@ module.exports = class ToolPointerView extends View
     #key.setScope('')
 
     @mousedown_offset = null
+    @active_node_target = null
     @node_motion = null
     @link_motion = null
     @axis_motion = null
