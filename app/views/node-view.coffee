@@ -562,14 +562,15 @@ module.exports = class NodeView extends View
     d3.event.sourceEvent.stopPropagation()
     @resizing_path = true
 
+    _h = parseInt(@path_controls.data()[0].get('height'))
+    _w = parseInt(@path_controls.data()[0].get('width'))
     _x = parseInt(@path_controls.data()[0].get('x'))
     _y = parseInt(@path_controls.data()[0].get('y'))
 
+    _new_height = Math.abs(_y - d3.event.y) * 2
     if key.shift
-      _new_height = Math.abs(_y - d3.event.y) * 2
-      _new_width = _new_height
+      _new_width = _w * (_new_height / _h)
     else
-      _new_height = Math.abs(_y - d3.event.y) * 2
       _new_width = Math.abs(_x - d3.event.x) * 2 
 
     _height  = Math.max(_new_height, 20)
