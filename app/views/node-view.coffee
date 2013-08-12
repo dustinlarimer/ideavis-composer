@@ -12,13 +12,13 @@ module.exports = class NodeView extends View
     @view = d3.select(@el)
     @padding = 20
 
-    @selected_path = null
-    @active_path = null
-    @resizing_path = false
-
     @selected_text = null
     @active_text = null
     @resizing_text = false
+
+    @selected_path = null
+    @active_path = null
+    @resizing_path = false
 
     @subscribeEvent 'clear_active', @deactivate
     @listenTo @model, 'sync', @refresh
@@ -49,6 +49,7 @@ module.exports = class NodeView extends View
     @build_controls()
 
     if selected_model?
+
       if selected_model instanceof Path
         @selected_path=
           model: selected_model
@@ -61,18 +62,19 @@ module.exports = class NodeView extends View
           index: @model.texts.indexOf(selected_model)
         @activate_text(@selected_text.model, @selected_text.index)
 
+
   deactivate: =>
     console.log 'Deactivating node...'
     @view.classed('active', false)
     @deactivate_controls()
 
-    @selected_path = null
-    @active_path = null
-    @resizing_path = false
-
     @selected_text = null
     @active_text = null
     @resizing_text = false
+
+    @selected_path = null
+    @active_path = null
+    @resizing_path = false
 
 
 
@@ -175,6 +177,13 @@ module.exports = class NodeView extends View
     
     @origin?.remove()    
     @controls?.remove()
+
+
+  deactivate_text_controls: =>
+    console.log 'turn paths off!'
+
+  deactivate_path_controls: =>
+    console.log 'turn paths off!'
 
 
 
