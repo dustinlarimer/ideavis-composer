@@ -179,13 +179,6 @@ module.exports = class NodeView extends View
     @controls?.remove()
 
 
-  deactivate_text_controls: =>
-    console.log 'turn paths off!'
-
-  deactivate_path_controls: =>
-    console.log 'turn paths off!'
-
-
 
   # ----------------------------------
   # ----------------------------------
