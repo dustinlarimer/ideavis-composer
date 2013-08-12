@@ -384,7 +384,6 @@ module.exports = class NodeView extends View
     height = d.get('height')
     font_size = d.get('font_size')
     line_height = d.get('line_height')
-
     #text_artifact.attr('y', -> -1 * (font_size/3) - (line_height * lines.length) / 2)
 
     text_artifact.selectAll('tspan.text_substring').remove()
@@ -409,17 +408,7 @@ module.exports = class NodeView extends View
     breaks.exit().remove()    
 
     build_height = d3.select(text_artifact[0][0])[0][0].getBBox().height
-    text_artifact.attr('y', => (-line_height + (font_size/3)) - (build_height/2 - (font_size*.6))
-      #if lines.length > 1
-      #  console.log build_height/lines.length
-      #  (-line_height + (font_size/3)) - (build_height/2 - (font_size*.5))
-      #  #(font_size/3)
-      #  #(font_size*.28) - (build_height/2) - (line_height/2)
-      #else
-      #  #(font_size/3)
-      #  (-line_height + (font_size/3))
-      #(-build_height)
-    )
+    text_artifact.attr('y', => (-line_height + (font_size/3)) - (build_height/2 - (font_size*.6)))
 
 
 
