@@ -628,7 +628,7 @@ module.exports = class NodeView extends View
         .attr('d', (d)-> d.path)
         .attr('fill', (d)-> d.get('fill'))
         .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
-        .attr('stroke', (d)-> d.get('stroke'))
+        .attr('stroke', (d)-> if d.get('shape') is 'none' then return 'none' else return d.get('stroke'))
         .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray').join())
         .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
         .attr('stroke-linejoin', (d)-> 
