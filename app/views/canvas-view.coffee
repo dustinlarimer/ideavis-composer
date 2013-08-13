@@ -255,7 +255,7 @@ module.exports = class CanvasView extends View
       .enter()
       .insert('svg:g', 'g.nodeGroup')
       .attr('class', 'linkGroup')
-      .attr('pointer-events', 'visibleStroke')
+      #.attr('pointer-events', 'stroke')
       #.attr('opacity', (d)-> d.model.get('stroke_opacity')/100)
       .each((d,i)-> d.view = new LinkView({model: d.model, el: @, source: d.source, target: d.target}))
     
