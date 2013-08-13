@@ -111,6 +111,7 @@ module.exports = class NodeView extends View
       .enter()
       .insert('path', 'g.nodeText')
         .attr('class', 'origin')
+        .attr('pointer-events', 'none')
         .attr('fill', 'none')
         .attr('d', 'M 0,-12 L 0,12 M -12,0 L 12,0')
         .style('stroke-dasharray', '4,1')
@@ -339,12 +340,9 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   build_texts: ->
-
-    @view.selectAll('g.nodeText').remove()
-    @text = d3.select(@el)
-      .selectAll('g.nodeText')
-      .data(@model.texts.models)
-
+    #@view.selectAll('g.nodeText').remove()
+    
+    @text = @view.selectAll('g.nodeText').data(@model.texts.models)
     @text
       .enter()
       .append('svg:g')
@@ -625,7 +623,7 @@ module.exports = class NodeView extends View
     if @active_path?
       d.px = Math.round(d3.event.x)
       d.py = Math.round(d3.event.y)
-      d3.select(@path[0][i]).attr('transform', 'translate('+ d.px + ',' + d.py + ')')
+      d3.select(@path[0][i]).attr('transform', 'translate('+ d.px + ',' + d.py + ') rotate(' + d.get('rotate') + ')')
       d3.select(@path_controls[0][0]).attr('transform', 'translate('+ (d.px - d.get('x')) + ',' + (d.py - d.get('y')) + ')')
 
   path_dragend: (d,i) =>
@@ -646,54 +644,32 @@ module.exports = class NodeView extends View
   # BUILD @Paths
   # ----------------------------------
   build_paths: =>
-    d3.select(@el).selectAll('g.nodePath').remove()
-    @path = d3.select(@el)
-      .selectAll('g.nodePath')
-      .data(@model.paths.models)
-    
+    #@view.selectAll('g.nodePath').remove()
+
+    @path = @view.selectAll('g.nodePath').data(@model.paths.models)
     @path
       .enter()
       .append('svg:g')
         .attr('class', 'nodePath')
-        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
         .append('svg:path')
           .attr('class', 'artifact')
-          .attr('shape-rendering', 'geometricPrecision')
-          #.attr('d', (d)-> d.path)
-          .attr('fill', (d)-> d.get('fill'))
-          .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
-          .attr('stroke', (d)-> d.get('stroke'))
-          .attr('stroke-width', (d)-> d.get('stroke_width'))
-          .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
-          .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
-          .attr('stroke-linejoin', (d)-> 
-            _linecap = d.get('stroke_linecap')
-            if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
-          )
-          .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray').join())
-    
+
     @path
-      .transition()
-        .ease('linear')
-        .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
-        .selectAll('path.artifact')
-          #.attr('d', (d)-> d.path)
-          .attr('fill', (d)-> d.get('fill'))
-          .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
-          .attr('stroke', (d)-> d.get('stroke'))
-          .attr('stroke-width', (d)-> d.get('stroke_width'))
-          .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
-          .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
-          .attr('stroke-linejoin', (d)-> 
-            _linecap = d.get('stroke_linecap')
-            if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
-          )
-    
-    @path
+      .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ') rotate(' + d.get('rotate') + ')' )
       .selectAll('path.artifact')
         .each((d,i)=> @generate_shape(d))
         .attr('d', (d)-> d.path)
+        .attr('fill', (d)-> d.get('fill'))
+        .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
+        .attr('stroke', (d)-> d.get('stroke'))
         .attr('stroke-dasharray', (d)-> d.get('stroke_dasharray').join())
+        .attr('stroke-linecap', (d)-> d.get('stroke_linecap'))
+        .attr('stroke-linejoin', (d)-> 
+          _linecap = d.get('stroke_linecap')
+          if _linecap is 'square' then return 'miter' else if _linecap is 'butt' then return 'bevel' else return _linecap
+        )
+        .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
+        .attr('stroke-width', (d)-> d.get('stroke_width'))
     
     @path
       .exit()
