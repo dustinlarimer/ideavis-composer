@@ -342,41 +342,34 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   build_texts: ->
-    #@view.selectAll('g.nodeText').remove()
-    
+
     @text = @view.selectAll('g.nodeText').data(@model.texts.models)
-    @text
-      .enter()
-      .append('svg:g')
-        .attr('class', 'nodeText')
-        .append('svg:text')
-          .attr('class', 'artifact')
+    @text.enter()
+      .append('svg:g').attr('class', 'nodeText')
+        .append('svg:g').attr('class', 'paragraph')
 
     @text
         .attr('transform', (d)-> return 'translate('+ d.get('x') + ',' + d.get('y') + ')')
-        .selectAll('text.artifact')
-          .attr('text-anchor', (d)=> d.get('align'))
-          .attr('fill', (d)-> d.get('fill'))
-          .attr('fill-opacity', (d)-> d.get('fill_opacity')/100)
-          .attr('stroke', (d)-> d.get('stroke'))
-          .attr('stroke-opacity', (d)-> d.get('stroke_opacity')/100)
+        .selectAll('g.paragraph')
+          .attr('fill', (d,i)-> d.get('fill'))
+          .attr('fill-opacity', (d,i)-> d.get('fill_opacity')/100)
+          .attr('stroke', (d,i)-> d.get('stroke'))
+          .attr('stroke-opacity', (d,i)-> d.get('stroke_opacity')/100)
           .attr('font-family', 'Helvetica, sans-serif')
-          .attr('font-size', (d)-> d.get('font_size'))
-          .attr('font-style', (d)-> if d.get('italic') then return 'italic' else return 'normal')
-          .attr('font-weight', (d)-> if d.get('bold') then return 'bold' else return 'normal')
-          .attr('text-decoration', (d)->
+          .attr('font-size', (d,i)-> d.get('font_size'))
+          .attr('font-style',(d,i)-> if d.get('italic') then return 'italic' else return 'normal')
+          .attr('font-weight', (d,i)-> if d.get('bold') then return 'bold' else return 'normal')
+          .attr('text-decoration', (d,i)->
             _deco = []
             if d.get('underline') then _deco.push('underline')
             if d.get('overline') then _deco.push('overline')
             return _deco.join(' ')
           )
-          .attr('letter-spacing', (d)-> d.get('spacing'))
-          .attr('stroke-width', (d)-> d.get('stroke_width'))
+          .attr('letter-spacing', (d,i)-> d.get('spacing'))
+          .attr('stroke-width', (d,i)-> d.get('stroke_width'))
           .each((d,i)=> @set_text(d,i))
    
-    @text
-      .exit()
-      .remove()
+    @text.exit().remove()
 
 
 
@@ -390,23 +383,18 @@ module.exports = class NodeView extends View
     words = d.get('text').split(' ')
     return unless words.length > 0
 
-    text_artifact = d3.select(@text[0][i]).selectAll('text.artifact')
+    text_artifact = d3.select(@text[0][i]).selectAll('g.paragraph')
     width = parseInt(d.get('width'))
-    height = parseInt(d3.select(@text[0][i])[0][0].getBBox().height)
-    x = parseInt(d.get('x'))
-    y = parseInt(d.get('y'))
-    
-    font_size = d.get('font_size')
-    line_height = d.get('line_height')
-    sub_strings = [''] #['This', 'is', 'so', 'cool']
+    sub_strings = ['']
     new_strings = ['']
-    
     temp = ''
     line = 0
+
     _.each(words, (word,index)=>
       new_strings[line] = _.clone(sub_strings[line])
       new_strings[line] += String(word + ' ')
       @build_line_breaks(text_artifact, d, new_strings)
+      
       if text_artifact[0][0].getBBox().width < width
         sub_strings[line] += String(word + ' ')
       else
@@ -417,19 +405,6 @@ module.exports = class NodeView extends View
         @build_line_breaks(text_artifact, d, sub_strings)
     )
 
-    text_background = d3.select(@text[0][i]).selectAll('rect.background').data([d])
-    text_background
-      .enter()
-      .insert('rect', 'text')
-        .attr('class', 'background')
-        .attr('pointer-events', 'none')
-        .attr('fill', 'none')
-        .attr('height', height + @padding)
-        .attr('width', width + @padding)
-        .attr('x', -(width/2) - (@padding/2))
-        .attr('y', -(height/2) - (@padding/2))
-    text_background.exit().remove()
-
 
 
   # ----------------------------------
@@ -439,30 +414,27 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   build_line_breaks: (text_artifact, d, lines) =>
-    text_align = d.get('align')
-    width = d.get('width')
     font_size = d.get('font_size')
     line_height = d.get('line_height')
+    text_align = d.get('align')
+    width = d.get('width')
 
-    text_artifact.selectAll('tspan.text_substring').remove()
-    breaks = text_artifact.selectAll('tspan.text_substring').data(lines)
-
-    breaks
-      .enter()
-      .append('svg:tspan')
-        .attr('class', 'text_substring')
+    text_artifact.selectAll('text.artifact').remove()
+    paragraph_lines = text_artifact.selectAll('text.artifact').data(lines)
+    paragraph_lines.enter().append('svg:text').attr('class', 'artifact')
+    paragraph_lines
+        .attr('text-anchor', text_align)
         .attr('x', =>
           if text_align is 'start' then return -(width/2)
           else if text_align is 'end' then return (width/2)
           else return 0
         )
-        .attr('dy', line_height)
+        .attr('y', (d,i)=> line_height*i)
         .text((d)-> String(d).trim())
 
-    breaks.exit().remove()    
-
-    build_height = d3.select(text_artifact[0][0])[0][0].getBBox().height
-    text_artifact.attr('y', => (-line_height + (font_size/3)) - (build_height/2 - (font_size*.6)))
+    text_artifact.attr('transform', =>
+      return 'translate(0,' + ((-line_height * (lines.length-1))/2 + (font_size*.3)) + ')'
+    )
 
 
 
