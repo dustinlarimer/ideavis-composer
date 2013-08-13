@@ -97,10 +97,11 @@ module.exports = class NodeView extends View
     # SET @PATH EVENT LISTENERS
     # -------------------------
     @path
-      .call(d3.behavior.drag()
-        .on('dragstart', @path_dragstart)
-        .on('drag', @path_drag)
-        .on('dragend', @path_dragend))
+      # DISABLED
+      #.call(d3.behavior.drag()
+      #  .on('dragstart', @path_dragstart)
+      #  .on('drag', @path_drag)
+      #  .on('dragend', @path_dragend))
 
 
     # CREATE CONTROL ELEMENTS
@@ -150,10 +151,11 @@ module.exports = class NodeView extends View
     # CLEAR @PATH EVENT LISTENERS
     # ---------------------------
     @path
-      .call(d3.behavior.drag()
-        .on('dragstart', null)
-        .on('drag', null)
-        .on('dragend', null))
+      # DISABLED
+      #.call(d3.behavior.drag()
+      #  .on('dragstart', null)
+      #  .on('drag', null)
+      #  .on('dragend', null))
 
     # UNBIND AND REMOVE CONTROL ELEMENTS
     # ----------------------------------
@@ -399,8 +401,6 @@ module.exports = class NodeView extends View
     sub_strings = [''] #['This', 'is', 'so', 'cool']
     new_strings = ['']
     
-    #@build_line_breaks(text_artifact, d, sub_strings)
-
     temp = ''
     line = 0
     _.each(words, (word,index)=>
@@ -446,23 +446,18 @@ module.exports = class NodeView extends View
 
     text_artifact.selectAll('tspan.text_substring').remove()
     breaks = text_artifact.selectAll('tspan.text_substring').data(lines)
+
     breaks
       .enter()
       .append('svg:tspan')
         .attr('class', 'text_substring')
-        #.attr('x', 0)
         .attr('x', =>
           if text_align is 'start' then return -(width/2)
           else if text_align is 'end' then return (width/2)
           else return 0
         )
-        #.attr('y', (d,i)=> line_height * i)
         .attr('dy', line_height)
         .text((d)-> String(d).trim())
-
-    breaks
-      .attr('dy', line_height)
-      .text((d)-> String(d).trim())    
 
     breaks.exit().remove()    
 
