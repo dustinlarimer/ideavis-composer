@@ -318,8 +318,14 @@ module.exports = class NodeView extends View
     if @active_text?
       d.px = Math.round(d3.event.x)
       d.py = Math.round(d3.event.y)
+
+      d.px = 0 if (d.px > -7 and d.px < 7)
+      d.py = 0 if (d.py > -7 and d.py < 7)
+
       d3.select(@text[0][i]).attr('transform', 'translate('+ d.px + ',' + d.py + ')')
       d3.select(@text_controls[0][0]).attr('transform', 'translate('+ (d.px - d.get('x')) + ',' + (d.py - d.get('y')) + ')')
+
+
 
   text_dragend: (d,i) =>
     d3.event.sourceEvent.stopPropagation()
