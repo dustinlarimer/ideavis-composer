@@ -43,6 +43,8 @@ module.exports = class ToolPointerView extends View
     
     @copied_node = undefined
     @copied_axis = undefined
+
+    @node_range = null
     
     mediator.publish 'clear_active'
     @setElement('')
@@ -58,6 +60,12 @@ module.exports = class ToolPointerView extends View
     key 'command+v', 'editor', @keypress_paste
     key 'control+v', 'editor', @keypress_paste
     #key.setScope('editor')
+
+    @controls = mediator.controls.append('svg:g').attr('id', 'pointer_controls')
+
+    @node_range=
+      x: _.map(mediator.nodes.models, (node, index)=> node.get('x'))
+      y: _.map(mediator.nodes.models, (node, index)=> node.get('y'))
 
     @nodes = d3.selectAll('g.nodeGroup')
       .attr('cursor', 'pointer')
@@ -80,6 +88,7 @@ module.exports = class ToolPointerView extends View
         .on('drag', @axis_drag_move)
         .on('dragend', @axis_drag_end))
 
+
   deactivate: =>
     key.unbind 'backspace', 'editor'
     key.unbind 'delete', 'editor'
@@ -90,11 +99,15 @@ module.exports = class ToolPointerView extends View
     key.unbind 'control+v', 'editor'
     #key.setScope('')
 
+    @controls?.remove()
+
     @mousedown_offset = null
     @active_node_target = null
     @node_motion = null
     @link_motion = null
     @axis_motion = null
+
+    @node_range = null
 
     @nodes
       .attr('cursor', 'default')
@@ -116,6 +129,7 @@ module.exports = class ToolPointerView extends View
         .on('dragstart', null)
         .on('drag', null)
         .on('dragend', null))
+
 
   reset: =>
     # Ensure keybindings for Copy, Paste, Delete
@@ -208,7 +222,17 @@ module.exports = class ToolPointerView extends View
       d.y = Math.round(rel_y / @snap) * @snap
     else
       d.x = Math.round(rel_x)
-      d.y = Math.round(rel_y)
+      d.y = Math.round(rel_y) 
+
+      _.each(@node_range.x, (x, j)=>
+        if d.x > (x-7) and d.x < (x+7)
+          d.x = x
+      )
+      _.each(@node_range.y, (y, j)=>
+        if d.y > (y-7) and d.y < (y+7)
+          d.y = y
+      )
+
     d.px = d.x
     d.py = d.y
     d.scale = d.model.get('scale') or 1

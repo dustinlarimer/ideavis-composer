@@ -10,7 +10,7 @@ module.exports = class NodeView extends View
   initialize: (data={}) ->
     super    
     @view = d3.select(@el)
-    @padding = 20
+    @padding = 0
 
     @selected_text = null
     @active_text = null
@@ -27,7 +27,7 @@ module.exports = class NodeView extends View
     super
     @build_paths()
     @build_texts()
-    @build_bounding_box()
+    #@build_bounding_box()
     console.log '[NodeView Rendered]'
 
   remove: ->
@@ -325,7 +325,7 @@ module.exports = class NodeView extends View
     d3.event.sourceEvent.stopPropagation()
     if @active_text?
       d.set x: d.px, y: d.py
-      @build_bounding_box()
+      #@build_bounding_box()
 
   activate_text: (d, i) =>
     @active_text=
@@ -597,7 +597,7 @@ module.exports = class NodeView extends View
     d3.event.sourceEvent.stopPropagation()
     if @active_path?
       d.set x: d.px, y: d.py
-      @build_bounding_box()
+      #@build_bounding_box()
 
   activate_path: (d, i) =>
     @active_path=
