@@ -95,7 +95,8 @@ module.exports = class ToolNodeView extends View
 
     delta_x = Math.pow(@end_point.x - @start_point.x, 2)
     delta_y = Math.pow(@end_point.y - @start_point.y, 2)
-    _radius = Math.sqrt(delta_x + delta_y)
+
+    _radius = Math.max(20, Math.sqrt(delta_x + delta_y))
 
     @ghost_node.select('#ghost_node')
       .attr('r', Math.round(_radius))
@@ -110,7 +111,7 @@ module.exports = class ToolNodeView extends View
     if @end_point?
       delta_x = Math.pow(@end_point.x - @start_point.x, 2)
       delta_y = Math.pow(@end_point.y - @start_point.y, 2)
-      _radius = Math.sqrt(delta_x + delta_y)
+      _radius = Math.max(20, Math.sqrt(delta_x + delta_y))
     else
       _radius = 50
 
