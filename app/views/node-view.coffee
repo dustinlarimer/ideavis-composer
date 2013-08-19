@@ -93,6 +93,7 @@ module.exports = class NodeView extends View
         .on('dragstart', @text_dragstart)
         .on('drag', @text_drag)
         .on('dragend', @text_dragend))
+      .on('dblclick', @text_inline_edit)
 
     # SET @PATH EVENT LISTENERS
     # -------------------------
@@ -135,6 +136,7 @@ module.exports = class NodeView extends View
       .enter()
       .append('svg:g')
         .attr('class', 'node_path_controls')
+        .attr('transform', (d,i)-> 'rotate(' + d.get('rotate') + ')')
         .each((d,i)=> @build_path_bounds(d,i))
 
 
@@ -325,19 +327,25 @@ module.exports = class NodeView extends View
       d3.select(@text[0][i]).attr('transform', 'translate('+ d.px + ',' + d.py + ')')
       d3.select(@text_controls[0][0]).attr('transform', 'translate('+ (d.px - d.get('x')) + ',' + (d.py - d.get('y')) + ')')
 
-
-
   text_dragend: (d,i) =>
     d3.event.sourceEvent.stopPropagation()
     if @active_text?
       d.set x: d.px, y: d.py
       #@build_bounding_box()
 
+  text_inline_edit: (d,i) =>
+    d3.event.stopPropagation() if typeof SVGForeignObjectElement isnt 'undefined' #bypass if !support
+    
+    console.log d
+    
+    
+
   activate_text: (d, i) =>
     @active_text=
       model: d
       index: i
     @text_controls.each(=> @build_text_handles(d, i))
+
 
 
 
