@@ -69,8 +69,8 @@ body
   margin 0
   padding 50px 0 0 50px
 
-  #editable_node_label
-    position absolute
+  //#editable_node_label
+  //  position absolute
 
 #controls
   position absolute
@@ -615,36 +615,7 @@ path.domain
   stroke none
 
 
-/*
- *  Demo styles
 
-svg *
-  transform-style preserve-3d
-  -webkit-transform-style preserve-3d
-
-
-g.nodeGroup,
-g.linkGroup {
-  cursor: pointer;
-} 
-
-*/
-
-/*
-rect.bounds, path.origin
-  fill none
-  stroke #000000
-  stroke-width 1
-  stroke-opacity 0
-  transition stroke-opacity .5s
-
-g.nodeGroup:hover .bounds
-  stroke-opacity .15
-
-.nodeGroup.active rect.bounds, .nodeGroup.active:hover rect.bounds,
-.nodeGroup.active path.origin, .nodeGroup.active:hover path.origin
-  opacity .25
-*/
 
 g.nodeGroup
   text.artifact
@@ -654,9 +625,9 @@ g.nodeGroup
     opacity 1
     shape-rendering crispEdges
     stroke #3498db
-    stroke-dasharray 5,3
+    //stroke-dasharray 5,3
     stroke-opacity 0
-    stroke-width 2
+    //stroke-width 2
     transition stroke-opacity .5s
   path.origin
     stroke #000
@@ -676,16 +647,14 @@ g.linkGroup
     circle
       cursor pointer
 
-
-
 g#node_controls
   rect.bounding_box
     fill none
     shape-rendering crispEdges
     stroke #000
-    stroke-dasharray 5,3
+    //stroke-dasharray 5,3
     stroke-opacity .15
-    stroke-width 2
+    //stroke-width 2
     transition stroke-opacity .2s linear
     &.active
       stroke-opacity .35
@@ -695,18 +664,40 @@ g#node_controls
     cursor move
     fill #fff
     stroke #4d4d4d
-    stroke-width 2
+    //stroke-width 2
 
 g#link_controls
   circle.point
     cursor move
     fill #fff
     stroke #4d4d4d
-    stroke-width 2
+    //stroke-width 2
     &.active
       fill #4d4d4d
 
 
+
+rect.parent_bounds, 
+rect.bounding_box,
+path.origin
+  stroke-dasharray 4,2
+
+
+g.zoom_in
+  rect.parent_bounds,
+  rect.bounding_box,
+  path.origin,
+  circle.point,
+  circle.handle
+    stroke-width 1
+
+g.zoom_out
+  rect.parent_bounds,
+  rect.bounding_box,
+  path.origin,
+  circle.point,
+  circle.handle
+    stroke-width 2
 
 
 

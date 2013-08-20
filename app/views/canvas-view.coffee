@@ -420,14 +420,25 @@ module.exports = class CanvasView extends View
 
   canvas_zoom: =>
     #console.log d3.event?.translate or [0,0]
+
     mediator.offset = [d3.event?.translate or [0,0], d3.event?.scale or 1]
-    d3.select('#canvas_elements')
+
+    mediator.vis
       .attr('transform', 'translate(' + (d3.event?.translate or [0,0]) + ') scale(' + (d3.event?.scale or 1) + ')')
-    d3.select('#canvas_controls')
+
+    mediator.controls
       .attr('transform', 'translate(' + (d3.event?.translate or [0,0]) + ') scale(' + (d3.event?.scale or 1) + ')')
-    mediator.stage?.select('.x.axis').call(xAxis)
-    mediator.stage?.select('.y.axis').call(yAxis)
+
+    mediator.stage.select('.x.axis').call(xAxis)
+    mediator.stage.select('.y.axis').call(yAxis)
     d3.selectAll('g.axis text').transition().ease('linear').style('opacity', 1)
+
+    if d3.event?.scale > 1
+      mediator.stage.attr('class', 'zoom_in')
+    else if d3.event?.scale < 1
+      mediator.stage.attr('class', 'zoom_out')
+    else
+      mediator.stage.attr('class', null)
 
   reset_zoom: =>
     @zoom.scale(1).translate([0,0])
