@@ -10,7 +10,7 @@ module.exports = class NodeView extends View
   initialize: (data={}) ->
     super    
     @view = d3.select(@el)
-    @padding = 0
+    @padding = 20
 
     @selected_text = null
     @active_text = null
@@ -27,7 +27,7 @@ module.exports = class NodeView extends View
     super
     @build_paths()
     @build_texts()
-    #@build_bounding_box()
+    @build_bounding_box()
     console.log '[NodeView Rendered]'
 
   remove: ->
@@ -75,6 +75,13 @@ module.exports = class NodeView extends View
     @selected_path = null
     @active_path = null
     @resizing_path = false
+
+
+  rebuild: =>
+    @deactivate()
+    @text.remove()
+    @path.remove()
+    @refresh()
 
 
 
@@ -202,10 +209,10 @@ module.exports = class NodeView extends View
         .insert('rect', 'g.nodePath')
           .attr('class', 'parent_bounds')
           .attr('fill', 'none')
-          .attr('height', (d)=> return _parent.height + (@padding*2))
-          .attr('width', (d)=> return _parent.width + (@padding*2))
-          .attr('x', (d)=> return _parent.x - @padding)
-          .attr('y', (d)=> return _parent.y - @padding)
+          .attr('height', (d)=> return _parent.height + (@padding))
+          .attr('width', (d)=> return _parent.width + (@padding))
+          .attr('x', (d)=> return _parent.x - (@padding/2))
+          .attr('y', (d)=> return _parent.y - (@padding/2))
     , 250
 
 
@@ -218,8 +225,8 @@ module.exports = class NodeView extends View
 
   build_text_bounds: (text_model, index) =>
     #console.log 'build_text_bounds'
-    _height = d3.select(@text[0][index])[0][0].getBBox().height + @padding
-    _width = parseInt(text_model.get('width')) + @padding
+    _height = d3.select(@text[0][index])[0][0].getBBox().height
+    _width = parseInt(text_model.get('width'))
     _x = parseInt(text_model.get('x'))
     _y = parseInt(text_model.get('y'))
 
@@ -246,8 +253,8 @@ module.exports = class NodeView extends View
 
   build_text_handles: (text_model, index) =>
     #console.log 'build_text_handles'
-    _height = d3.select(@text[0][index])[0][0].getBBox().height + @padding
-    _width = parseInt(text_model.get('width')) + @padding
+    _height = d3.select(@text[0][index])[0][0].getBBox().height
+    _width = parseInt(text_model.get('width'))
     _x = parseInt(text_model.get('x'))
     _y = parseInt(text_model.get('y'))
     _handle = []
@@ -297,7 +304,7 @@ module.exports = class NodeView extends View
   drag_text_handle_end: (d,i) =>
     d3.event.sourceEvent.stopPropagation()
     _x = parseInt(@text_controls.data()[0].get('x'))
-    _width = @text_bounding_box.attr('width') - @padding
+    _width = @text_bounding_box.attr('width')
     if @resizing_text
       @text_controls.data()[0].set width: Math.round(_width)
 
@@ -484,8 +491,8 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   build_path_bounds: (path_model, index) =>
-    _height = parseInt(path_model.get('height')) + @padding
-    _width = parseInt(path_model.get('width')) + @padding
+    _height = parseInt(path_model.get('height'))
+    _width = parseInt(path_model.get('width'))
     _x = parseInt(path_model.get('x'))
     _y = parseInt(path_model.get('y'))
 
@@ -510,8 +517,8 @@ module.exports = class NodeView extends View
   # ----------------------------------
 
   build_path_handles: (path_model, index) =>
-    _height = parseInt(path_model.get('height')) + @padding
-    _width = parseInt(path_model.get('width')) + @padding
+    _height = parseInt(path_model.get('height'))
+    _width = parseInt(path_model.get('width'))
     _x = parseInt(path_model.get('x'))
     _y = parseInt(path_model.get('y'))
     _handle = []
@@ -593,8 +600,8 @@ module.exports = class NodeView extends View
     d3.event.sourceEvent.stopPropagation()
     _x = parseInt(@path_controls.data()[0].get('x'))
     _y = parseInt(@path_controls.data()[0].get('y'))
-    _height = @path_bounding_box.attr('height') - @padding
-    _width = @path_bounding_box.attr('width') - @padding
+    _height = @path_bounding_box.attr('height')
+    _width = @path_bounding_box.attr('width')
     if @resizing_path
       @path_controls.data()[0].set height: Math.round(_height), width: Math.round(_width)
 

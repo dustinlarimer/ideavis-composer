@@ -84,6 +84,7 @@ module.exports = class EditorView extends CanvasView
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null
+    mediator.publish 'clear_active'
     @toolbar_view = new ToolNodeView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
@@ -93,6 +94,7 @@ module.exports = class EditorView extends CanvasView
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null
+    mediator.publish 'clear_active'
     @toolbar_view = new ToolLinkView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
@@ -102,6 +104,7 @@ module.exports = class EditorView extends CanvasView
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null
+    mediator.publish 'clear_active'
     @toolbar_view = new ToolAxisView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false
@@ -111,6 +114,7 @@ module.exports = class EditorView extends CanvasView
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null
+    mediator.publish 'clear_active'
     @toolbar_view = new ToolTextView el: $('svg', @el)
     @subview 'tool_view', @toolbar_view
     return false

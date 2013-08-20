@@ -59,8 +59,7 @@ module.exports = class DetailNodePathView extends View
     _.each($('#path-attribute-stroke-dasharray input'), (d,i)->
       _path.stroke_dasharray.push parseInt($(d).val()) or 0
     )
-    console.log _path
-
+    #console.log _path
     @model.set _path
 
   update_shape: (e) =>

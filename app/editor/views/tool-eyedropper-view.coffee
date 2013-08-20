@@ -106,9 +106,9 @@ module.exports = class ToolEyedropperView extends View
         opacity: _target_attributes.opacity
         rotate:  _target_attributes.rotate
         nested:  _.union(_target_paths, _target_texts)
-      console.log _model
       mediator.selected_node.model.save _model
       mediator.selected_node.model.build_nested()
+      mediator.selected_node.view.rebuild()
 
     else
       mediator.selected_node = d
@@ -121,7 +121,8 @@ module.exports = class ToolEyedropperView extends View
     @nodes.attr('cursor', 'crosshair')
   
   node_drag_stop: (d, i) =>
-    console.log 'node_drag_stop'
+    return false
+    #console.log 'node_drag_stop'
 
 
 

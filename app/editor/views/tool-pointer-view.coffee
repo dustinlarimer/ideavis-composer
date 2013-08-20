@@ -46,7 +46,7 @@ module.exports = class ToolPointerView extends View
 
     @node_range = null
     
-    mediator.publish 'clear_active'
+    #mediator.publish 'clear_active'
     @setElement('')
     super
 
