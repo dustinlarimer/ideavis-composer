@@ -13,6 +13,7 @@ module.exports = class DetailNodePathView extends View
     @delegate 'click', '#path-attribute-shape button', @update_shape
     @delegate 'click', '#path-attribute-stroke-linecap button', @update_linecap
     @delegate 'click', 'a.fill-image', -> return false
+    @subscribeEvent 'activate_path', @focus_path
 
   listen:
     'change model': 'update_form'
@@ -33,6 +34,13 @@ module.exports = class DetailNodePathView extends View
     )
     @$('#path-attribute-stroke-linecap button[value="' + @model.get('stroke_linecap') + '"]').addClass('active')
     @$('a.fill-image').tooltip({placement: 'right'})
+
+
+  focus_path: =>
+    setTimeout (->
+      @$('.dropdown-toggle').focus()
+    ), 0
+
 
   update_attributes: =>
     _path=

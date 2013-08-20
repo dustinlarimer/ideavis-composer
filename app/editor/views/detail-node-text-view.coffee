@@ -13,6 +13,7 @@ module.exports = class DetailNodeTextView extends View
     @delegate 'change', 'select', @update_attributes
     @delegate 'click', '.attribute-style button', @update_style
     @delegate 'click', '.attribute-label-align button', @update_align
+    @subscribeEvent 'activate_text', @focus_text
 
   listen:
     'change model': 'update_form'
@@ -25,6 +26,11 @@ module.exports = class DetailNodeTextView extends View
       @$('div.label-controls:gt(0)').show()
 
     @$('#text-attribute-align button[value="' + @model.get('align') + '"]').addClass('active')
+
+  focus_text: =>
+    setTimeout (->
+      @$('#text-attribute-text').focus().select()
+    ), 0
 
   update_attributes: =>
     _node_text=

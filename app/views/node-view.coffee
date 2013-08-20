@@ -93,7 +93,7 @@ module.exports = class NodeView extends View
         .on('dragstart', @text_dragstart)
         .on('drag', @text_drag)
         .on('dragend', @text_dragend))
-      .on('dblclick', @text_inline_edit)
+      #.on('dblclick', @text_inline_edit)
 
     # SET @PATH EVENT LISTENERS
     # -------------------------
@@ -192,10 +192,10 @@ module.exports = class NodeView extends View
 
   build_bounding_box: ->
     # Remove all existing bounding boxes
-    d3.select(@el).select('rect.parent_bounds').remove()
+    @view.select('rect.parent_bounds').remove()
     setTimeout =>
-      _parent = d3.select(@el)[0][0].getBBox()
-      d3.select(@el)
+      _parent = @view[0][0].getBBox()
+      @view
         .selectAll('rect.parent_bounds')
         .data([{}])
         .enter()
@@ -335,16 +335,30 @@ module.exports = class NodeView extends View
 
   text_inline_edit: (d,i) =>
     d3.event.stopPropagation() if typeof SVGForeignObjectElement isnt 'undefined' #bypass if !support
-    
-    console.log d
-    
-    
+    _placement = d3.select(@text_controls[0][i])[0][0].getBoundingClientRect()
+    _model = @model.texts.models[i]
+    d3.select('#stage')
+      .append('textarea')
+        .attr('id', 'editable_node_label')
+        .html(_model.get('text'))
+        .style('background', '#fff')
+        .style('text-align', -> 
+          _align = _model.get('align')
+          'center' if _align is 'middle'
+          'left' if _align is 'start'
+          'right' if _align is 'end'
+        )
+        .style('height', _placement.height + 'px')
+        .style('left', _placement.left + 5 + 'px')
+        .style('top', _placement.top + 'px')
+        .style('width', _model.get('width') + 'px')
 
   activate_text: (d, i) =>
     @active_text=
       model: d
       index: i
     @text_controls.each(=> @build_text_handles(d, i))
+    @publishEvent 'activate_text'
 
 
 
@@ -618,6 +632,7 @@ module.exports = class NodeView extends View
       model: d
       index: i
     @path_controls.each(=> @build_path_handles(d, i))
+    @publishEvent 'activate_path'
 
 
 
