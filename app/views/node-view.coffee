@@ -358,7 +358,7 @@ module.exports = class NodeView extends View
       model: d
       index: i
     @text_controls.each(=> @build_text_handles(d, i))
-    @publishEvent 'activate_text'
+    setTimeout => @publishEvent 'activate_text', 0
 
 
 
@@ -632,7 +632,7 @@ module.exports = class NodeView extends View
       model: d
       index: i
     @path_controls.each(=> @build_path_handles(d, i))
-    @publishEvent 'activate_path'
+    setTimeout => @publishEvent 'activate_path', 0
 
 
 
