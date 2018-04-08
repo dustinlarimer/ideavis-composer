@@ -13,16 +13,16 @@ body
 
 .navbar
   position fixed
-  
+
   .navbar-inner
     background rgba(0,0,0,.75)
     border medium none
     box-shadow none
-  
+
   .container
-    padding 5px 0
+    padding 2px 0
     width auto
-  
+
   .brand
     color #fff
     font-size 18px
@@ -42,6 +42,7 @@ body
       padding 10px 15px
 
   form.navbar-form
+    padding: 0;
     input
       background rgba(0,0,0,.2)
       border-radius 2px
@@ -51,8 +52,7 @@ body
       font-size 16px
       font-weight 700
       height auto
-      margin-left 12px
-      margin-right 12px
+      margin 0
       padding 6px 10px 4px
       text-shadow 1px 1px 1px rgba(0,0,0,.25)
     input::-webkit-input-placeholder
@@ -84,15 +84,15 @@ body
     padding 62px 10px 0
     position fixed
     z-index 1
-    
+
     hr
       border-top 1px solid rgba(0,0,0,.2)
       border-bottom 1px solid #fff
       margin 0 0 12px
-    
+
     .btn-group+.btn-group
       margin-left 0
-    
+
     .btn-group > .btn
       background #fff
       border 1px solid rgba(0,0,0,.15)
@@ -232,7 +232,7 @@ body
           //background #fff
         &:hover, &:focus
           text-decoration none
-      
+
       .detail-inner
         border medium none
         padding 10px
@@ -255,13 +255,13 @@ body
     .detail-panel-bucket
       padding 0 10px 5px
 
-    
+
     h2
       font-size 14px
       line-height 14px
       margin 8px 0 0
       text-transform uppercase
-    
+
     h4
       font-size 14px
       margin 10px 0 5px
@@ -387,6 +387,7 @@ body
         ul
           list-style none
           margin 0
+          padding 0
       button.btn
         background #fbfbfb
         border medium none
@@ -399,7 +400,7 @@ body
         &.active
           background #b4e6fa
           box-shadow none
-     
+
       &.open
         a.dropdown-toggle
           border-radius 4px 4px 4px 0
@@ -493,12 +494,12 @@ body
           border-bottom-color transparent
         &:last-child a
           margin-right 0
-    
+
     .tab-content
       overflow visible
       padding-top 10px
 
-    .hidden-fields 
+    .hidden-fields
       padding-top 5px
 
     #marker-start,
@@ -584,7 +585,7 @@ body
     opacity .6
     i
       display block
-   
+
 
 #detail .detail-panel-bucket table { margin: 0; }
 
@@ -677,7 +678,7 @@ g#link_controls
 
 
 
-rect.parent_bounds, 
+rect.parent_bounds,
 rect.bounding_box,
 path.origin
   stroke-dasharray 4,2
@@ -698,7 +699,3 @@ g.zoom_out
   circle.point,
   circle.handle
     stroke-width 2
-
-
-
-
