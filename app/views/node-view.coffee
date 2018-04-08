@@ -78,6 +78,7 @@ module.exports = class NodeView extends View
 
 
   rebuild: =>
+    console.log 'Rebuilding node...'
     @deactivate()
     @text.remove()
     @path.remove()
@@ -125,7 +126,7 @@ module.exports = class NodeView extends View
         .attr('d', 'M 0,-12 L 0,12 M -12,0 L 12,0')
         .style('stroke-dasharray', '4,1')
     
-    mediator.controls.selectAll('g#node_controls').remove()
+    #mediator.controls.selectAll('g#node_controls').remove()
     @controls = mediator.controls
       .append('svg:g')
         .attr('id', 'node_controls')

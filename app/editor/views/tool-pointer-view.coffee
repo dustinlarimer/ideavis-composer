@@ -244,7 +244,18 @@ module.exports = class ToolPointerView extends View
       d.model.save x: d.x, y: d.y
       d.view.activate()
     else
-      d.view.activate(@active_node_target)
+      if key.shift
+        _check = _.where(mediator.selected_nodes, {id: d.id})
+        if _check.length > 0
+          mediator.selected_nodes = _.reject(mediator.selected_nodes, {id: d.id})
+          d.view.deactivate()
+        else
+          mediator.selected_nodes.push(d)
+          d.view.activate(@active_node_target)
+        console.log mediator.selected_nodes
+      else
+        d.view.activate(@active_node_target)
+
     @reset()
     mediator.publish 'activate_detail', d.model
     #mediator.publish 'refresh_canvas'
@@ -336,6 +347,10 @@ module.exports = class ToolPointerView extends View
   # ----------------------------------
 
   deselect_all: ->
+
+    # Experimental
+    mediator.selected_nodes = []
+
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null

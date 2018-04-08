@@ -81,6 +81,7 @@ module.exports = class EditorView extends CanvasView
 
   activate_node: =>
     @removeSubview 'tool_view'
+    mediator.selected_nodes = []
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null
@@ -91,6 +92,7 @@ module.exports = class EditorView extends CanvasView
 
   activate_link: =>
     @removeSubview 'tool_view'
+    mediator.selected_nodes = []
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null
@@ -101,6 +103,7 @@ module.exports = class EditorView extends CanvasView
 
   activate_axis: =>
     @removeSubview 'tool_view'
+    mediator.selected_nodes = []
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null
@@ -111,6 +114,7 @@ module.exports = class EditorView extends CanvasView
 
   activate_text: =>
     @removeSubview 'tool_view'
+    mediator.selected_nodes = []
     mediator.selected_node = null
     mediator.selected_link = null
     mediator.selected_axis = null

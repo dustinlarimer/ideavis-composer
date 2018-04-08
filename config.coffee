@@ -15,6 +15,7 @@ exports.config =
           'vendor/scripts/jquery-1.9.1.js',
           'vendor/scripts/lodash.underscore.js',
           'vendor/scripts/backbone-1.0.0.js'
+          'vendor/scripts/backbone-firebase.js'
           'vendor/scripts/keymaster.js'
         ]
         after: [

@@ -9,8 +9,8 @@
     "url": ""
   },
 	"engines": {
-    "node"										: "0.10.5",
-    "npm"                     : "1.2.21"
+    "node"								: "4.9.1"
+  , "npm"									: "2.15.11"
   },
   "scripts": {
     "start"       : "brunch watch --server",
